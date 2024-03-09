@@ -10,7 +10,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: slackwatch.slackspace.io
+  - host: slackwatch.slack.house
     http:
       paths:
       - path: /
