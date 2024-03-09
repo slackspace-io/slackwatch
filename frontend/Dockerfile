@@ -12,6 +12,7 @@ RUN npm install
 # Copy project files and folders to the current working directory (i.e. "app" folder)
 COPY . .
 
+ENV VITE_APP_ENV=production
 # Build the application
 RUN npm run build
 
@@ -31,6 +32,5 @@ RUN npm install
 # Expose the port the app runs on
 EXPOSE 3000
 ENV NODE_ENV=production
-ENV VITE_APP_ENV=production
 # Command to run the app
 CMD ["node", "build"]
