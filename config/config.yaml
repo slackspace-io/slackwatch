@@ -1,0 +1,4 @@
+kubernetes:
+  useInClusterConfig: false
+  outOfClusterConfig:
+    kubeconfigPath: "/home/dopey/.kube/config"

@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+	  "target": "esnext",
+	  "module": "esnext",
+	  "strict": true,
+	  "jsx": "preserve",
+	  "moduleResolution": "node",
+	  "allowSyntheticDefaultImports": true,
+	  "esModuleInterop": true,
+	  "skipLibCheck": true,
+	  "forceConsistentCasingInFileNames": true,
+	  "baseUrl": ".",
+	  "paths": {
+		"$lib": ["src/lib"]
+	  }
+	},
+	"include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.svelte"],
+	"exclude": ["node_modules/*", "__sapper__/*", "public/*"]
+  }
+  
