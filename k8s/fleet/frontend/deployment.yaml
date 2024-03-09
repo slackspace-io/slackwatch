@@ -20,6 +20,5 @@ spec:
         ports:
         - containerPort: 3000
         env:  # Add this section
-        - name: VITE_API_BASE_URL
-          value: "http://slackwatch-be-svc.slackwatch.svc.cluster.local"
-
+          - name: VITE_APP_ENV
+            value: "production"
