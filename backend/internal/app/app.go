@@ -49,13 +49,17 @@ func enableCors(w *http.ResponseWriter) {
 func (app *Application) setupRoutes() {
     http.HandleFunc("/api/pods", func(w http.ResponseWriter, r *http.Request) {
         enableCors(&w) // Enable CORS for this endpoint
-        images, err := app.Kubernetes.ListContainerImages("default")
+        // Assuming you're looking for pods with an annotation "monitoring" set to "enabled"
+        pods, err := app.Kubernetes.FindContainersWithAnnotation("", "diun.enable", "true")
+        //log result
+        log.Println(pods)
+
         if err != nil {
             http.Error(w, err.Error(), http.StatusInternalServerError)
             return
         }
         w.Header().Set("Content-Type", "application/json")
-        json.NewEncoder(w).Encode(images)
+        json.NewEncoder(w).Encode(pods)
     })
 }
 
