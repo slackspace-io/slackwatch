@@ -9,8 +9,8 @@
 	<h1>Pods Information</h1>
 	{#each data.podsInfo as { podName, containerName, image, timeScanned }}
 		<div class="pod-details">
-			<h3>Pod: {podName}</h3>
-			<p>Container: {containerName}</p>
+			<h3>Container: {containerName}</h3>
+			<p>Pod: {podName}</p>
 			<p>Image: {image}</p>
 			<time datetime="{timeScanned}">Scanned: {timeScanned}</time>
 		</div>
