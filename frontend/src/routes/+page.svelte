@@ -1,8 +1,6 @@
 <script lang="ts">
 	export let podsInfo: Array<{ image: string; timeScanned: string }> = [];
 	export let data;
-	console.log(podsInfo);
-	console.log(data);
 </script>
 
 <main>
