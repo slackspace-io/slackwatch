@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slackwatch-fe
+  labels:
+    app: slackwatch-fe
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: slackwatch-fe
+  template:
+    metadata:
+      labels:
+        app: slackwatch-fe
+    spec:
+      containers:
+      - name: slackwatch-fe
+        image: ghcr.io/slackspace-io/slackwatch-fe:latest
+        ports:
+        - containerPort: 80
+
