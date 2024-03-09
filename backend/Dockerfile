@@ -12,7 +12,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -v -o server ./cmd/slackwatch
 FROM alpine:latest  
 RUN apk --no-cache add ca-certificates
 
-WORKDIR /root/
+WORKDIR /app
 # Copy the binary to the production image from the builder stage.
 COPY --from=builder /app/server .
 
