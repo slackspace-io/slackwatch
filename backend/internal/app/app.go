@@ -19,7 +19,7 @@ type Application struct {
 func Initialize() (*Application, error) {
     // Initialize Kubernetes client, notifications, and repo checker here
     // For example:
-    cfg, err := config.LoadConfig("config/config.yaml")
+    cfg, err := config.LoadConfig("/app/config/config.yaml")
     if err != nil {
         return nil, err
     }

@@ -19,7 +19,7 @@ spec:
         - containerPort: 8080
       volumeMounts:
         - name: slackwatch-config
-          mountPath: /root/config
+          mountPath: /app/config
           subPath: config.yaml
       envFrom:
         - configMapRef:
