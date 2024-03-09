@@ -19,7 +19,4 @@ spec:
         image: ghcr.io/slackspace-io/slackwatch-fe:latest
         ports:
         - containerPort: 3000
-        env:  # Add this section
-        - name: VITE_API_BASE_URL
-          value: "http://backend-service:8080/api"
 

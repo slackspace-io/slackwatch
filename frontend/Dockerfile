@@ -31,6 +31,7 @@ RUN npm install
 # Expose the port the app runs on
 EXPOSE 3000
 ENV NODE_ENV=production
+ENV VITE_API_BASE_URL=http://backend-service:8080
 
 # Command to run the app
 CMD ["node", "build"]
