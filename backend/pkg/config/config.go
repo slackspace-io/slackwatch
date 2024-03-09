@@ -12,6 +12,7 @@ type Config struct {
 }
 
 type KubernetesConfig struct {
+    PollingInterval int `yaml:"pollingInterval"`
     UseInClusterConfig bool   `yaml:"useInClusterConfig"`
     OutOfClusterConfig struct {
         KubeconfigPath string `yaml:"kubeconfigPath"`
@@ -36,5 +37,7 @@ func LoadConfig(configPath string) (*Config, error) {
     if err := yaml.Unmarshal(bytes, &config); err != nil {
         return nil, err
     }
+    //log config
+    log.Printf("Config: %+v", config)
     return &config, nil
 }

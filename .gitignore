@@ -1,0 +1,46 @@
+#local go builds
+slackwatch
+
+# General
+.DS_Store
+node_modules/
+dist/
+*.log
+*.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/vendor/
+*.test
+*.out
+
+# Svelte / TypeScript
+public/build/
+src/node_modules/
+
+# Kubernetes
+*.kube
+*.k8s
+
+# Docker
+docker-compose*.yml
+*.dockerignore
+Dockerfile
+**/Dockerfile
+**/.dockerignore
+slackwatch
