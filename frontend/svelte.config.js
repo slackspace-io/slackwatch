@@ -12,7 +12,7 @@ const config = {
     // for more information about preprocessors
     preprocess: sveltePreprocess({
         typescript: {
-            tsconfigFile: './tsconfig.json',
+            tsconfigFile: './tsconfig.json', // Adjusted path
         },
     }),
 
