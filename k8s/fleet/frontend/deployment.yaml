@@ -21,4 +21,4 @@ spec:
         - containerPort: 3000
         env:  # Add this section
           - name: VITE_APP_ENV
-            value: "production"
+            value: production
