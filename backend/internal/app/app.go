@@ -2,12 +2,12 @@ package app
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"slackwatch/backend/internal/kubernetes"
 	"slackwatch/backend/internal/notifications"
 	"slackwatch/backend/internal/repochecker"
 	"slackwatch/backend/pkg/config"
-	"time"
 )
 
 type Application struct {
@@ -52,8 +52,10 @@ func (app *Application) setupRoutes() {
 }
 
 func (app *Application) Run() error {
-    // Your application's main logic
-    // For example, monitor Kubernetes pods, check for updates, and send notifications
-    
+    log.Println("Starting Slackwatch")
+    // Start HTTP server
+    if err := http.ListenAndServe(":8080", nil); err != nil {
+        log.Fatalf("Failed to start server: %v", err)
+    }
     return nil
 }
