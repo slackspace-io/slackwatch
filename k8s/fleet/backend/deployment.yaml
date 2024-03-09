@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: slackwatch-be-deployment
+  name: slackwatch-be
 spec:
   replicas: 1
   selector:

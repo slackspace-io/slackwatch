@@ -4,7 +4,7 @@ metadata:
   name: backend-service
 spec:
   selector:
-    app: slackwatch-backend
+    app: slackwatch-be
   ports:
     - protocol: TCP
       port: 80
