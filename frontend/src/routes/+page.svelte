@@ -10,8 +10,8 @@
 	{#each data.podsInfo as { podName, containerName, image, timeScanned }}
 		<div class="pod-details">
 			<h3>Container: {containerName}</h3>
-			<p>Pod: {podName}</p>
 			<p>Image: {image}</p>
+			<p>Pod: {podName}</p>
 			<time datetime="{timeScanned}">Scanned: {timeScanned}</time>
 		</div>
 		<style>
