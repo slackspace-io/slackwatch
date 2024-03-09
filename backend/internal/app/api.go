@@ -5,6 +5,10 @@ import (
 	"net/http"
 )
 
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*") // Be more specific in production!
+}
+
 func (app *Application) RegisterHandlers() {
 	http.HandleFunc("/api/images", app.handleListImages)
 }
