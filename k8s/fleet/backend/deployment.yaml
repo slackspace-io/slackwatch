@@ -17,11 +17,11 @@ spec:
         image: ghcr.io/slackspace-io/slackwatch-be:latest
         ports:
         - containerPort: 8080
-      volumeMounts:
-        - name: slackwatch-config
-          mountPath: /app/config/
-      envFrom:
-        - configMapRef:
-            name: slackwatch-config
-
-
+        volumeMounts:
+          - name: config-volume
+            mountPath: /app/config/
+      volumes:
+      - name: config-volume
+        configMap:
+          name: slackwatch-config
+    
