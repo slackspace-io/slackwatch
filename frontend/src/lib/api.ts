@@ -1,7 +1,8 @@
-import { BE_BASE_URL } from "../config";
+import config from "../config";
+
 
 export async function fetchPods(): Promise<Array<{name: string, timeScanned: string}>> {
-  const response = await fetch(`${BE_BASE_URL}/api/pods`);
+  const response = await fetch(`${config!.baseURL}/api/pods`);
   if (!response.ok) {
       throw new Error('Failed to fetch pods');
   }
