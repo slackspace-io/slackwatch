@@ -42,8 +42,13 @@ func Initialize() (*Application, error) {
     return app, nil
 }
 
+func enableCors(w *http.ResponseWriter) {
+    (*w).Header().Set("Access-Control-Allow-Origin", "*") // Allow any domain, adjust as necessary for security
+}
+
 func (app *Application) setupRoutes() {
     http.HandleFunc("/api/pods", func(w http.ResponseWriter, r *http.Request) {
+        enableCors(&w) // Enable CORS for this endpoint
         images, err := app.Kubernetes.ListContainerImages("default")
         if err != nil {
             http.Error(w, err.Error(), http.StatusInternalServerError)
