@@ -18,5 +18,5 @@ spec:
       - name: slackwatch-fe
         image: ghcr.io/slackspace-io/slackwatch-fe:latest
         ports:
-        - containerPort: 80
+        - containerPort: 3000
 
