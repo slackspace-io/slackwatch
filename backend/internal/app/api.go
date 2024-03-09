@@ -14,6 +14,7 @@ func (app *Application) RegisterHandlers() {
 }
 
 func (app *Application) handleListImages(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	images, err := app.Kubernetes.ListContainerImages("default") // Assume using "default" namespace
 	if err != nil {
 		http.Error(w, "Failed to get images", http.StatusInternalServerError)
