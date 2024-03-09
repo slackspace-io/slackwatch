@@ -20,8 +20,10 @@ FROM node:16 as production-stage
 
 WORKDIR /app
 
-COPY --from=build-stage /app/build /app
-COPY package*.json ./
+COPY --from=build-stage /app/build build/
+COPY --from=build-stage /app/node_modules node_modules/
+COPY package.json .
+
 
 # Install production dependencies
 RUN npm install --only=production
