@@ -16,20 +16,21 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Serve the application with Node
-FROM node:16 as production-stage
+FROM node:19-alpine as production-stage
 
 WORKDIR /app
 
 COPY --from=build-stage /app/build build/
 COPY --from=build-stage /app/node_modules node_modules/
-COPY package.json .
+COPY --from=build-stage /app/package.json .
 
 
 # Install production dependencies
-RUN npm install --only=production
+RUN npm install
 
 # Expose the port the app runs on
 EXPOSE 3000
+ENV NODE_ENV=production
 
 # Command to run the app
 CMD ["node", "build"]

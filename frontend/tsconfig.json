@@ -1,23 +1,24 @@
-  
-
 {
 	"extends": "./.svelte-kit/tsconfig.json",
 	"compilerOptions": {
-	  "target": "esnext",
-	  "module": "esnext",
-	  "strict": true,
-	  "jsx": "preserve",
-	  "moduleResolution": "node",
-	  "allowSyntheticDefaultImports": true,
-	  "esModuleInterop": true,
-	  "skipLibCheck": true,
-	  "forceConsistentCasingInFileNames": true,
-	  "baseUrl": ".",
-	  "paths": {
-		"$lib": ["src/lib"]
-	  }
+		"target": "esnext",
+		"module": "esnext",
+		"strict": true,
+		"jsx": "preserve",
+		"moduleResolution": "node",
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
 	},
-	"include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.svelte"],
-	"exclude": ["node_modules/*", "__sapper__/*", "public/*"]
-  }
-  
+	"include": [
+		"src/**/*.d.ts",
+		"src/**/*.ts",
+		"src/**/*.svelte"
+	],
+	"exclude": [
+		"node_modules/*",
+		"__sapper__/*",
+		"public/*"
+	]
+}
