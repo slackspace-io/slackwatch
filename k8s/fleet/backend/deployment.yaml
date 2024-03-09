@@ -12,6 +12,7 @@ spec:
       labels:
         app: slackwatch-be
     spec:
+      serviceAccountName: slackwatch-backend
       containers:
       - name: slackwatch-be
         image: ghcr.io/slackspace-io/slackwatch-be:latest

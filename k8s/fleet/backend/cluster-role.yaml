@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: slackwatch-backend-role-binding
+subjects:
+- kind: ServiceAccount
+  name: slackwatch-backend
+  namespace: slackwatch
+roleRef:
+  kind: ClusterRole
+  name: slackwatch-backend-role
+  apiGroup: rbac.authorization.k8s.io
