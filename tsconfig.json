@@ -1,0 +1,5 @@
+// tsconfig.json at the root of your monorepo
+{
+  "extends": "./frontend/tsconfig.json",
+}
+  
