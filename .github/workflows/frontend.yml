@@ -27,4 +27,4 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
-          tags: ghcr.io/yourusername/frontend:latest,ghcr.io/yourusername/frontend:dev,ghcr.io/yourusername/slackwatch-fe:${{ github.sha }}
+          tags: ghcr.io/slackspace-io/slackwatch-fe:latest,ghcr.io/slackspace-io/slackwatch-fe:dev,ghcr.io/slackspace-io/slackwatch-fe:${{ github.sha }}
