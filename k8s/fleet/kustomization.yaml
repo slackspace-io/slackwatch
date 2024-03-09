@@ -5,3 +5,7 @@ resources:
   - backend
   - frontend
 
+configMapGenerator:
+  - name: slackwatch-config
+    files:
+      - ./config/config.yaml
