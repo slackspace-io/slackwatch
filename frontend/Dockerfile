@@ -15,13 +15,19 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Stage 2: Serve the application from Nginx
-FROM nginx:stable-alpine as production-stage
+# Stage 2: Serve the application with Node
+FROM node:16 as production-stage
 
-# Copy the build artifacts from the build stage
-COPY --from=build-stage /app/.svelte-kit/output /usr/share/nginx/html
+WORKDIR /app
 
-# Expose port 80 to the outside once the container has launched
-EXPOSE 80
+COPY --from=build-stage /app/build /app
+COPY package*.json ./
 
-CMD ["nginx", "-g", "daemon off;"]
+# Install production dependencies
+RUN npm install --only=production
+
+# Expose the port the app runs on
+EXPOSE 3000
+
+# Command to run the app
+CMD ["node", "build"]

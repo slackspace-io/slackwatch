@@ -1,4 +1,5 @@
-import adapter from '@sveltejs/adapter-auto';
+import adapter from '@sveltejs/adapter-node';
+
 import sveltePreprocess from 'svelte-preprocess';
 
 // If you're using vitePreprocess (mentioned in the provided snippet),
