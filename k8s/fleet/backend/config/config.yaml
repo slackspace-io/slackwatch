@@ -1,5 +1,5 @@
 kubernetes:
   pollingInterval: 30
-  useInClusterConfig: false
+  useInClusterConfig: true
   outOfClusterConfig:
     kubeconfigPath: "/home/dopey/.kube/config"
