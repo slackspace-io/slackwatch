@@ -19,6 +19,3 @@ spec:
         image: ghcr.io/slackspace-io/slackwatch-fe:latest
         ports:
         - containerPort: 3000
-        env:  # Add this section
-          - name: VITE_APP_ENV
-            value: production
