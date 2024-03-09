@@ -88,7 +88,7 @@ func (c *Client) ListContainerImages(namespace string) ([]map[string]string, err
     for _, pod := range podList.Items {
         for _, container := range pod.Spec.Containers {
             images = append(images, map[string]string{
-                "name": container.Image,
+                "image": container.Image,
                 "timeScanned": time.Now().Format(time.RFC3339),
             })
         }
