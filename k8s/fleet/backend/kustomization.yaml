@@ -4,3 +4,7 @@ resources:
   - deployment.yaml
   - service.yaml
 
+configMapGenerator:
+  - name: slackwatch-config
+    files:
+      - ./config/config.yaml
