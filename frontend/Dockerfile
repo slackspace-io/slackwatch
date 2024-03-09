@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM node:16 as build-stage
+FROM node:current-alpine as build-stage
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Serve the application with Node
-FROM node:19-alpine as production-stage
+FROM node:current-alpine as production-stage
 
 WORKDIR /app
 
