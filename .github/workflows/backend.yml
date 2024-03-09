@@ -27,4 +27,4 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          tags: ghcr.io/slackspace-io/slackwatch-be:latest,ghcr.io/slackspace-io/slackwatch-be:${{ github.sha }}
+          tags: ghcr.io/slackspace-io/slackwatch-be:latest,ghcr.io/slackspace-io/slackwatch-be:dev,ghcr.io/slackspace-io/slackwatch-be:${{ github.sha }}
