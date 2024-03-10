@@ -34,10 +34,3 @@ As we continue to develop this project, we aim to introduce more features and im
 ## Contributing
 
 This project is in its early stages, and we welcome contributions from the community. Whether it's adding new features, fixing bugs, or improving documentation, your help can make a significant difference in bringing this project to fruition.
-
-## License
-
-This project is open-source and available under the MIT License. We encourage you to use, modify, and distribute it as you see fit.
-
-Stay tuned for updates as we progress in making container version monitoring more accessible and efficient.
-
