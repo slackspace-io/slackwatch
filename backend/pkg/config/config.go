@@ -31,6 +31,7 @@ type KubernetesConfig struct {
 
 type SystemConfig struct {
     Schedule string `yaml:"schedule"`
+    RunAtStartup bool `yaml:"runAtStartup"`
 }
 
 // LoadConfig reads and parses the configuration file

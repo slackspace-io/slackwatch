@@ -51,7 +51,9 @@ func Initialize() (*Application, error) {
 
     app.setupRoutes()
     app.scheduleTasks()
-    go app.runScheduledTask()
+    if app.System.RunAtStartup { // Check if runAtStartup is true
+        go app.runScheduledTask()
+    }
     return app, nil
 }
 
