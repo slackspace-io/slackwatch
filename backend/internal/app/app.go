@@ -2,6 +2,7 @@ package app
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"slackwatch/backend/internal/kubernetes"
@@ -17,19 +18,17 @@ type Application struct {
 }
 
 func Initialize() (*Application, error) {
-    // Initialize Kubernetes client, notifications, and repo checker here
-    // For example:
     cfg, err := config.LoadConfig("/app/config/config.yaml")
     if err != nil {
         return nil, err
     }
-    k8sClient, err := kubernetes.NewClient(&cfg.Kubernetes)
+    repoChecker := repochecker.NewChecker(cfg.Repositories)
+    k8sClient, err := kubernetes.NewClient(&cfg.Kubernetes, repoChecker)
     if err != nil {
         return nil, err
     }
     
     notificationManager := notifications.NewManager()
-    repoChecker := repochecker.NewChecker()
     
     app := &Application{
         Kubernetes:    k8sClient,
@@ -49,17 +48,24 @@ func enableCors(w *http.ResponseWriter) {
 func (app *Application) setupRoutes() {
     http.HandleFunc("/api/pods", func(w http.ResponseWriter, r *http.Request) {
         enableCors(&w) // Enable CORS for this endpoint
-        // Assuming you're looking for pods with an annotation "monitoring" set to "enabled"
-        pods, err := app.Kubernetes.FindContainersWithAnnotation("", "diun.enable", "true")
-        //log result
-        log.Println(pods)
 
+        // First, find containers with the specific annotation
+        containers, err := app.Kubernetes.FindContainersWithAnnotation("", "diun.enable", "true")
+        fmt.Println(containers)
         if err != nil {
             http.Error(w, err.Error(), http.StatusInternalServerError)
             return
         }
+
+        // Then, pass the result directly to CheckForImageUpdates
+        updates, err := app.Kubernetes.CheckForImageUpdates(containers)
+        if err != nil {
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
+
         w.Header().Set("Content-Type", "application/json")
-        json.NewEncoder(w).Encode(pods)
+        json.NewEncoder(w).Encode(updates)
     })
 }
 

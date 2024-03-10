@@ -6,20 +6,23 @@ import (
     "path/filepath"
     "slackwatch/backend/pkg/config" // Import your config package
     "time"
+    "strings"
 
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
     "k8s.io/client-go/kubernetes"
     "k8s.io/client-go/rest"
     "k8s.io/client-go/tools/clientcmd"
     corev1 "k8s.io/api/core/v1"
+    "slackwatch/backend/internal/repochecker" // Assuming the import path for repochecker
 )
 
 
 type Client struct {
     clientSet *kubernetes.Clientset
+    repoChecker *repochecker.Checker
 }
 
-func NewClient(cfg *config.KubernetesConfig) (*Client, error) {
+func NewClient(cfg *config.KubernetesConfig, checker *repochecker.Checker) (*Client, error) {
     var k8sConfig *rest.Config
     var err error
 
@@ -41,7 +44,7 @@ func NewClient(cfg *config.KubernetesConfig) (*Client, error) {
         return nil, fmt.Errorf("failed to create clientset: %w", err)
     }
 
-    return &Client{clientSet: clientSet}, nil
+    return &Client{clientSet: clientSet, repoChecker: checker}, nil
 }
 
 // FindContainersWithAnnotation finds all containers in a given namespace (or all namespaces if namespace is empty) that have a specific metadata annotation
@@ -95,4 +98,36 @@ func (c *Client) ListContainerImages(namespace string) ([]map[string]string, err
     }
 
     return images, nil
+}
+// CheckForImageUpdates checks for newer tags of the images
+func (c *Client) CheckForImageUpdates(containers []map[string]string) ([]map[string]string, error) {
+    var updates []map[string]string
+    for _, container := range containers {
+        fmt.Println(container)
+        imageName := container["image"]
+        fmt.Println(imageName)
+        // Assuming the image name is in the format "repo/image:tag"
+        parts := strings.Split(imageName, ":")
+        if len(parts) != 2 {
+            continue // Skip if the format is unexpected
+        }
+        repo, currentTag := parts[0], parts[1]
+        fmt.Println(repo)
+        fmt.Println(currentTag)
+        newTags, err := c.repoChecker.GetTags(repo)
+        if err != nil {
+            continue // Skip on error
+        }
+        for _, newTag := range newTags {
+            if newTag != "" && newTag != currentTag {
+                updates = append(updates, map[string]string{
+                    "image": imageName,
+                    "currentTag": currentTag,
+                    "newTag": newTag,
+                })
+            }
+        }
+    }
+    fmt.Println(updates)
+    return updates, nil
 }

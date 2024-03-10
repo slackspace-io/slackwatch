@@ -9,6 +9,20 @@ import (
 
 type Config struct {
     Kubernetes KubernetesConfig `yaml:"kubernetes"`
+    Repositories []Repository `yaml:"repositories"`
+}
+
+type Repository struct {
+    Name     string `yaml:"name"`
+    Token    string `yaml:"token,omitempty"`
+    Username string `yaml:"username,omitempty"`
+    Password string `yaml:"password,omitempty"`
+}
+
+type RepositoryConfig struct {
+    URL      string `yaml:"url"`
+    Username string `yaml:"username"`
+    Password string `yaml:"password"`
 }
 
 type KubernetesConfig struct {
