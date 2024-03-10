@@ -134,13 +134,11 @@ func (c *Client) CheckForImageUpdates(containers []map[string]string) ([]map[str
 			}
 			if isNewer {
 				log.Printf("New tag found %s", newTag)
-				updates = append(updates, map[string]string{
-					"image":      imageName,
-					"currentTag": currentTag,
-					"newTag":     newTag,
-					"isNewer":    strconv.FormatBool(isNewer),
-					"foundAt":    time.Now().Format(time.RFC3339),
-				})
+				container["currentTag"] = currentTag // Add current tag to the container's map
+				container["newTag"] = newTag         // Add new tag information
+				container["isNewer"] = strconv.FormatBool(isNewer) // Add isNewer flag
+				container["foundAt"] = time.Now().Format(time.RFC3339) // Add foundAt timestamp
+				updates = append(updates, container) // Append the modified container map
 			}
 		}
 	}
