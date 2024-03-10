@@ -6,7 +6,7 @@ export async function load({
 	}: {
 		fetch: (input: RequestInfo, init?: RequestInit) => Promise<Response>;
 	}) {
-    const response = await fetch(`${config!.baseURL}api/images`);
+    const response = await fetch(`${config!.baseURL}api/containers`);
     const podsInfo = await response.json(); // Parse the response as JSON
     return { podsInfo };
 	}

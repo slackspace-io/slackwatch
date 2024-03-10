@@ -8,7 +8,6 @@ import (
 	"slackwatch/backend/internal/notifications"
 	"slackwatch/backend/internal/repochecker"
 	"slackwatch/backend/internal/service"
-	"slackwatch/backend/internal/storage"
 	"slackwatch/backend/pkg/config"
 
 	"github.com/robfig/cron/v3"
@@ -30,9 +29,8 @@ func Initialize() (*Application, error) {
         return nil, err
     }
 
-    // Initialize services and storage
-    fileStorage := &storage.FileStorage{FilePath: "data.json"}
-    dataService := &service.DataService{Storage: fileStorage}
+    // Initialize services
+    dataService := &service.DataService{}
 
     // Initialize other components as before
     repoChecker := repochecker.NewChecker(*cfg)
@@ -53,7 +51,7 @@ func Initialize() (*Application, error) {
 
     app.setupRoutes()
     app.scheduleTasks()
-
+    go app.runScheduledTask()
     return app, nil
 }
 
@@ -64,26 +62,30 @@ func enableCors(w http.ResponseWriter) {
 }
 
 func (app *Application) setupRoutes() {
-    // Setup routes for data service with CORS enabled
-    http.HandleFunc("/api/images", app.enableCorsMiddleware(app.DataService.HandleGetData))
-    http.HandleFunc("/api/refresh", app.enableCorsMiddleware(app.handleRefreshData))
+    http.HandleFunc("/api/containers", app.enableCorsMiddleware(app.handleContainerInfo))
+    http.HandleFunc("/api/imageUpdates", app.enableCorsMiddleware(app.handleImageUpdates))
+    // Add the new route for data refresh
+    http.HandleFunc("/api/data/refresh", app.enableCorsMiddleware(app.handleDataRefresh))
+}
 
-    // Setup other routes as before
-    // Example: http.HandleFunc("/api/pods", app.handlePods)
+// handleDataRefresh triggers the scheduled task manually.
+func (app *Application) handleDataRefresh(w http.ResponseWriter, r *http.Request) {
+
+    go app.runScheduledTask() // Run in a goroutine to not block the HTTP response
+
+    w.WriteHeader(http.StatusOK)
+    _, _ = w.Write([]byte("Scheduled task triggered"))
 }
 
 // enableCorsMiddleware wraps an http.HandlerFunc with CORS headers
 func (app *Application) enableCorsMiddleware(next http.HandlerFunc) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
         enableCors(w)
+        if r.Method == "OPTIONS" {
+            return
+        }
         next.ServeHTTP(w, r)
     }
-}
-
-func (app *Application) handleRefreshData(w http.ResponseWriter, r *http.Request) {
-    // Logic to refresh data manually
-    log.Println("Manually refreshing data...")
-    app.runScheduledTask() // Directly invoke the task logic
 }
 
 func (app *Application) scheduleTasks() {
@@ -103,14 +105,21 @@ func (app *Application) runScheduledTask() {
         log.Printf("Error finding containers: %v", err)
         return
     }
+    log.Printf("Found %d containers", len(containers))
+    for _, container := range containers {
+        log.Printf("Container: %v", container)
+    }
+    err = app.DataService.SaveData(context.Background(), "container", containers)
+    if err != nil {
+        log.Printf("Error saving container data: %v", err)
+    }
+
     updates, err := app.Kubernetes.CheckForImageUpdates(containers)
     if err != nil {
         log.Printf("Error checking for image updates: %v", err)
         return
     }
-    // Save updates data locally
-    log.Printf("Saving updates data: %v", updates)
-    err = app.DataService.SaveData(context.Background(), updates)
+    err = app.DataService.SaveData(context.Background(), "image", updates)
     if err != nil {
         log.Printf("Error saving updates data: %v", err)
     }
@@ -125,5 +134,3 @@ func (app *Application) Run() error {
     }
     return nil
 }
-
-// Include other methods (e.g., scheduleKubernetesTasks) as they were previously defined

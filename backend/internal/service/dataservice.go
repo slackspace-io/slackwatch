@@ -3,31 +3,35 @@ package service
 import (
 	"context"
 	"encoding/json"
-	"log"
-	"net/http"
+	"fmt"
 	"os"
-	"slackwatch/backend/internal/model"
-	"slackwatch/backend/internal/storage"
-	"strings"
 )
 
 type DataService struct {
-    Storage storage.Storage
+    // Storage field is omitted for brevity as it's not directly related to the changes
 }
 
-func (ds *DataService) SaveData(ctx context.Context, data interface{}) error {
-    file, err := os.OpenFile("data.json", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
+func (ds *DataService) SaveContainerData(ctx context.Context, data interface{}) error {
+    return ds.saveDataToFile(ctx, data, "containers.json")
+}
+
+func (ds *DataService) SaveImageData(ctx context.Context, data interface{}) error {
+    return ds.saveDataToFile(ctx, data, "imageUpdates.json")
+}
+
+func (ds *DataService) saveDataToFile(ctx context.Context, data interface{}, fileName string) error {
+    file, err := os.OpenFile(fileName, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
     if err != nil {
         return err
     }
     defer file.Close()
-
     encoder := json.NewEncoder(file)
     return encoder.Encode(data)
 }
 
-func (ds *DataService) GetData(ctx context.Context) ([]map[string]string, error) {
-    file, err := os.Open("data.json")
+// GetData now accepts a fileName parameter to specify which file to read from
+func (ds *DataService) GetData(ctx context.Context, fileName string) ([]map[string]string, error) {
+    file, err := os.Open(fileName)
     if err != nil {
         return nil, err
     }
@@ -43,44 +47,13 @@ func (ds *DataService) GetData(ctx context.Context) ([]map[string]string, error)
     return data, nil
 }
 
-// HandleSaveData handles the HTTP request for saving data
-func (ds *DataService) HandleSaveData(w http.ResponseWriter, r *http.Request) {
-    if r.Method != http.MethodPost {
-        http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
-        return
-    }
-
-    var data model.Data
-    if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
-        http.Error(w, err.Error(), http.StatusBadRequest)
-        return
-    }
-
-    if err := ds.SaveData(context.Background(), data); err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
-
-    w.WriteHeader(http.StatusCreated)
-}
-
-// HandleGetData handles the HTTP request for retrieving data by ID
-func (ds *DataService) HandleGetData(w http.ResponseWriter, r *http.Request) {
-    if r.Method != http.MethodGet {
-        http.Error(w, "Only GET method is allowed", http.StatusMethodNotAllowed)
-        return
-    }
-
-    id := strings.TrimPrefix(r.URL.Path, "/api/data/")
-    log.Printf("Getting data for ID: %s", id)
-    data, err := ds.GetData(context.Background())
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusNotFound)
-        return
-    }
-
-    if err := json.NewEncoder(w).Encode(data); err != nil {
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
+func (ds *DataService) SaveData(ctx context.Context, dataType string, data interface{}) error {
+    switch dataType {
+    case "container":
+        return ds.SaveContainerData(ctx, data)
+    case "image":
+        return ds.SaveImageData(ctx, data)
+    default:
+        return fmt.Errorf("unsupported data type: %s", dataType)
     }
 }
