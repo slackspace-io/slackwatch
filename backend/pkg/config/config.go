@@ -11,6 +11,7 @@ type Config struct {
     Kubernetes   KubernetesConfig `yaml:"kubernetes"`
     Repositories []Repository     `yaml:"repositories"`
     System       SystemConfig     `yaml:"system"`
+    Magic        MagicConfig      `yaml:"magic"`
 }
 
 type Repository struct {
@@ -32,6 +33,10 @@ type KubernetesConfig struct {
 type SystemConfig struct {
     Schedule string `yaml:"schedule"`
     RunAtStartup bool `yaml:"runAtStartup"`
+}
+
+type MagicConfig struct {
+    ExcludePatterns []string `yaml:"excludePatterns"`
 }
 
 // LoadConfig reads and parses the configuration file

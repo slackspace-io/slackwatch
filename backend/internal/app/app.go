@@ -34,7 +34,7 @@ func Initialize() (*Application, error) {
 
     // Initialize other components as before
     repoChecker := repochecker.NewChecker(*cfg)
-    k8sClient, err := kubernetes.NewClient(&cfg.Kubernetes, repoChecker)
+    k8sClient, err := kubernetes.NewClient(&cfg.Kubernetes, repoChecker, cfg)
     if err != nil {
         log.Printf("Failed to initialize Kubernetes client: %v", err)
         return nil, err

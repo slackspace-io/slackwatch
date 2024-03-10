@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
-	"slackwatch/backend/pkg/config" // Import your config package
+	"regexp"
 	"strings"
 	"time"
+	"strconv"
 
+	"github.com/Masterminds/semver/v3"
+	"slackwatch/backend/pkg/config" // Import your config package
 	"slackwatch/backend/internal/repochecker" // Assuming the import path for repochecker
 
 	corev1 "k8s.io/api/core/v1"
@@ -21,9 +24,10 @@ import (
 type Client struct {
 	clientSet   *kubernetes.Clientset
 	repoChecker *repochecker.Checker
+	config      *config.Config
 }
 
-func NewClient(cfg *config.KubernetesConfig, checker *repochecker.Checker) (*Client, error) {
+func NewClient(cfg *config.KubernetesConfig, checker *repochecker.Checker, appConfig *config.Config) (*Client, error) {
 	var k8sConfig *rest.Config
 	var err error
 
@@ -45,7 +49,7 @@ func NewClient(cfg *config.KubernetesConfig, checker *repochecker.Checker) (*Cli
 		return nil, fmt.Errorf("failed to create clientset: %w", err)
 	}
 
-	return &Client{clientSet: clientSet, repoChecker: checker}, nil
+	return &Client{clientSet: clientSet, repoChecker: checker, config: appConfig}, nil
 }
 
 // FindContainersWithAnnotation finds all containers in a given namespace (or all namespaces if namespace is empty) that have a specific metadata annotation
@@ -111,31 +115,69 @@ func (c *Client) ListContainerImages(namespace string) ([]map[string]string, err
 func (c *Client) CheckForImageUpdates(containers []map[string]string) ([]map[string]string, error) {
 	var updates []map[string]string
 	for _, container := range containers {
-		fmt.Println(container)
 		imageName := container["image"]
-		fmt.Println(imageName)
 		// Assuming the image name is in the format "repo/image:tag"
 		parts := strings.Split(imageName, ":")
 		if len(parts) != 2 {
 			continue // Skip if the format is unexpected
 		}
 		repo, currentTag := parts[0], parts[1]
-		fmt.Println(repo)
-		fmt.Println(currentTag)
 		newTags, err := c.repoChecker.GetTags(repo)
 		if err != nil {
 			continue // Skip on error
 		}
 		for _, newTag := range newTags {
-			if newTag != "" && newTag != currentTag {
+			isNewer, err := c.isTagNewer(currentTag, newTag)
+			if err != nil {
+				log.Printf("Error comparing versions: %v", err)
+				continue
+			}
+			if isNewer {
+				log.Printf("New tag found %s", newTag)
 				updates = append(updates, map[string]string{
 					"image":      imageName,
 					"currentTag": currentTag,
 					"newTag":     newTag,
+					"isNewer":    strconv.FormatBool(isNewer),
+					"foundAt":    time.Now().Format(time.RFC3339),
 				})
 			}
 		}
 	}
-	fmt.Println(updates)
 	return updates, nil
+}
+
+// isTagNewer compares two semantic versioning tags and checks if the newTag is actually newer than the currentTag.
+// It also checks if the newTag matches any of the exclude patterns provided in the config.
+func (c *Client) isTagNewer(currentTag, newTag string) (bool, error) {
+    excludePatterns := c.config.Magic.ExcludePatterns
+    log.Printf("Exclude patterns: %v", excludePatterns)
+    if len(excludePatterns) > 0 {
+        for _, pattern := range excludePatterns {
+            // Convert wildcard pattern to valid regex pattern
+            regexPattern := strings.ReplaceAll(pattern, "*", ".*")
+            matched, err := regexp.MatchString(regexPattern, newTag)
+            if err != nil {
+                return false, fmt.Errorf("error matching exclude pattern: %w", err)
+            }
+            if matched {
+                log.Printf("Skipping tag %s due to exclude pattern %s", newTag, pattern)
+                return false, nil // If newTag matches any exclude pattern, it's not considered newer.
+            }
+        }
+    }
+
+    
+    // Parse semantic versions
+    currentVersion, err := semver.NewVersion(currentTag)
+    if err != nil {
+        return false, fmt.Errorf("error parsing current tag '%s' as semver: %w", currentTag, err)
+    }
+    newVersion, err := semver.NewVersion(newTag)
+    if err != nil {
+        return false, fmt.Errorf("error parsing new tag '%s' as semver: %w consider updating your exclude patterns", newTag, err)
+    }
+
+    // Compare versions
+    return newVersion.GreaterThan(currentVersion), nil
 }
