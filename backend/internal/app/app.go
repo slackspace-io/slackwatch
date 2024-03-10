@@ -125,9 +125,11 @@ func (app *Application) runScheduledTask() {
         log.Printf("Error checking for image updates: %v", err)
         return
     }
-    err = app.DataService.SaveData(context.Background(), "image", updates)
-    if err != nil {
-        log.Printf("Error saving updates data: %v", err)
+    for _, update := range updates {
+        err = app.Notifications.SendNtfyNotification(update["containerName"], update["currentTag"], update["newTag"], update["foundAt"])
+        if err != nil {
+            log.Printf("Failed to send notification for container %s: %v", update["containerName"], err)
+        }
     }
     log.Printf("Data saved successfully")
 }
