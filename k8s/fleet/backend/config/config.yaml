@@ -6,6 +6,9 @@ kubernetes:
 system:
   schedule: "28 */3 * * *"
   runAtStartup: true
+magic:
+  excludePatterns:
+    - '*dev*'
 repositories:
   - name: "ghcr.io"
   - name: "docker.io"
