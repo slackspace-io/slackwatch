@@ -37,6 +37,7 @@ type SystemConfig struct {
 
 type MagicConfig struct {
     ExcludePatterns []string `yaml:"excludePatterns"`
+    IncludePatterns []string `yaml:"includePatterns"` // Add this line
 }
 
 // LoadConfig reads and parses the configuration file

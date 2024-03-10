@@ -68,12 +68,14 @@ func (c *Client) FindContainersWithAnnotation(namespace string, annotationKey st
 		for _, container := range pod.Spec.Containers {
 			if value, ok := pod.ObjectMeta.Annotations[annotationKey]; ok && value == annotationValue {
 				excludePattern, _ := pod.ObjectMeta.Annotations["slackwatch.exclude"]
+				includePattern, _ := pod.ObjectMeta.Annotations["slackwatch.include"]
 				containersWithAnnotation = append(containersWithAnnotation, map[string]string{
 					"podName":        pod.Name,
 					"containerName":  container.Name,
 					"image":          container.Image,
 					"timeScanned":    time.Now().Format(time.RFC3339),
 					"excludePattern": excludePattern,
+					"includePattern": includePattern,
 				})
 			}
 		}
@@ -129,7 +131,7 @@ func (c *Client) CheckForImageUpdates(containers []map[string]string) ([]map[str
 			continue // Skip on error
 		}
 		for _, newTag := range newTags {
-			isNewer, err := c.isTagNewer(currentTag, newTag, container["excludePattern"])
+			isNewer, err := c.isTagNewer(currentTag, newTag, container["excludePattern"], container["includePattern"])
 			if err != nil {
 				log.Printf("Error comparing versions: %v", err)
 				continue
@@ -149,7 +151,40 @@ func (c *Client) CheckForImageUpdates(containers []map[string]string) ([]map[str
 
 // isTagNewer compares two semantic versioning tags and checks if the newTag is actually newer than the currentTag.
 // It also checks if the newTag matches any of the exclude patterns provided in the config or the specific container exclude pattern.
-func (c *Client) isTagNewer(currentTag, newTag, excludePattern string) (bool, error) {
+func (c *Client) isTagNewer(currentTag, newTag, excludePattern, includePattern string) (bool, error) {
+    if includePattern != "" {
+        // Convert wildcard pattern to valid regex pattern
+        regexPattern := strings.ReplaceAll(includePattern, "*", ".*")
+        matched, err := regexp.MatchString(regexPattern, newTag)
+        if err != nil {
+            return false, fmt.Errorf("error matching include pattern: %w", err)
+        }
+        if !matched {
+            log.Printf("Skipping tag %s due to not matching include pattern %s", newTag, includePattern)
+            return false, nil // If newTag does not match the include pattern, it's not considered.
+        }
+    }
+
+    includePatterns := c.config.Magic.IncludePatterns
+    if len(includePatterns) > 0 {
+        includeMatched := false
+        for _, pattern := range includePatterns {
+            regexPattern := strings.ReplaceAll(pattern, "*", ".*")
+            matched, err := regexp.MatchString(regexPattern, newTag)
+            if err != nil {
+                return false, fmt.Errorf("error matching include pattern: %w", err)
+            }
+            if matched {
+                includeMatched = true
+                break
+            }
+        }
+        if !includeMatched {
+            log.Printf("Tag %s does not match any include pattern", newTag)
+            return false, nil
+        }
+    }
+
     if excludePattern != "" {
         // Convert wildcard pattern to valid regex pattern
         regexPattern := strings.ReplaceAll(excludePattern, "*", ".*")
