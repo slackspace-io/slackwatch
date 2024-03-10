@@ -13,3 +13,8 @@ repositories:
   - name: "ghcr.io"
   - name: "docker.io"
     defaultRepo: true
+notifications:
+  ntfy:
+    url: http://ntfy.ntfy.svc.cluster.local
+    topic: slackwatch
+    priority: 3

@@ -18,6 +18,12 @@ spec:
         image: ghcr.io/slackspace-io/slackwatch-be:latest
         ports:
         - containerPort: 8080
+        env:
+        - name: NTFY_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: ntfy-token
+              key: token
         volumeMounts:
           - name: config-volume
             mountPath: /app/config/
@@ -25,4 +31,3 @@ spec:
       - name: config-volume
         configMap:
           name: slackwatch-config
-    
