@@ -67,11 +67,13 @@ func (c *Client) FindContainersWithAnnotation(namespace string, annotationKey st
 	for _, pod := range podList.Items {
 		for _, container := range pod.Spec.Containers {
 			if value, ok := pod.ObjectMeta.Annotations[annotationKey]; ok && value == annotationValue {
+				excludePattern, _ := pod.ObjectMeta.Annotations["slackwatch.exclude"]
 				containersWithAnnotation = append(containersWithAnnotation, map[string]string{
-					"podName":       pod.Name,
-					"containerName": container.Name,
-					"image":         container.Image,
-					"timeScanned":   time.Now().Format(time.RFC3339),
+					"podName":        pod.Name,
+					"containerName":  container.Name,
+					"image":          container.Image,
+					"timeScanned":    time.Now().Format(time.RFC3339),
+					"excludePattern": excludePattern,
 				})
 			}
 		}
@@ -127,7 +129,7 @@ func (c *Client) CheckForImageUpdates(containers []map[string]string) ([]map[str
 			continue // Skip on error
 		}
 		for _, newTag := range newTags {
-			isNewer, err := c.isTagNewer(currentTag, newTag)
+			isNewer, err := c.isTagNewer(currentTag, newTag, container["excludePattern"])
 			if err != nil {
 				log.Printf("Error comparing versions: %v", err)
 				continue
@@ -146,8 +148,21 @@ func (c *Client) CheckForImageUpdates(containers []map[string]string) ([]map[str
 }
 
 // isTagNewer compares two semantic versioning tags and checks if the newTag is actually newer than the currentTag.
-// It also checks if the newTag matches any of the exclude patterns provided in the config.
-func (c *Client) isTagNewer(currentTag, newTag string) (bool, error) {
+// It also checks if the newTag matches any of the exclude patterns provided in the config or the specific container exclude pattern.
+func (c *Client) isTagNewer(currentTag, newTag, excludePattern string) (bool, error) {
+    if excludePattern != "" {
+        // Convert wildcard pattern to valid regex pattern
+        regexPattern := strings.ReplaceAll(excludePattern, "*", ".*")
+        matched, err := regexp.MatchString(regexPattern, newTag)
+        if err != nil {
+            return false, fmt.Errorf("error matching exclude pattern: %w", err)
+        }
+        if matched {
+            log.Printf("Skipping tag %s due to exclude pattern %s", newTag, excludePattern)
+            return false, nil // If newTag matches the exclude pattern, it's not considered newer.
+        }
+    }
+
     excludePatterns := c.config.Magic.ExcludePatterns
     log.Printf("Exclude patterns: %v", excludePatterns)
     if len(excludePatterns) > 0 {
