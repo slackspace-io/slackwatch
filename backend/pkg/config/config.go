@@ -10,6 +10,7 @@ import (
 type Config struct {
     Kubernetes   KubernetesConfig `yaml:"kubernetes"`
     Repositories []Repository     `yaml:"repositories"`
+    System       SystemConfig     `yaml:"system"`
 }
 
 type Repository struct {
@@ -26,6 +27,10 @@ type KubernetesConfig struct {
     OutOfClusterConfig struct {
         KubeconfigPath string `yaml:"kubeconfigPath"`
     } `yaml:"outOfClusterConfig"`
+}
+
+type SystemConfig struct {
+    Schedule string `yaml:"schedule"`
 }
 
 // LoadConfig reads and parses the configuration file
