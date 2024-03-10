@@ -12,57 +12,101 @@ import (
 )
 
 type Checker struct {
-	cfg []config.Repository // Configuration for multiple repositories
+	cfg config.Config // Adjusted to use the top-level Config struct
 }
 
-func NewChecker(cfg []config.Repository) *Checker {
-	log.Println("Initializing new Checker")
+func NewChecker(cfg config.Config) *Checker {
+	log.Println("Initializing new Checker with updated configuration")
 	return &Checker{cfg: cfg}
 }
 
-// getRepoConfig retrieves the configuration for a given registry URL.
-func (c *Checker) getRepoConfig(registryURL string) (config.Repository, error) {
-	log.Printf("Retrieving repo config for registry URL: %s\n", registryURL)
-	for _, repo := range c.cfg {
-		if strings.Contains(registryURL, repo.Name) {
-			log.Printf("Config found for registry: %s\n", registryURL)
+// getDefaultRepoConfig retrieves the default repository configuration.
+func (c *Checker) getDefaultRepoConfig() (config.Repository, error) {
+	for _, repo := range c.cfg.Repositories {
+		if repo.DefaultRepo {
+			log.Printf("Default repository found: %s %v\n", repo.Name, repo.DefaultRepo)
 			return repo, nil
 		}
 	}
-	log.Printf("No config found for registry: %s\n", registryURL)
-	return config.Repository{}, fmt.Errorf("no config found for registry: %s", registryURL)
+	log.Println("No default repository configured")
+	return config.Repository{}, fmt.Errorf("no default repository configured")
+}
+
+// getRepoConfig retrieves the configuration for a given image name by checking if it matches any configured repository.
+// If no specific match is found, it returns the default repository configuration.
+func (c *Checker) getRepoConfig(imageName string) (config.Repository, error) {
+	for _, repo := range c.cfg.Repositories {
+		if strings.Contains(imageName, repo.Name) {
+			log.Printf("Repository config found for image: %s, using repository: %s\n", imageName, repo.Name)
+			return repo, nil
+		}
+	}
+
+	// If no specific repository is matched, use the default repository
+	return c.getDefaultRepoConfig()
 }
 
 func (c *Checker) GetTags(imageName string) ([]string, error) {
 	log.Printf("Getting tags for image: %s\n", imageName)
-	// Assuming GHCR is part of the imageName, adjust if necessary
-	repoConfig, err := c.getRepoConfig("ghcr.io")
+
+	repoConfig, err := c.getRepoConfig(imageName)
 	if err != nil {
-		log.Printf("Error getting repo config: %v\n", err)
+		log.Printf("Error getting repository configuration: %v\n", err)
 		return nil, err
 	}
 
 	var sysCtx types.SystemContext
-	if repoConfig.Token != "" {
+	if repoConfig.Token != "" && repoConfig.Username != "" && repoConfig.Password != "" {
+		// Token, username, and password are provided
+		log.Println("Warning: Both token and password are provided; it's recommended to use only one method of authentication.")
+		sysCtx = types.SystemContext{
+			DockerAuthConfig: &types.DockerAuthConfig{
+				IdentityToken: repoConfig.Token,
+				Username:      repoConfig.Username,
+				Password:      repoConfig.Password,
+			},
+		}
+	} else if repoConfig.Token != "" && repoConfig.Username != "" {
+		// Token and username are provided
+		sysCtx = types.SystemContext{
+			DockerAuthConfig: &types.DockerAuthConfig{
+				IdentityToken: repoConfig.Token,
+				Username:      repoConfig.Username,
+			},
+		}
+	} else if repoConfig.Token != "" {
+		// Only token is provided
 		sysCtx = types.SystemContext{
 			DockerAuthConfig: &types.DockerAuthConfig{
 				IdentityToken: repoConfig.Token,
 			},
 		}
-	} else {
+	} else if repoConfig.Username != "" && repoConfig.Password != "" {
+		// Username and password are provided
 		sysCtx = types.SystemContext{
 			DockerAuthConfig: &types.DockerAuthConfig{
 				Username: repoConfig.Username,
 				Password: repoConfig.Password,
 			},
 		}
+	} else {
+		// No authentication details provided
+		log.Println("No authentication details provided, using non-authenticated query")
+	}
+
+	// Ensure the imageName includes the registry URL if not already present
+	if !strings.Contains(imageName, repoConfig.Name) {
+		imageName = repoConfig.Name + "/" + imageName
+		log.Printf("Image name updated to: %s\n", imageName)
 	}
 
 	ref, err := docker.ParseReference("//" + imageName)
+    log.Printf("Parsed reference: %v\n", ref)
 	if err != nil {
 		log.Printf("Error parsing reference: %v\n", err)
 		return nil, fmt.Errorf("error parsing reference: %w", err)
 	}
+	log.Printf("Fetching tags for image: %s\n", imageName)
 	tags, err := docker.GetRepositoryTags(context.Background(), &sysCtx, ref)
 	if err != nil {
 		log.Printf("Error fetching tags: %v\n", err)
