@@ -1,4 +1,5 @@
 <script lang="ts">
+	export const imageUpdates: Array<{ containerName: string, currentTag: string, foundAt: string, image: string, isNewer: boolean, newTag: string, podName: string, timeScanned: string }> = []
 	export let data;
 </script>
 
