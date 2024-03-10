@@ -12,6 +12,9 @@ type Config struct {
     Repositories []Repository     `yaml:"repositories"`
     System       SystemConfig     `yaml:"system"`
     Magic        MagicConfig      `yaml:"magic"`
+    Notifications struct {
+        Ntfy NtfyConfig `yaml:"ntfy"`
+    } `yaml:"notifications"`
 }
 
 type Repository struct {
@@ -38,6 +41,13 @@ type SystemConfig struct {
 type MagicConfig struct {
     ExcludePatterns []string `yaml:"excludePatterns"`
     IncludePatterns []string `yaml:"includePatterns"` // Add this line
+}
+
+type NtfyConfig struct {
+    URL      string `yaml:"url"`
+    Topic    string `yaml:"topic"`
+    Priority int    `yaml:"priority"`
+    Token    string `yaml:"token"`
 }
 
 // LoadConfig reads and parses the configuration file

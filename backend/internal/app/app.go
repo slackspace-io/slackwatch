@@ -20,6 +20,7 @@ type Application struct {
     Scheduler     *cron.Cron
     DataService   *service.DataService
     System        config.SystemConfig `yaml:"system"`
+    Config        *config.Config // Add this line to hold the entire configuration
 }
 
 func Initialize() (*Application, error) {
@@ -39,7 +40,9 @@ func Initialize() (*Application, error) {
         log.Printf("Failed to initialize Kubernetes client: %v", err)
         return nil, err
     }
-    notificationManager := notifications.NewManager()
+    
+    // Modify this line to pass the configuration to NewManager
+    notificationManager := notifications.NewManager(cfg.Notifications.Ntfy)
 
     app := &Application{
         Kubernetes:    k8sClient,
@@ -47,6 +50,7 @@ func Initialize() (*Application, error) {
         RepoChecker:   repoChecker,
         DataService:   dataService,
         System:        cfg.System,
+        Config:        cfg, // Store the entire configuration in the Application struct
     }
 
     app.setupRoutes()
@@ -130,9 +134,21 @@ func (app *Application) runScheduledTask() {
 
 func (app *Application) Run() error {
     log.Println("Starting the application on port :8080")
-    // Start HTTP server
-    if err := http.ListenAndServe(":8080", nil); err != nil {
-        log.Fatalf("Failed to start server: %v", err)
+    // Start HTTP server in a goroutine so that it doesn't block
+    go func() {
+        if err := http.ListenAndServe(":8080", nil); err != nil {
+            log.Fatalf("Failed to start HTTP server: %v", err)
+        }
+    }()
+    
+    // Send a fake notification with spoof data
+    err := app.Notifications.SendNtfyNotification("spoof-container", "v1.0.0", "v1.0.1", "2023-04-01T12:00:00Z")
+    if err != nil {
+        log.Printf("Failed to send fake notification: %v", err)
+    } else {
+        log.Println("Fake notification sent successfully")
     }
-    return nil
+
+    // Keep the application running
+    select {}
 }
