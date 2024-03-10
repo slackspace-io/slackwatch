@@ -3,6 +3,7 @@ package config
 import (
     "io/ioutil"
     "log"
+    "os" // Added to import the os package
 
     "gopkg.in/yaml.v2"
 )
@@ -68,6 +69,13 @@ func LoadConfig(configPath string) (*Config, error) {
         log.Printf("Error unmarshalling config file: %s", err)
         return nil, err
     }
+
+    // New code to read NTFY_TOKEN from environment variable
+    ntfyToken := os.Getenv("NTFY_TOKEN")
+    if ntfyToken != "" {
+        config.Notifications.Ntfy.Token = ntfyToken
+    }
+
     log.Printf("Successfully loaded configuration: %+v", config)
 
     return &config, nil
