@@ -3,23 +3,27 @@ import Link from 'next/link'; // Import Link from next/link
 import { unstable_noStore as noStore } from 'next/cache'
 
 
-interface Update {
+interface CombinedData {
   containerName: string;
-  currentTag: string;
-  newTag: string;
-  foundAt: string;
+  currentTag?: string;
+  newTag?: string;
+  foundAt?: string;
+  image: string;
+  includePattern: string;
+  excludePattern: string;
+  podName: string;
+  timeScanned: string;
+  updateAvailable: boolean;
 }
 
-async function getData(): Promise<Update[]> {
+async function getData(): Promise<CombinedData[]> {
   noStore();
-  // Use the environment variable
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-  // Check if baseUrl is defined
   if (!baseUrl) {
     console.warn('NEXT_PUBLIC_API_BASE_URL is not defined. Skipping fetch.');
-    return []; // Return empty array or mock data
+    return [];
   }
-  const res = await fetch(`${baseUrl}/api/imageUpdates`);
+  const res = await fetch(`${baseUrl}/api/data/combined`);
   if (!res.ok) {
     throw new Error('Failed to fetch data');
   }
@@ -27,24 +31,30 @@ async function getData(): Promise<Update[]> {
 }
 
 export default async function Page() {
-  const data = await getData();
+  let data = await getData();
+
+  // Sort data so that entries with updates are at the top
+  data = data.sort((a, b) => Number(b.updateAvailable) - Number(a.updateAvailable));
 
   return (
     <main className="p-4">
       <div className="mb-4">
-        {/* Link to the Dashboard page */}
         <Link href="/watched" className="text-blue-500 hover:text-blue-700">
           All Watched
         </Link>
       </div>
-      {data.map((update: Update, index: number) => (
-        <Card key={index} className="mb-4 p-4 shadow-lg">
+      {data.map((update: CombinedData, index: number) => (
+        <Card key={index} className={`mb-4 p-4 shadow-lg ${update.updateAvailable ? 'border-l-4 border-green-500' : ''}`}>
           <p className="text-lg font-bold">
             Container: {update.containerName}
           </p>
-          <p>Current Tag: {update.currentTag}</p>
-          <p>New Tag: {update.newTag}</p>
-          <p>Found At: {update.foundAt}</p>
+          {update.currentTag && <p>Current Tag: {update.currentTag}</p>}
+          {update.updateAvailable && update.newTag && (
+            <p className="text-green-500">New Tag Available: {update.newTag}</p>
+          )}
+          <p>Image: {update.image}</p>
+          <p>Pod Name: {update.podName}</p>
+          <p>Time Scanned: {update.timeScanned}</p>
         </Card>
       ))}
     </main>
