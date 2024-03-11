@@ -41,3 +41,13 @@ func (app *Application) handleListImages(w http.ResponseWriter, r *http.Request)
 		json.NewEncoder(w).Encode(savedData)
 	}
 }
+
+// handleCombinedData responds with the combined container and image update data.
+func (app *Application) handleCombinedData(w http.ResponseWriter, r *http.Request) {
+	combinedData, err := app.DataService.GetCombinedData(context.Background())
+	if err != nil {
+		http.Error(w, "Failed to get combined data", http.StatusInternalServerError)
+		return
+	}
+	json.NewEncoder(w).Encode(combinedData)
+}

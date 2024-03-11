@@ -47,6 +47,38 @@ func (ds *DataService) GetData(ctx context.Context, fileName string) ([]map[stri
     return data, nil
 }
 
+func (ds *DataService) GetCombinedData(ctx context.Context) ([]map[string]interface{}, error) {
+    containerData, err := ds.GetData(ctx, "containers.json")
+    if err != nil {
+        return nil, err
+    }
+    imageData, err := ds.GetData(ctx, "imageUpdates.json")
+    if err != nil {
+        return nil, err
+    }
+    combinedData := make([]map[string]interface{}, 0)
+    imageMap := make(map[string]map[string]string)
+    for _, image := range imageData {
+        imageMap[image["containerName"]] = image
+    }
+    for _, container := range containerData {
+        combined := make(map[string]interface{})
+        for k, v := range container {
+            combined[k] = v
+        }
+        if update, exists := imageMap[container["containerName"]]; exists {
+            combined["updateAvailable"] = true
+            for k, v := range update {
+                combined[k] = v
+            }
+        } else {
+            combined["updateAvailable"] = false
+        }
+        combinedData = append(combinedData, combined)
+    }
+    return combinedData, nil
+}
+
 func (ds *DataService) SaveData(ctx context.Context, dataType string, data interface{}) error {
     switch dataType {
     case "container":

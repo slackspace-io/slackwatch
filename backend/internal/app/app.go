@@ -72,6 +72,7 @@ func (app *Application) setupRoutes() {
     http.HandleFunc("/api/imageUpdates", app.enableCorsMiddleware(app.handleImageUpdates))
     // Add the new route for data refresh
     http.HandleFunc("/api/data/refresh", app.enableCorsMiddleware(app.handleDataRefresh))
+    http.HandleFunc("/api/data/combined", app.enableCorsMiddleware(app.handleCombinedData))
 }
 
 // handleDataRefresh triggers the scheduled task manually.
