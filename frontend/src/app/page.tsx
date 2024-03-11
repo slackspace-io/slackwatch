@@ -11,6 +11,11 @@ interface Update {
 async function getData(): Promise<Update[]> {
   // Use the environment variable
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+  // Check if baseUrl is defined
+  if (!baseUrl) {
+    console.warn('NEXT_PUBLIC_API_BASE_URL is not defined. Skipping fetch.');
+    return []; // Return empty array or mock data
+  }
   const res = await fetch(`${baseUrl}/api/imageUpdates`);
   if (!res.ok) {
     throw new Error('Failed to fetch data');

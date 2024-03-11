@@ -12,6 +12,11 @@ interface Container {
 
 async function getContainers(): Promise<Container[]> {
     const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    // Check if baseUrl is defined
+    if (!baseUrl) {
+        console.warn('NEXT_PUBLIC_API_BASE_URL is not defined. Skipping fetch.');
+        return []; // Return empty array or mock data
+    }
     const res = await fetch(`${baseUrl}/api/containers`);
     if (!res.ok) {
         throw new Error('Failed to fetch data');
@@ -24,7 +29,6 @@ export default async function Watched() {
     return (
         <main className="p-4">
             <div className="mb-4">
-                {/* Link to the Dashboard page */}
                 <Link href="/" className="text-blue-500 hover:text-blue-700">
                     Available Updates
                 </Link>
