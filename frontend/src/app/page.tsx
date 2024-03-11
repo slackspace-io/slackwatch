@@ -1,5 +1,7 @@
 import { Card } from '@/components/ui/card';
 import Link from 'next/link'; // Import Link from next/link
+import { unstable_noStore as noStore } from 'next/cache'
+
 
 interface Update {
   containerName: string;
@@ -9,6 +11,7 @@ interface Update {
 }
 
 async function getData(): Promise<Update[]> {
+  noStore();
   // Use the environment variable
   const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
   // Check if baseUrl is defined
