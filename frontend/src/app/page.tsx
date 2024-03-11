@@ -1,5 +1,4 @@
 import { Card } from '@/components/ui/card';
-import Link from 'next/link'; // Import Link from next/link
 import { unstable_noStore as noStore } from 'next/cache'
 
 
@@ -39,9 +38,6 @@ export default async function Page() {
   return (
     <main className="p-4">
       <div className="mb-4">
-        <Link href="/watched" className="text-blue-500 hover:text-blue-700">
-          All Watched
-        </Link>
       </div>
       {data.map((update: CombinedData, index: number) => (
         <Card key={index} className={`mb-4 p-4 shadow-lg ${update.updateAvailable ? 'border-l-4 border-green-500' : ''}`}>
