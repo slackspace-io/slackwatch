@@ -4,7 +4,7 @@ kubernetes:
   outOfClusterConfig:
     kubeconfigPath: "/home/dopey/.kube/config"
 system:
-  schedule: "28 */3 * * *"
+  schedule: "0 9-22/2 * * *"
   runAtStartup: true
 magic:
   excludePatterns:
