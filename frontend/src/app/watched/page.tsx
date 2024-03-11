@@ -12,6 +12,7 @@ interface Container {
 
 async function getContainers(): Promise<Container[]> {
     const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    console.log("found base url get containers", baseUrl);
     // Check if baseUrl is defined
     if (!baseUrl) {
         console.warn('NEXT_PUBLIC_API_BASE_URL is not defined. Skipping fetch.');
@@ -26,6 +27,8 @@ async function getContainers(): Promise<Container[]> {
 
 export default async function Watched() {
     const containers = await getContainers();
+    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
+    console.log("found base url in watched", baseUrl);
     return (
         <main className="p-4">
             <div className="mb-4">
