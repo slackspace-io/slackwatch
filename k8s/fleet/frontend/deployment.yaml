@@ -19,6 +19,7 @@ spec:
           image: ghcr.io/slackspace-io/slackwatch-fe:latest
           ports:
             - containerPort: 3000
-    env:
-      - name: NEXT_PUBLIC_API_URL
-        value: "http://slackwatch-be-svc.slackwatch.svc.cluster.local"
+          env:
+            - name: NEXT_PUBLIC_API_URL
+              value: "http://slackwatch-be-svc.slackwatch.svc.cluster.local"
+
