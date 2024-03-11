@@ -1,36 +1,34 @@
-# Stage 1: Build the application
-FROM node:current-alpine as build-stage
+# Stage 1: Build the Next.js application
+FROM node:21-alpine AS builder
 
+# Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package.json and package-lock.json files
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci
 
-# Copy project files and folders to the current working directory (i.e. "app" folder)
+# Copy the rest of your app's source code
 COPY . .
 
-ENV VITE_APP_ENV=production
-# Build the application
+# Build your Next.js application
 RUN npm run build
 
-# Stage 2: Serve the application with Node
-FROM node:current-alpine as production-stage
+# Stage 2: Serve the application using Node.js
+FROM node:21-alpine AS runner
 
 WORKDIR /app
 
-COPY --from=build-stage /app/build build/
-COPY --from=build-stage /app/node_modules node_modules/
-COPY --from=build-stage /app/package.json .
+# Copy the build output from the builder stage
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/public ./public
 
-
-# Install production dependencies
-RUN npm install
-
-# Expose the port the app runs on
+# Expose the port your app runs on
 EXPOSE 3000
-ENV NODE_ENV=production
-# Command to run the app
-CMD ["node", "build"]
+
+# Define the command to run your app
+CMD ["npm", "start"]
