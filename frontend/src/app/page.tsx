@@ -13,8 +13,7 @@ interface CombinedData {
   podName: string;
   timeScanned: string;
   updateAvailable: boolean;
-  notificationSentAt?: boolean;
-  notificationSent?: string;
+  sentTime?: string;
 }
 async function getData(): Promise<CombinedData[]> {
   noStore();
@@ -52,8 +51,7 @@ export default async function Page() {
           <p>Image: {update.image}</p>
           <p>Pod Name: {update.podName}</p>
           <p>Time Scanned: {update.timeScanned}</p>
-          {update.notificationSentAt && <p>Notification Sent At: {update.notificationSent}</p>}
-          {update.notificationSent && <p>Notification Sent: {update.notificationSent}</p>}
+          {update.sentTime && <p>Notification Sent At: {update.sentTime}</p>}
         </Card>
       ))}
     </main>

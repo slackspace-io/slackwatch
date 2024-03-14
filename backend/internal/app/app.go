@@ -143,10 +143,14 @@ func (app *Application) runScheduledTask() {
 		return
 	}
 	for _, update := range updates {
-		var lastNotificationTime time.Time
+		var lastNotificationTime = time.Time{}
 		for _, data := range combinedData {
 			if data["containerName"] == update["containerName"] {
-				lastNotificationTime, err = time.Parse(time.RFC3339, data["sentTime"].(string))
+				lastSentTime, ok := data["sentTime"].(string)
+				if !ok {
+					continue
+				}
+				lastNotificationTime, err = time.Parse(time.RFC3339, lastSentTime)
 				if err != nil {
 					log.Printf("Error parsing time: %v", err)
 					continue
