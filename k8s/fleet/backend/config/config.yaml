@@ -18,3 +18,4 @@ notifications:
     url: http://ntfy.ntfy.svc.cluster.local
     topic: slackwatch
     priority: 3
+    reminder: 1d
