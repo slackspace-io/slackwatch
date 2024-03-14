@@ -1,5 +1,5 @@
-import { Card } from '@/components/ui/card';
-import { unstable_noStore as noStore } from 'next/cache'
+import { unstable_noStore as noStore } from 'next/cache';
+import UpdateCard from '@/components/UpdateCard';
 
 
 interface CombinedData {
@@ -32,27 +32,12 @@ async function getData(): Promise<CombinedData[]> {
 export default async function Page() {
   let data = await getData();
 
-  // Sort data so that entries with updates are at the top
   data = data.sort((a, b) => Number(b.updateAvailable) - Number(a.updateAvailable));
 
   return (
     <main className="p-4">
-      <div className="mb-4">
-      </div>
-      {data.map((update: CombinedData, index: number) => (
-        <Card key={index} className={`mb-4 p-4 shadow-lg ${update.updateAvailable ? 'border-l-4 border-green-500' : ''}`}>
-          <p className="text-lg font-bold">
-            Container: {update.containerName}
-          </p>
-          {update.currentTag && <p>Current Tag: {update.currentTag}</p>}
-          {update.updateAvailable && update.newTag && (
-            <p className="text-green-500">New Tag Available: {update.newTag}</p>
-          )}
-          <p>Image: {update.image}</p>
-          <p>Pod Name: {update.podName}</p>
-          <p>Time Scanned: {update.timeScanned}</p>
-          {update.sentTime && <p>Notification Sent At: {update.sentTime}</p>}
-        </Card>
+      {data.map((update, index) => (
+        <UpdateCard key={index} update={update} />
       ))}
     </main>
   );
