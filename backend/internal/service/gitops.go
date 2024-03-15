@@ -63,7 +63,7 @@ func (gs *Gitops) UpdateRequest(updateRequest map[string]string, runningData map
 	fullPath := gs.BuildPath(repo, updateRequest)
 	//send notification
 	gs.UpdateYamls(repo, updateRequest, fullPath)
-	ddgs.CheckForChangesAndCommit(repoConfig, repo, updateRequest, runningData)
+	gs.CheckForChangesAndCommit(repoConfig, repo, updateRequest, runningData)
 
 }
 
