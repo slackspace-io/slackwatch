@@ -46,6 +46,8 @@ async function handleUpdate(data: FormData) {
     if (!response.ok) {
         throw new Error('Failed to fetch data');
     }
+    //notify success
+
     console.log("hi")
 
 }
@@ -94,6 +96,7 @@ const UpdateCard: React.FC<UpdateCardProps> = ({ update }) => (
       {update.sentTime && <p>Notification Sent At: <span className="font-semibold">{update.sentTime}</span></p>}
     </div>
   </Card>
+
 );
 
 export default UpdateCard;
