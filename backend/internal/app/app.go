@@ -20,6 +20,7 @@ type Application struct {
 	Notifications *notifications.Manager
 	RepoChecker   *repochecker.Checker
 	Scheduler     *cron.Cron
+	Gitops        *service.Gitops
 	DataService   *service.DataService
 	System        config.SystemConfig `yaml:"system"`
 	Config        *config.Config      // Add this line to hold the entire configuration
@@ -34,7 +35,7 @@ func Initialize() (*Application, error) {
 
 	// Initialize services
 	dataService := &service.DataService{}
-
+	gitops := service.NewGitOps(*cfg)
 	// Initialize other components as before
 	repoChecker := repochecker.NewChecker(*cfg)
 	k8sClient, err := kubernetes.NewClient(&cfg.Kubernetes, repoChecker, cfg)
@@ -51,6 +52,7 @@ func Initialize() (*Application, error) {
 		Notifications: notificationManager,
 		RepoChecker:   repoChecker,
 		DataService:   dataService,
+		Gitops:        gitops,
 		System:        cfg.System,
 		Config:        cfg, // Store the entire configuration in the Application struct
 	}
@@ -75,6 +77,41 @@ func (app *Application) setupRoutes() {
 	// Add the new route for data refresh
 	http.HandleFunc("/api/data/refresh", app.enableCorsMiddleware(app.handleDataRefresh))
 	http.HandleFunc("/api/data/combined", app.enableCorsMiddleware(app.handleCombinedData))
+	http.HandleFunc("/api/container/update", app.enableCorsMiddleware(app.handleContainerUpdate))
+}
+
+// handleContainerUpdate
+func (app *Application) handleContainerUpdate(w http.ResponseWriter, r *http.Request) {
+	// Get the container name from the request
+	name := r.URL.Query().Get("name")
+	image := r.URL.Query().Get("image")
+	// Get the new tag from the request
+	newTag := r.URL.Query().Get("newTag")
+	// Get the current tag from the request
+	currentTag := r.URL.Query().Get("currentTag")
+	namespace := r.URL.Query().Get("namespace")
+	repo := r.URL.Query().Get("repo")
+	directory := r.URL.Query().Get("directory")
+	// Create a map to hold the update data
+	updateRequest := map[string]string{
+		"name":       name,
+		"newTag":     newTag,
+		"currentTag": currentTag,
+		"namespace":  namespace,
+		"repo":       repo,
+		"directory":  directory,
+		"image":      image,
+	}
+	log.Printf("Received update: %v", updateRequest)
+	runningData, err := app.Kubernetes.FindStatefulSets(namespace, name)
+	if err != nil {
+		log.Printf("Error getting container info: %v", err)
+	}
+	log.Printf("Running data: %v", runningData)
+	app.Gitops.UpdateRequest(updateRequest, runningData)
+	// Save the update data
+	w.WriteHeader(http.StatusOK)
+
 }
 
 // handleDataRefresh triggers the scheduled task manually.
@@ -123,7 +160,7 @@ func (app *Application) runScheduledTask() {
 	log.Println("Scheduled task running...")
 	//get previous data
 	combinedData, err := app.DataService.GetCombinedData(context.Background())
-	containers, err := app.Kubernetes.FindContainersWithAnnotation("", "slackwatch.enable", "true")
+	containers, err := app.Kubernetes.FindContainersWithAnnotation("", "slackwatch.test", "true")
 	if err != nil {
 		log.Printf("Error finding containers: %v", err)
 		return
@@ -145,7 +182,7 @@ func (app *Application) runScheduledTask() {
 	for _, update := range updates {
 		var lastNotificationTime = time.Time{}
 		for _, data := range combinedData {
-			if data["containerName"] == update["containerName"] {
+			if data["name"] == update["name"] {
 				lastSentTime, ok := data["sentTime"].(string)
 				if !ok {
 					continue
@@ -166,14 +203,14 @@ func (app *Application) runScheduledTask() {
 			continue
 		}
 		if time.Since(lastNotificationTime) >= reminderDuration {
-			notificationTime, err := app.Notifications.SendNtfyNotification(update["containerName"], update["currentTag"], update["newTag"], update["foundAt"])
+			notificationTime, err := app.Notifications.SendNtfyContainerUpdate(update["name"], update["currentTag"], update["newTag"], update["foundAt"])
 			//add sentTime to updates object
 			update["sentTime"] = notificationTime
 			if err != nil {
-				log.Printf("Failed to send notification for container %s: %v", update["containerName"], err)
+				log.Printf("Failed to send notification for container %s: %v", update["name"], err)
 			}
 		} else {
-			log.Printf("Skipping notification for container %s: reminder interval not reached", update["containerName"])
+			log.Printf("Skipping notification for container %s: reminder interval not reached", update["name"])
 		}
 	}
 	err = app.DataService.SaveData(context.Background(), "image", updates)
@@ -212,9 +249,8 @@ func (app *Application) Run() error {
 			log.Fatalf("Failed to start HTTP server: %v", err)
 		}
 	}()
-
 	// Send a fake notification with spoof data
-	notificationTime, err := app.Notifications.SendNtfyNotification("spoof-container", "v1.0.0", "v1.0.1", "2023-04-01T12:00:00Z")
+	notificationTime, err := app.Notifications.SendNtfyContainerUpdate("spoof-container", "v1.0.0", "v1.0.1", "2023-04-01T12:00:00Z")
 	log.Printf("Fake notification sent at: %s", notificationTime)
 	if err != nil {
 		log.Printf("Failed to send fake notification: %v", err)

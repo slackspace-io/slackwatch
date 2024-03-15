@@ -32,14 +32,30 @@ type NotificationPayload struct {
 	LastSent string `json:"lastSent"`
 }
 
-// SendNtfyNotification sends a notification to ntfy
+// SendNtfyContainerUpdate sends a notification to ntfy
 
 // Modify the function signature to return time.Time
-func (m *Manager) SendNtfyNotification(container, currentTag, newTag, foundAt string) (string, error) {
+func (m *Manager) SendNtfyContainerUpdate(container, currentTag, newTag, foundAt string) (string, error) {
 	cfg := m.ntfyConfig
 	message := fmt.Sprintf("🔔 *Update Available!* 🔔\n\n*Container:* %s\n*Current Tag:* %s\n*New Tag:* %s\n*Found At:* %s", container, currentTag, newTag, foundAt)
 	log.Printf("Sending notification to ntfy: %s", message)
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/%s", cfg.URL, cfg.Topic), bytes.NewBuffer([]byte(message)))
+	payload := NotificationPayload{
+		Message:  message,
+		Priority: cfg.Priority,
+	}
+	notificationTime, err := m.SendNtfyNotificationGeneric(payload)
+	if err != nil {
+		return notificationTime, err
+	}
+
+	return notificationTime, nil
+}
+
+// More Generic ntfy notification
+func (m *Manager) SendNtfyNotificationGeneric(payload NotificationPayload) (string, error) {
+	cfg := m.ntfyConfig
+	log.Printf("Sending notification to ntfy: %s", payload.Message)
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/%s", cfg.URL, cfg.Topic), bytes.NewBuffer([]byte(payload.Message)))
 	if err != nil {
 		return time.Now().Format(time.RFC3339), err
 	}

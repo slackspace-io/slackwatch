@@ -6,13 +6,13 @@ import (
 	"log"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
-	"strconv"
 
 	"github.com/Masterminds/semver/v3"
-	"slackwatch/backend/pkg/config" // Import your config package
 	"slackwatch/backend/internal/repochecker" // Assuming the import path for repochecker
+	"slackwatch/backend/pkg/config"           // Import your config package
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -53,6 +53,49 @@ func NewClient(cfg *config.KubernetesConfig, checker *repochecker.Checker, appCo
 }
 
 // FindContainersWithAnnotation finds all containers in a given namespace (or all namespaces if namespace is empty) that have a specific metadata annotation
+func (c *Client) FindStatefulSets(namespace string, name string) (map[string]string, error) {
+	statefulSets, err := c.clientSet.AppsV1().StatefulSets(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to list stateful sets in namespace %s: %w", namespace, err)
+	}
+	// Print each stateful set and metadata
+	statefulSetMap := make(map[string]string)
+	statefulSetMap["name"] = statefulSets.Name
+	statefulSetMap["namespace"] = statefulSets.Namespace
+	statefulSetMap["timeScanned"] = time.Now().Format(time.RFC3339)
+	//get imagename
+	containers := statefulSets.Spec.Template.Spec.Containers
+	for _, container := range containers {
+		statefulSetMap["image"] = container.Image
+	}
+	//log all values in map
+	log.Printf("Found stateful set: %v", statefulSetMap)
+	return statefulSetMap, nil
+}
+
+// Get single container info
+func (c *Client) GetContainerInfo(namespace string, podName string, containerName string) (map[string]string, error) {
+	pod, err := c.clientSet.CoreV1().Pods(namespace).Get(context.TODO(), podName, metav1.GetOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get pod %s in namespace %s: %w", podName, namespace, err)
+	}
+
+	for _, container := range pod.Spec.Containers {
+		if container.Name == containerName {
+			return map[string]string{
+				"podName":       pod.Name,
+				"containerName": container.Name,
+				"image":         container.Image,
+				"timeScanned":   time.Now().Format(time.RFC3339),
+			}, nil
+		}
+	}
+
+	return nil, fmt.Errorf("container %s not found in pod %s", containerName, podName)
+
+}
+
+// FindContainersWithAnnotation finds all containers in a given namespace (or all namespaces if namespace is empty) that have a specific metadata annotation
 func (c *Client) FindContainersWithAnnotation(namespace string, annotationKey string, annotationValue string) ([]map[string]string, error) {
 	// If namespace is provided, search within that namespace. Otherwise, search across all namespaces.
 	podList, err := c.clientSet.CoreV1().Pods(namespace).List(context.TODO(), metav1.ListOptions{})
@@ -69,6 +112,7 @@ func (c *Client) FindContainersWithAnnotation(namespace string, annotationKey st
 			if value, ok := pod.ObjectMeta.Annotations[annotationKey]; ok && value == annotationValue {
 				excludePattern, _ := pod.ObjectMeta.Annotations["slackwatch.exclude"]
 				includePattern, _ := pod.ObjectMeta.Annotations["slackwatch.include"]
+				gitopsRepo, _ := pod.ObjectMeta.Annotations["slackwatch.repo"]
 				containersWithAnnotation = append(containersWithAnnotation, map[string]string{
 					"podName":        pod.Name,
 					"containerName":  container.Name,
@@ -76,6 +120,7 @@ func (c *Client) FindContainersWithAnnotation(namespace string, annotationKey st
 					"timeScanned":    time.Now().Format(time.RFC3339),
 					"excludePattern": excludePattern,
 					"includePattern": includePattern,
+					"gitopsRepo":     gitopsRepo,
 				})
 			}
 		}
@@ -138,11 +183,11 @@ func (c *Client) CheckForImageUpdates(containers []map[string]string) ([]map[str
 			}
 			if isNewer {
 				log.Printf("New tag found %s", newTag)
-				container["currentTag"] = currentTag // Add current tag to the container's map
-				container["newTag"] = newTag         // Add new tag information
-				container["isNewer"] = strconv.FormatBool(isNewer) // Add isNewer flag
+				container["currentTag"] = currentTag                   // Add current tag to the container's map
+				container["newTag"] = newTag                           // Add new tag information
+				container["isNewer"] = strconv.FormatBool(isNewer)     // Add isNewer flag
 				container["foundAt"] = time.Now().Format(time.RFC3339) // Add foundAt timestamp
-				updates = append(updates, container) // Append the modified container map
+				updates = append(updates, container)                   // Append the modified container map
 			}
 		}
 	}
@@ -152,80 +197,79 @@ func (c *Client) CheckForImageUpdates(containers []map[string]string) ([]map[str
 // isTagNewer compares two semantic versioning tags and checks if the newTag is actually newer than the currentTag.
 // It also checks if the newTag matches any of the exclude patterns provided in the config or the specific container exclude pattern.
 func (c *Client) isTagNewer(currentTag, newTag, excludePattern, includePattern string) (bool, error) {
-    if includePattern != "" {
-        // Convert wildcard pattern to valid regex pattern
-        regexPattern := strings.ReplaceAll(includePattern, "*", ".*")
-        matched, err := regexp.MatchString(regexPattern, newTag)
-        if err != nil {
-            return false, fmt.Errorf("error matching include pattern: %w", err)
-        }
-        if !matched {
-            log.Printf("Skipping tag %s due to not matching include pattern %s", newTag, includePattern)
-            return false, nil // If newTag does not match the include pattern, it's not considered.
-        }
-    }
+	if includePattern != "" {
+		// Convert wildcard pattern to valid regex pattern
+		regexPattern := strings.ReplaceAll(includePattern, "*", ".*")
+		matched, err := regexp.MatchString(regexPattern, newTag)
+		if err != nil {
+			return false, fmt.Errorf("error matching include pattern: %w", err)
+		}
+		if !matched {
+			log.Printf("Skipping tag %s due to not matching include pattern %s", newTag, includePattern)
+			return false, nil // If newTag does not match the include pattern, it's not considered.
+		}
+	}
 
-    includePatterns := c.config.Magic.IncludePatterns
-    if len(includePatterns) > 0 {
-        includeMatched := false
-        for _, pattern := range includePatterns {
-            regexPattern := strings.ReplaceAll(pattern, "*", ".*")
-            matched, err := regexp.MatchString(regexPattern, newTag)
-            if err != nil {
-                return false, fmt.Errorf("error matching include pattern: %w", err)
-            }
-            if matched {
-                includeMatched = true
-                break
-            }
-        }
-        if !includeMatched {
-            log.Printf("Tag %s does not match any include pattern", newTag)
-            return false, nil
-        }
-    }
+	includePatterns := c.config.Magic.IncludePatterns
+	if len(includePatterns) > 0 {
+		includeMatched := false
+		for _, pattern := range includePatterns {
+			regexPattern := strings.ReplaceAll(pattern, "*", ".*")
+			matched, err := regexp.MatchString(regexPattern, newTag)
+			if err != nil {
+				return false, fmt.Errorf("error matching include pattern: %w", err)
+			}
+			if matched {
+				includeMatched = true
+				break
+			}
+		}
+		if !includeMatched {
+			log.Printf("Tag %s does not match any include pattern", newTag)
+			return false, nil
+		}
+	}
 
-    if excludePattern != "" {
-        // Convert wildcard pattern to valid regex pattern
-        regexPattern := strings.ReplaceAll(excludePattern, "*", ".*")
-        matched, err := regexp.MatchString(regexPattern, newTag)
-        if err != nil {
-            return false, fmt.Errorf("error matching exclude pattern: %w", err)
-        }
-        if matched {
-            log.Printf("Skipping tag %s due to exclude pattern %s", newTag, excludePattern)
-            return false, nil // If newTag matches the exclude pattern, it's not considered newer.
-        }
-    }
+	if excludePattern != "" {
+		// Convert wildcard pattern to valid regex pattern
+		regexPattern := strings.ReplaceAll(excludePattern, "*", ".*")
+		matched, err := regexp.MatchString(regexPattern, newTag)
+		if err != nil {
+			return false, fmt.Errorf("error matching exclude pattern: %w", err)
+		}
+		if matched {
+			log.Printf("Skipping tag %s due to exclude pattern %s", newTag, excludePattern)
+			return false, nil // If newTag matches the exclude pattern, it's not considered newer.
+		}
+	}
 
-    excludePatterns := c.config.Magic.ExcludePatterns
-    log.Printf("Exclude patterns: %v", excludePatterns)
-    if len(excludePatterns) > 0 {
-        for _, pattern := range excludePatterns {
-            // Convert wildcard pattern to valid regex pattern
-            regexPattern := strings.ReplaceAll(pattern, "*", ".*")
-            matched, err := regexp.MatchString(regexPattern, newTag)
-            if err != nil {
-                return false, fmt.Errorf("error matching exclude pattern: %w", err)
-            }
-            if matched {
-                log.Printf("Skipping tag %s due to exclude pattern %s", newTag, pattern)
-                return false, nil // If newTag matches any exclude pattern, it's not considered newer.
-            }
-        }
-    }
+	excludePatterns := c.config.Magic.ExcludePatterns
+	log.Printf("Exclude patterns: %v", excludePatterns)
+	if len(excludePatterns) > 0 {
+		for _, pattern := range excludePatterns {
+			// Convert wildcard pattern to valid regex pattern
+			regexPattern := strings.ReplaceAll(pattern, "*", ".*")
+			matched, err := regexp.MatchString(regexPattern, newTag)
+			if err != nil {
+				return false, fmt.Errorf("error matching exclude pattern: %w", err)
+			}
+			if matched {
+				log.Printf("Skipping tag %s due to exclude pattern %s", newTag, pattern)
+				return false, nil // If newTag matches any exclude pattern, it's not considered newer.
+			}
+		}
+	}
 
-    
-    // Parse semantic versions
-    currentVersion, err := semver.NewVersion(currentTag)
-    if err != nil {
-        return false, fmt.Errorf("error parsing current tag '%s' as semver: %w", currentTag, err)
-    }
-    newVersion, err := semver.NewVersion(newTag)
-    if err != nil {
-        return false, fmt.Errorf("error parsing new tag '%s' as semver: %w consider updating your exclude patterns", newTag, err)
-    }
+	// Parse semantic versions
+	currentVersion, err := semver.NewVersion(currentTag)
+	if err != nil {
+		return false, fmt.Errorf("error parsing current tag '%s' as semver: %w", currentTag, err)
+	}
+	newVersion, err := semver.NewVersion(newTag)
+	if err != nil {
+		return false, fmt.Errorf("error parsing new tag '%s' as semver: %w consider updating your exclude patterns", newTag, err)
+	}
 
-    // Compare versions
-    return newVersion.GreaterThan(currentVersion), nil
+	// Compare versions
+	return newVersion.GreaterThan(currentVersion), nil
 }

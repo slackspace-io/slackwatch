@@ -13,9 +13,17 @@ type Config struct {
 	Repositories  []Repository     `yaml:"repositories"`
 	System        SystemConfig     `yaml:"system"`
 	Magic         MagicConfig      `yaml:"magic"`
+	GitOps        []GitOps         `yaml:"gitops"`
 	Notifications struct {
 		Ntfy NtfyConfig `yaml:"ntfy"`
 	} `yaml:"notifications"`
+}
+
+type GitOps struct {
+	Name      string `yaml:"name"`
+	RepoURL   string `yaml:"repoURL"`
+	Branch    string `yaml:"branch"`
+	AuthToken string `yaml:"authToken"`
 }
 
 type Repository struct {
