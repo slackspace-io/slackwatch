@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { unstable_noStore as noStore } from 'next/cache';
-import {Alert, AlertDescription, AlertTitle} from '@/components/ui/alert';
+
 
 interface UpdateCardProps {
   update: {
@@ -45,10 +45,10 @@ async function handleUpdate(data: FormData) {
     const response = await fetch(`${baseUrl}/api/container/update?${params}`);
     if (!response.ok) {
         throw new Error('Failed to fetch data');
+        return false;
     }
+    return true;
     //notify success
-
-    console.log("hi")
 
 }
 

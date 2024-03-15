@@ -110,6 +110,7 @@ func (app *Application) handleContainerUpdate(w http.ResponseWriter, r *http.Req
 	// Save the update data
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte("Container update received"))
+	//return json response
 
 }
 
