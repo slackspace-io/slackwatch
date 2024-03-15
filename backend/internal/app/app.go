@@ -91,7 +91,6 @@ func (app *Application) handleContainerUpdate(w http.ResponseWriter, r *http.Req
 	currentTag := r.URL.Query().Get("currentTag")
 	namespace := r.URL.Query().Get("namespace")
 	repo := r.URL.Query().Get("repo")
-	directory := r.URL.Query().Get("directory")
 	// Create a map to hold the update data
 	updateRequest := map[string]string{
 		"name":       name,
@@ -99,7 +98,6 @@ func (app *Application) handleContainerUpdate(w http.ResponseWriter, r *http.Req
 		"currentTag": currentTag,
 		"namespace":  namespace,
 		"repo":       repo,
-		"directory":  directory,
 		"image":      image,
 	}
 	log.Printf("Received update: %v", updateRequest)
@@ -111,6 +109,7 @@ func (app *Application) handleContainerUpdate(w http.ResponseWriter, r *http.Req
 	app.Gitops.UpdateRequest(updateRequest, runningData)
 	// Save the update data
 	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write([]byte("Container update received"))
 
 }
 
@@ -160,7 +159,7 @@ func (app *Application) runScheduledTask() {
 	log.Println("Scheduled task running...")
 	//get previous data
 	combinedData, err := app.DataService.GetCombinedData(context.Background())
-	containers, err := app.Kubernetes.FindContainersWithAnnotation("", "slackwatch.test", "true")
+	containers, err := app.Kubernetes.FindContainersWithAnnotation("", "slackwatch.enable", "true")
 	if err != nil {
 		log.Printf("Error finding containers: %v", err)
 		return

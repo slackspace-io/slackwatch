@@ -117,6 +117,7 @@ func (c *Client) FindContainersWithAnnotation(namespace string, annotationKey st
 					"podName":        pod.Name,
 					"containerName":  container.Name,
 					"image":          container.Image,
+					"namespace":      pod.Namespace,
 					"timeScanned":    time.Now().Format(time.RFC3339),
 					"excludePattern": excludePattern,
 					"includePattern": includePattern,

@@ -13,7 +13,9 @@ interface CombinedData {
   podName: string;
   timeScanned: string;
   updateAvailable: boolean;
+  namespace: string;
   sentTime?: string;
+  repo: string;
 }
 async function getData(): Promise<CombinedData[]> {
   noStore();
