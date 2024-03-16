@@ -52,8 +52,10 @@ func NewClient(cfg *config.KubernetesConfig, checker *repochecker.Checker, appCo
 	return &Client{clientSet: clientSet, repoChecker: checker, config: appConfig}, nil
 }
 
-// FindContainersWithAnnotation finds all containers in a given namespace (or all namespaces if namespace is empty) that have a specific metadata annotation
+// FindStatefulSets finds a stateful set by name in a given namespace
 func (c *Client) FindStatefulSets(namespace string, name string) (map[string]string, error) {
+	//log params
+	log.Printf("Finding stateful set with name %s in namespace %s", name, namespace)
 	statefulSets, err := c.clientSet.AppsV1().StatefulSets(namespace).Get(context.TODO(), name, metav1.GetOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to list stateful sets in namespace %s: %w", namespace, err)

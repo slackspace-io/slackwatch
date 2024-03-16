@@ -235,11 +235,21 @@ func (gs *Gitops) BuildPath(repo *git.Repository, updateRequest map[string]strin
 	// Find the files to update
 	//log config available
 	log.Printf("Finding files to update for %s", updateRequest["repo"])
-	subFolder := updateRequest["name"]
-	fullPath := "/tmp/repo/" + subFolder
-	log.Printf("Full path: %s", fullPath)
+	if updateRequest["directory"] == "" {
+		log.Printf("Subfolder specified: %s", updateRequest["directory"])
+		subFolder := updateRequest["directory"]
+		fullPath := "/tmp/repo/" + subFolder
+		log.Printf("Full path: %s", fullPath)
+		return fullPath
+	} else {
+		log.Printf("No subfolder specified, using name %s", updateRequest["name"])
+		subFolder := updateRequest["name"]
+		fullPath := "/tmp/repo/" + subFolder
+		log.Printf("Full path: %s", fullPath)
+		return fullPath
+
+	}
 	//list files
-	return fullPath
 
 }
 

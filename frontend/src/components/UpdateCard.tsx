@@ -15,7 +15,8 @@ interface UpdateCardProps {
     namespace: string;
     updateAvailable: boolean;
     sentTime?: string;
-    repo: string;
+    gitopsRepo: string;
+    directory?: string;
   };
 }
 
@@ -32,11 +33,11 @@ async function handleUpdate(data: FormData) {
     const newTag = data.get('newTag');
     const currentTag = data.get('currentTag');
     const namespace = data.get('namespace');
-    const repo = data.get('repo');
+    const repo = data.get('gitopsRepo');
     //create url
     //fetch url
     const params = new URLSearchParams({
-        containerName: name as string,
+        name: name as string,
         image: image as string,
         newTag: newTag as string,
         currentTag: currentTag as string,
@@ -82,6 +83,8 @@ const UpdateCard: React.FC<UpdateCardProps> = ({ update }) => (
         <input name="image" type="hidden" value={update.image} />
         <input name="currentTag" type="hidden" value={update.currentTag} />
         <input name="namespace" type="hidden" value={update.namespace} />
+        <input name="gitopsRepo" type="hidden" value={update.gitopsRepo} />
+        <input name="directory" type="hidden" value={update.directory} />
         <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out">
           Update
         </button>
@@ -94,6 +97,7 @@ const UpdateCard: React.FC<UpdateCardProps> = ({ update }) => (
       <p>Image: <span className="font-semibold">{update.image}</span></p>
       <p>Pod Name: <span className="font-semibold">{update.podName}</span></p>
       <p>Time Scanned: <span className="font-semibold">{update.timeScanned}</span></p>
+        <p>Namespace: <span className="font-semibold">{update.namespace}</span></p>
       {update.sentTime && <p>Notification Sent At: <span className="font-semibold">{update.sentTime}</span></p>}
     </div>
   </Card>

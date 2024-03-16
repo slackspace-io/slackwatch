@@ -15,7 +15,8 @@ interface CombinedData {
   updateAvailable: boolean;
   namespace: string;
   sentTime?: string;
-  repo: string;
+  gitopsRepo: string;
+  directory?: string;
 }
 async function getData(): Promise<CombinedData[]> {
   noStore();
