@@ -24,6 +24,11 @@ spec:
             secretKeyRef:
               name: ntfy-token
               key: token
+        - name: fleet-slack-house-token
+          valueFrom:
+            secretKeyRef:
+              name: fleet-slack-house-token
+              key: token
         volumeMounts:
           - name: config-volume
             mountPath: /app/config/
