@@ -85,6 +85,17 @@ func LoadConfig(configPath string) (*Config, error) {
 		config.Notifications.Ntfy.Token = ntfyToken
 	}
 
+	//get token for matching gitops repo config
+	for i, gitops := range config.GitOps {
+		if gitops.AuthToken == "" {
+			gitopsToken := os.Getenv(gitops.Name + "-token")
+			if gitopsToken != "" {
+				log.Printf("Found token for %s", gitops.Name)
+				config.GitOps[i].AuthToken = gitopsToken
+			}
+		}
+	}
+
 	log.Printf("Successfully loaded configuration: %+v", config)
 
 	return &config, nil
