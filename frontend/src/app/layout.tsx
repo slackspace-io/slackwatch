@@ -19,6 +19,8 @@ export default function RootLayout({
         {/* Metadata can be expanded here for SEO purposes */}
         <title>SlackWatch - Kubernetes Container Monitoring</title>
         <meta name="description" content="SlackWatch is your go-to tool for monitoring containers within your Kubernetes cluster, ensuring your deployments are up-to-date and secure." />
+        <link rel="icon" href="/favicon.ico" />
+
       </head>
       <body className={`${inter.className} bg-gray-50`}>{children}</body>
     </html>

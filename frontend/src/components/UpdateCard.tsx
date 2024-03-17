@@ -2,6 +2,7 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { unstable_noStore as noStore } from 'next/cache';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import RefreshButton from "@/components/RefreshButton";
 
 
 interface UpdateCardProps {
@@ -91,6 +92,9 @@ const UpdateCard: React.FC<UpdateCardProps> = ({ update }) => (
           </form>
       )}
     </div>
+      <div className="flex justify-center items-end">
+          <RefreshButton />
+      </div>
     <div className="mt-4">
       {update.currentTag && <p>Current Tag: <span className="font-semibold">{update.currentTag}</span></p>}
       {update.newTag && <p className="text-green-500">New Tag: <span className="font-semibold">{update.newTag}</span></p>}
