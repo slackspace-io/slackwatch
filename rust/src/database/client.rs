@@ -48,7 +48,8 @@ pub fn return_workload(name: String, namespace: String) -> (Result<Workload>) {
 
 pub fn return_all_workloads() -> (Result<Vec<Workload>>) {
     let conn = Connection::open("data.db")?;
-    let mut stmt = conn.prepare("SELECT * FROM workloads")?;
+    // only get latest unique name and namespace combinations
+    let mut stmt = conn.prepare("SELECT * FROM workloads WHERE id IN (SELECT MAX(id) FROM workloads GROUP BY name, namespace)")?;
     let workloads = stmt.query_map([], |row| {
         Ok(Workload {
             name: row.get(1)?,

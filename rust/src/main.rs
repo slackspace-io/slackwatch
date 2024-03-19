@@ -6,6 +6,7 @@ use std::env;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use warp::Filter;
+use crate::repocheck::repocheck::test_call;
 
 mod config;
 mod database;
@@ -13,6 +14,7 @@ mod kubernetes;
 mod models;
 mod web;
 mod services;
+mod repocheck;
 
 
 #[tokio::main]
@@ -20,7 +22,7 @@ async fn main() {
     println!("Hello, world!");
 
     //Logging and env variables
-    env::set_var("RUST_LOG", "debug");
+    env::set_var("RUST_LOG", "info");
     env_logger::init();
     dotenv::dotenv().ok();
 

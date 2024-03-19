@@ -2,11 +2,14 @@ use actix_web::{get, web, App, HttpServer, Responder, HttpResponse};
 use crate::database;
 use crate::services;
 use serde::Deserialize;
+use crate::repocheck::repocheck;
 
 
 #[get("/")]
 async fn index() -> impl Responder {
-    "Hello, World!"
+    let _ = repocheck::test_call().await;
+    log::info!("Hello world");
+    HttpResponse::Ok().body("Hello world!")
 }
 
 #[get("/api/workloads/all")]
@@ -31,8 +34,8 @@ async fn refresh_workloads() -> impl Responder {
     } else {
         HttpResponse::Ok().body("Workload not found")
     }
-    
-    
+
+
 }
 
 #[get("/api/workloads/{name}/{namespace}")]
