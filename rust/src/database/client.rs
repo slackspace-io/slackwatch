@@ -1,6 +1,6 @@
 use crate::models::models::Workload;
 use crate::models::models::UpdateStatus;
-use rusqlite::{Connection, Result, ToSql};
+use rusqlite::{Error, Connection, Result, ToSql};
 use rusqlite::types::{FromSql, FromSqlError, FromSqlResult, ToSqlOutput, ValueRef};
 
 pub fn create_table_if_not_exist() -> Result<()> {
@@ -83,7 +83,7 @@ impl FromSql for UpdateStatus {
             .map_err(|e| FromSqlError::Other(Box::new(e)))
     }
 }
-pub fn insert_workload(workload: &Workload) -> Result<()> {
+pub fn insert_workload(workload: &Workload) -> Result<()>{
     let conn = Connection::open("data.db")?;
 
     match conn.execute(
@@ -103,6 +103,6 @@ pub fn insert_workload(workload: &Workload) -> Result<()> {
         ],
     ) {
         Ok(_) => Ok(()),
-        Err(err) => Err(err.into()),  // Convert into your custom error type
+        Err(e) => Err(e),
     }
 }

@@ -12,7 +12,7 @@ mod database;
 mod kubernetes;
 mod models;
 mod web;
-
+mod services;
 
 
 #[tokio::main]
@@ -39,24 +39,22 @@ async fn main() {
     //find enabled
     let workloads = find_enabled_workloads().await.unwrap();
     //print count of workloads
-    println!("Workloads found: {}", workloads.len());
     //print first 5 workloads
     // Initialize shared state
     for workload in workloads.iter() {
-        println!("Workload: {:?}", workload);
         //insert into db
         database::client::insert_workload(workload).unwrap();
     }
     //get workload from db
-    if let workload = database::client::return_workload("frigate".to_string(), "frigate".to_string()) {
-        println!("Workload from db: {:?}", workload);
+    //if let workload = database::client::return_workload("frigate".to_string(), "frigate".to_string()) {
+    //    println!("Workload from db: {:?}", workload);
 
-    } else {
-        println!("Workload not found");
-    }
+    //} else {
+    //    println!("Workload not found");
+    //}
     //return all
-    let workloads = database::client::return_all_workloads().unwrap();
-    println!("Workloads from db: {:?}", workloads);
+    //let workloads = database::client::return_all_workloads().unwrap();
+    //println!("Workloads from db: {:?}", workloads);
     //run site
     tokio::task::spawn_blocking(|| {
         crate::web::exweb::site();
