@@ -9,7 +9,7 @@ async fn index() -> impl Responder {
     "Hello, World!"
 }
 
-#[get("/workloads/all")]
+#[get("/api/workloads/all")]
 async fn fetch_all_workloads() -> impl Responder {
     //get workload from db
     if let Ok(workload) = database::client::return_all_workloads() {
@@ -21,7 +21,7 @@ async fn fetch_all_workloads() -> impl Responder {
     }
 }
 
-#[get("/workloads/refresh")]
+#[get("/api/workloads/refresh")]
 async fn refresh_workloads() -> impl Responder {
     //fetch and update all workloads return if successful or error
     if let Ok(_) = services::workloads::fetch_and_update_all_watched().await {
@@ -35,7 +35,7 @@ async fn refresh_workloads() -> impl Responder {
     
 }
 
-#[get("/workloads/{name}/{namespace}")]
+#[get("/api/workloads/{name}/{namespace}")]
 async fn fetch_workload(path: web::Path<(String, String)>) -> impl Responder {
     let (name, namespace) = path.into_inner();
     //get workload from db

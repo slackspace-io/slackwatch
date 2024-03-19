@@ -7,17 +7,16 @@ import RefreshButton from "@/components/RefreshButton";
 
 interface UpdateCardProps {
   update: {
-    containerName: string;
-    currentTag?: string;
-    newTag?: string;
-    image: string;
-    podName: string;
-    timeScanned: string;
-    namespace: string;
-    updateAvailable: boolean;
-    sentTime?: string;
-    gitopsRepo: string;
-    directory?: string;
+    name: string,
+    exclude_pattern: string,
+    git_ops_repo: string,
+    include_pattern: string,
+    update_available: string,
+    image: string,
+    last_scanned: string,
+    namespace: string,
+    current_version: string,
+    latest_version: string,
   };
 }
 
@@ -68,24 +67,23 @@ const AlertMessage: React.FC<UpdateCardProps> = ({ update }) => (
     <Alert>
         <AlertTitle>Update Available</AlertTitle>
         <AlertDescription>
-            {update.containerName} has an update available. Click the button to update.
+            {update.name} has an update available. Click the button to update.
         </AlertDescription>
     </Alert>
 );
 
 const UpdateCard: React.FC<UpdateCardProps> = ({ update }) => (
-  <Card className={`mb-4 p-4 shadow-lg rounded-lg ${update.updateAvailable ? 'border-l-4 border-green-500' : 'border'}`}>
+  <Card className={`mb-4 p-4 shadow-lg rounded-lg ${update.update_available ? 'border-l-4 border-green-500' : 'border'}`}>
     <div className="flex justify-between items-center">
-      <p className="text-lg font-bold">{update.containerName}</p>
-      {update.updateAvailable && update.newTag && (
+      <p className="text-lg font-bold">{update.name}</p>
+      {update.update_available && update.latest_version && (
           <form action={handleUpdate}>
-        <input name="containerName" type="hidden" value={update.containerName} />
-        <input name="newTag" type="hidden" value={update.newTag} />
+        <input name="containerName" type="hidden" value={update.name} />
+        <input name="newTag" type="hidden" value={update.latest_version} />
         <input name="image" type="hidden" value={update.image} />
-        <input name="currentTag" type="hidden" value={update.currentTag} />
+        <input name="currentTag" type="hidden" value={update.current_version} />
         <input name="namespace" type="hidden" value={update.namespace} />
-        <input name="gitopsRepo" type="hidden" value={update.gitopsRepo} />
-        <input name="directory" type="hidden" value={update.directory} />
+        <input name="gitopsRepo" type="hidden" value={update.git_ops_repo} />
         <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out">
           Update
         </button>
@@ -96,13 +94,13 @@ const UpdateCard: React.FC<UpdateCardProps> = ({ update }) => (
           <RefreshButton />
       </div>
     <div className="mt-4">
-      {update.currentTag && <p>Current Tag: <span className="font-semibold">{update.currentTag}</span></p>}
-      {update.newTag && <p className="text-green-500">New Tag: <span className="font-semibold">{update.newTag}</span></p>}
+      {update.current_version && <p>Current Tag: <span className="font-semibold">{update.current_version}</span></p>}
+      {update.latest_version && <p className="text-green-500">New Tag: <span className="font-semibold">{update.latest_version}</span></p>}
       <p>Image: <span className="font-semibold">{update.image}</span></p>
-      <p>Pod Name: <span className="font-semibold">{update.podName}</span></p>
-      <p>Time Scanned: <span className="font-semibold">{update.timeScanned}</span></p>
+      <p>Pod Name: <span className="font-semibold">{update.name}</span></p>
+      <p>Time Scanned: <span className="font-semibold">{update.last_scanned}</span></p>
         <p>Namespace: <span className="font-semibold">{update.namespace}</span></p>
-      {update.sentTime && <p>Notification Sent At: <span className="font-semibold">{update.sentTime}</span></p>}
+      {update.last_scanned && <p>Notification Sent At: <span className="font-semibold">{update.last_scanned}</span></p>}
     </div>
   </Card>
 
