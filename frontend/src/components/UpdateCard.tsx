@@ -73,10 +73,12 @@ const AlertMessage: React.FC<UpdateCardProps> = ({ update }) => (
 );
 
 const UpdateCard: React.FC<UpdateCardProps> = ({ update }) => (
-  <Card className={`mb-4 p-4 shadow-lg rounded-lg ${update.update_available ? 'border-l-4 border-green-500' : 'border'}`}>
+    //if update_available set to Availabe make green
+    //if update_available set to Not Available make red
+  <Card className={`mb-4 p-4 shadow-lg rounded-lg ${update.update_available == "Available" ? 'border-l-4 border-green-500' : 'border'}`}>
     <div className="flex justify-between items-center">
       <p className="text-lg font-bold">{update.name}</p>
-      {update.update_available && update.latest_version && (
+      {update.update_available == "Available" && update.latest_version && (
           <form action={handleUpdate}>
         <input name="containerName" type="hidden" value={update.name} />
         <input name="newTag" type="hidden" value={update.latest_version} />

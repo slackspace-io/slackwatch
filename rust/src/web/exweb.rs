@@ -1,13 +1,15 @@
-use actix_web::{get, web, App, HttpServer, Responder, HttpResponse};
 use crate::database;
+use crate::database::client::get_latest_scan_id;
 use crate::services;
+use crate::services::workloads;
+use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
 use serde::Deserialize;
-use crate::repocheck::repocheck;
-
 
 #[get("/")]
 async fn index() -> impl Responder {
-    let _ = repocheck::test_call().await;
+    let _ = workloads::test_call().await;
+    let scan = get_latest_scan_id();
+    log::info!("Scan id: {:?}", scan);
     log::info!("Hello world");
     HttpResponse::Ok().body("Hello world!")
 }
@@ -34,8 +36,6 @@ async fn refresh_workloads() -> impl Responder {
     } else {
         HttpResponse::Ok().body("Workload not found")
     }
-
-
 }
 
 #[get("/api/workloads/{name}/{namespace}")]
@@ -53,11 +53,16 @@ async fn fetch_workload(path: web::Path<(String, String)>) -> impl Responder {
     }
 }
 
-
 #[actix_web::main]
 pub(crate) async fn site() -> std::io::Result<()> {
-    HttpServer::new(|| App::new().service(index).service(fetch_all_workloads).service(fetch_workload).service(refresh_workloads))
-        .bind(("127.0.0.1", 8080))?
-        .run()
-        .await
+    HttpServer::new(|| {
+        App::new()
+            .service(index)
+            .service(fetch_all_workloads)
+            .service(fetch_workload)
+            .service(refresh_workloads)
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
 }

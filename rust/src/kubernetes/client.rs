@@ -53,8 +53,7 @@ pub async fn find_enabled_workloads() -> Result<Vec<Workload>, kube::Error> {
                 if let Some(enable) = annotations.get("slackwatch.enable") {
                     //Found a pod with slackwatch.enable annotation
                     if enable == "true" {
-                        let exclude_pattern = annotations.get("slackwatch.exclude").cloned(); 
-                        println!("exclude_pattern: {:?}", exclude_pattern);
+                        let exclude_pattern = annotations.get("slackwatch.exclude").cloned();
                         let include_pattern = annotations.get("slackwatch.include").cloned();
                         let git_ops_repo = annotations.get("slackwatch.repo").cloned();
                         for spec in p.spec {
@@ -67,7 +66,9 @@ pub async fn find_enabled_workloads() -> Result<Vec<Workload>, kube::Error> {
                                             exclude_pattern: exclude_pattern.clone(),
                                             git_ops_repo: git_ops_repo.clone(),
                                             include_pattern: include_pattern.clone(),
-                                            update_available: "NotAvailable".parse().unwrap_or(UpdateStatus::NotAvailable),
+                                            update_available: "NotAvailable"
+                                                .parse()
+                                                .unwrap_or(UpdateStatus::NotAvailable),
                                             image: image.clone(),
                                             name: name.clone(),
                                             namespace: namespace.clone(),

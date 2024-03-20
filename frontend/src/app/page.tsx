@@ -31,8 +31,9 @@ async function getData(): Promise<CombinedData[]> {
 export default async function Page() {
   let data = await getData();
 
-  data = data.sort((a, b) => Number(b.update_available) - Number(a.update_available));
-
+//  data = data.sort((a, b) => Number(b.update_available) - Number(a.update_available));
+    //order by two strings which goes first
+    data = data.sort((a, b) => { return a.update_available.localeCompare(b.update_available) });
   return (
     <main className="p-4">
       {data.map((update, index) => (
