@@ -79,7 +79,7 @@ const UpdateCard: React.FC<UpdateCardProps> = ({ update }) => (
     <div className="flex justify-between items-center">
       <p className="text-lg font-bold">{update.name}</p>
       {update.update_available == "Available" && update.latest_version && (
-          <form action={handleUpdate}>
+          <form>
         <input name="containerName" type="hidden" value={update.name} />
         <input name="newTag" type="hidden" value={update.latest_version} />
         <input name="image" type="hidden" value={update.image} />
@@ -92,9 +92,9 @@ const UpdateCard: React.FC<UpdateCardProps> = ({ update }) => (
           </form>
       )}
     </div>
-      <div className="flex justify-center items-end">
-          <RefreshButton />
-      </div>
+      {/*<div className="flex justify-center items-end">*/}
+      {/*    <RefreshButton />*/}
+      {/*</div>*/}
     <div className="mt-4">
       {update.current_version && <p>Current Tag: <span className="font-semibold">{update.current_version}</span></p>}
       {update.latest_version && <p className="text-green-500">New Tag: <span className="font-semibold">{update.latest_version}</span></p>}
