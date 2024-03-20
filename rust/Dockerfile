@@ -1,5 +1,5 @@
 # Use the official Rust image as a builder stage
-FROM rust:1.58 as builder
+FROM rust:1.76-alpine as builder
 
 # Create a new empty shell project
 RUN USER=root cargo new --bin rust-slackwatch
