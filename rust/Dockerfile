@@ -16,5 +16,6 @@ FROM alpine:latest
 # Copy the binary from the builder stage
 COPY --from=builder /app/target/release/slackwatch .
 
-# Set the CMD to your binary
+RUN CHMOD +x slackwatch
+# Run the binary
 CMD ["./slackwatch"]
