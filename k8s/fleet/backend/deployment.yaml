@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: slackwatch-be
+  name: slackwatch-rs
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: slackwatch-be
+      app: slackwatch-rs
   template:
     metadata:
       labels:
-        app: slackwatch-be
+        app: slackwatch-rs
     spec:
       serviceAccountName: slackwatch-backend
       containers:
-      - name: slackwatch-be
-        image: ghcr.io/slackspace-io/slackwatch-be:latest
+      - name: slackwatch-rs
+        image: ghcr.io/slackspace-io/slackwatch-rs:latest
         ports:
         - containerPort: 8080
         env:
