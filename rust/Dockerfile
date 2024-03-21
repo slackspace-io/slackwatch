@@ -1,8 +1,7 @@
 # Use the official Rust image as a builder stage
 FROM rust:1.76 as builder
-RUN apk add --no-cache musl-dev
-RUN apk add --no-cache openssl-dev
 # Create a new empty shell project
+
 WORKDIR app
 COPY . .
 # Copy our manifests
