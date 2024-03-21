@@ -26,7 +26,7 @@ impl Settings {
     pub fn new() -> Result<Self, ConfigError> {
         dotenv::dotenv().ok();
         let s = Config::builder()
-            .add_source(File::with_name("config/config.toml").required(false))
+            .add_source(File::with_name("config/config").required(false))
             .add_source(File::with_name(".env.toml").required(false))
             .add_source(Environment::with_prefix("slackwatch"))
             .build()?;
