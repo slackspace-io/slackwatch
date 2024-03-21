@@ -1,6 +1,5 @@
 use crate::models::models::UpdateStatus;
 use crate::models::models::Workload;
-use futures::StreamExt;
 use rusqlite::types::{FromSql, FromSqlError, FromSqlResult, ToSqlOutput, ValueRef};
 use rusqlite::{Connection, Error, Result, ToSql};
 
@@ -27,7 +26,7 @@ pub fn create_table_if_not_exist() -> Result<()> {
     Ok(())
 }
 
-pub fn return_workload(name: String, namespace: String) -> (Result<Workload>) {
+pub fn return_workload(name: String, namespace: String) -> Result<Workload> {
     let conn = Connection::open("data.db")?;
     let mut stmt = conn.prepare("SELECT * FROM workloads WHERE name = ?1 AND namespace = ?2")?;
     let mut workload = stmt.query_map(&[&name, &namespace], |row| {
@@ -51,7 +50,7 @@ pub fn return_workload(name: String, namespace: String) -> (Result<Workload>) {
     };
 }
 
-pub fn return_all_workloads() -> (Result<Vec<Workload>>) {
+pub fn return_all_workloads() -> Result<Vec<Workload>> {
     let conn = Connection::open("data.db")?;
     // only get latest unique name and namespace combinations
     let mut stmt = conn.prepare("SELECT * FROM workloads WHERE scan_id IN (SELECT MAX(scan_id) FROM workloads GROUP BY scan_type)")?;

@@ -1,5 +1,5 @@
 # Use the official Rust image as a builder stage
-FROM rust:alpine as builder
+FROM rust:1.76 as builder
 RUN apk add --no-cache musl-dev
 RUN apk add --no-cache openssl-dev
 # Create a new empty shell project

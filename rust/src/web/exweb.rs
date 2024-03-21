@@ -3,7 +3,6 @@ use crate::database::client::get_latest_scan_id;
 use crate::services;
 use crate::services::workloads;
 use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
-use serde::Deserialize;
 
 #[get("/")]
 async fn index() -> impl Responder {

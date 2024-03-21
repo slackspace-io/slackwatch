@@ -17,21 +17,21 @@ impl Client {
         Ok(Client { kube_client })
     }
 
-    pub async fn fetch_slackwatch_enabled_containers(&self) -> Result<Vec<Pod>, kube::Error> {
-        let pods: Api<Pod> = Api::all(self.kube_client.clone());
-        let lp = ListParams::default().labels("slackwatch.enable=true"); // Adjust based on actual use case
-        let pod_list = pods.list(&lp).await?;
-        Ok(pod_list.items)
-    }
-    pub async fn fetch_containers_with_annotation(
-        &self,
-        annotation_key: &str,
-    ) -> Result<Vec<Pod>, kube::Error> {
-        let pods: Api<Pod> = Api::all(self.kube_client.clone());
-        let lp = ListParams::default().labels(format!("{}=*", annotation_key).as_str()); // Adjust based on actual use case
-        let pod_list = pods.list(&lp).await?;
-        Ok(pod_list.items)
-    }
+   // pub async fn fetch_slackwatch_enabled_containers(&self) -> Result<Vec<Pod>, kube::Error> {
+   //     let pods: Api<Pod> = Api::all(self.kube_client.clone());
+   //     let lp = ListParams::default().labels("slackwatch.enable=true"); // Adjust based on actual use case
+   //     let pod_list = pods.list(&lp).await?;
+   //     Ok(pod_list.items)
+   // }
+   // pub async fn fetch_containers_with_annotation(
+   //     &self,
+   //     annotation_key: &str,
+   // ) -> Result<Vec<Pod>, kube::Error> {
+   //     let pods: Api<Pod> = Api::all(self.kube_client.clone());
+   //     let lp = ListParams::default().labels(format!("{}=*", annotation_key).as_str()); // Adjust based on actual use case
+   //     let pod_list = pods.list(&lp).await?;
+   //     Ok(pod_list.items)
+   // }
 
     pub async fn list_pods(&self) -> Result<Vec<Pod>, kube::Error> {
         let pods: Api<Pod> = Api::all(self.kube_client.clone());

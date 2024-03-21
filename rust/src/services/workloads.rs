@@ -43,7 +43,6 @@ pub async fn find_latest_tag_for_image(workload: &Workload) -> Result<String, St
 pub async fn test_call() {
     let workloads = find_enabled_workloads().await.unwrap();
     for workload in workloads.iter().take(1) {
-        let tags = get_tags_for_image(&workload.image).await.unwrap();
         //let workload = workload.clone();
         let workload = parse_tags(&workload).await.unwrap();
         log::info!("Workload: {:?}", workload)

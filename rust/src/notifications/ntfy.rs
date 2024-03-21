@@ -1,7 +1,5 @@
-use chrono::{Duration, Local};
 use ntfy::payload::{Action, ActionType};
 use ntfy::{Auth, Dispatcher, NtfyError, Payload, Priority};
-use url::Url;
 use crate::config::Settings;
 use crate::models::models::Workload;
 

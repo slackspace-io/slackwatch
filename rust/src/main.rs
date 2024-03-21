@@ -1,14 +1,6 @@
 use crate::database::client::create_table_if_not_exist;
-use crate::kubernetes::client::find_enabled_workloads;
-use crate::repocheck::repocheck::test_call;
-use kube::Client;
-use kubernetes::client;
 use std::env;
-use std::sync::Arc;
-use tokio::sync::Mutex;
-use warp::Filter;
 use crate::config::Settings;
-use crate::notifications::ntfy::send_notification;
 
 mod oldc;
 mod database;
@@ -37,7 +29,7 @@ async fn main() {
     //find enabled
     //end_notification().await.unwrap();
     tokio::task::spawn_blocking(|| {
-        crate::web::exweb::site();
+        let _ = web::exweb::site();
     })
     .await
     .expect("Failed to run site")
