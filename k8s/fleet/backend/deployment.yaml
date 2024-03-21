@@ -19,7 +19,7 @@ spec:
         ports:
         - containerPort: 8080
         env:
-        - name: NTFY_TOKEN
+        - name: SLACKWATCH_NOTIFICATIONS.NTFY.TOKEN
           valueFrom:
             secretKeyRef:
               name: ntfy-token
@@ -31,7 +31,7 @@ spec:
               key: token
         volumeMounts:
           - name: config-volume
-            mountPath: /app/config/
+            mountPath: /app/config/default/config.toml
       volumes:
       - name: config-volume
         configMap:

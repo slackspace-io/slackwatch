@@ -1,0 +1,5 @@
+[notifications.ntfy]
+url = "http://localhost:9090"
+topic = "slackwatch"
+priorty = 1
+reminder = "24h"
