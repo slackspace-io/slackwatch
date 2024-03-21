@@ -1,22 +1,9 @@
-# Use the official Rust image as a builder stage
-FROM rust:1.76 as builder
-# Create a new empty shell project
-
-WORKDIR app
+FROM rust:1.67 as builder
+WORKDIR /usr/src/slackwatch
 COPY . .
-# Copy our manifests
-# Build only the dependencies to cache them
-RUN cargo build --release
+RUN cargo install --path .
 
-RUN touch src/main.rs && cargo build --target aarch64-unknown-linux-musl --release
-
-# Use the official Debian Buster Slim image for the runtime stage
-FROM alpine:latest
-
-# Copy the binary from the builder stage
-COPY --from=builder /app/target/aarch64-unknown-linux-musl/release/slackwatch .
-
-RUN chmod +x slackwatch
-
-# Run the binary
-CMD ["./slackwatch"]
+FROM debian:bullseye-slim
+RUN apt-get update && apt-get install -y extra-runtime-dependencies && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /usr/local/cargo/bin/slackwatch /usr/local/bin/slackwatch
+CMD ["slackwatch"]
