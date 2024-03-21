@@ -1,32 +1,22 @@
-# STAGE1: Build the binary
+# Use the official Rust image as a builder stage
 FROM rust:alpine as builder
-
-# Install build dependencies
-RUN apk add --no-cache build-base musl-dev openssl-dev openssl
-
+RUN apk add --no-cache musl-dev
+RUN apk add --no-cache openssl-dev
 # Create a new empty shell project
-WORKDIR /app
-
-# Copy over the Cargo.toml files to the shell project
-COPY Cargo.toml Cargo.lock ./
-
-# Build and cache the dependencies
-RUN mkdir src && echo "fn main() {}" > src/main.rs
-RUN cargo fetch
+WORKDIR app
+COPY . .
+# Copy our manifests
+# Build only the dependencies to cache them
 RUN cargo build --release
-RUN rm src/main.rs
+RUN rm src/*.rs
 
-# Copy the actual code files and build the application
-COPY src ./src/
-# Update the file date
-RUN touch src/main.rs
-RUN cargo build --release
+RUN touch src/main.rs && cargo build --release
 
-# STAGE2: create a slim image with the compiled binary
-FROM alpine as runner
+# Use the official Debian Buster Slim image for the runtime stage
+FROM alpine:latest
 
 # Copy the binary from the builder stage
-WORKDIR /app
-COPY --from=builder /app/target/release/app app
+COPY --from=builder /app/target/release/rust-slackwatch .
 
-CMD ["./app"]
+# Set the CMD to your binary
+CMD ["./rust-slackwatch"]

@@ -21,7 +21,8 @@ jobs:
 
       - name: Log in to GitHub Container Registry
         run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-
+      - name: list files in rust
+        run: ls -la ./rust
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
