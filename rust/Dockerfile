@@ -8,13 +8,13 @@ COPY . .
 # Build only the dependencies to cache them
 RUN cargo build --release
 
-RUN touch src/main.rs && cargo build --release
+RUN touch src/main.rs && cargo build --target aarch64-unknown-linux-musl --release
 
 # Use the official Debian Buster Slim image for the runtime stage
 FROM alpine:latest
 
 # Copy the binary from the builder stage
-COPY --from=builder /app/target/release/slackwatch .
+COPY --from=builder /app/target/aarch64-unknown-linux-musl/release/slackwatch .
 
 RUN chmod +x slackwatch
 
