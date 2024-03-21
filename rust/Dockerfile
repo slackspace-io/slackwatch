@@ -7,7 +7,6 @@ COPY . .
 # Copy our manifests
 # Build only the dependencies to cache them
 RUN cargo build --release
-RUN rm src/*.rs
 
 RUN touch src/main.rs && cargo build --release
 
@@ -15,7 +14,7 @@ RUN touch src/main.rs && cargo build --release
 FROM alpine:latest
 
 # Copy the binary from the builder stage
-COPY --from=builder /app/target/release/rust-slackwatch .
+COPY --from=builder /app/target/release/slackwatch .
 
 # Set the CMD to your binary
-CMD ["./rust-slackwatch"]
+CMD ["./slackwatch"]

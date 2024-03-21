@@ -1,8 +1,6 @@
 use crate::database::client::create_table_if_not_exist;
 use std::env;
 use crate::config::Settings;
-
-mod oldc;
 mod database;
 mod kubernetes;
 mod models;
