@@ -2,10 +2,10 @@ use crate::database;
 use crate::database::client::get_latest_scan_id;
 use crate::kubernetes::client::find_enabled_workloads;
 use crate::models::models::{UpdateStatus, Workload};
+use crate::notifications::ntfy::send_notification;
 use crate::repocheck::repocheck::get_tags_for_image;
 use regex::Regex;
 use semver::Version;
-use crate::notifications::ntfy::send_notification;
 
 pub async fn fetch_and_update_all_watched() -> Result<(), String> {
     let workloads = find_enabled_workloads().await.map_err(|e| e.to_string())?;
@@ -19,9 +19,11 @@ pub async fn fetch_and_update_all_watched() -> Result<(), String> {
             .map_err(|e| e.to_string())?;
         let workload = parse_tags(&workload).await.map_err(|e| e.to_string())?;
         if workload.update_available.to_string() == "Available" {
-            send_notification(&workload).await.unwrap_or_else(|e| log::error!("Error sending notification: {}", e));
+            send_notification(&workload)
+                .await
+                .unwrap_or_else(|e| log::error!("Error sending notification: {}", e));
         }
-        
+
         std::thread::spawn(move || database::client::insert_workload(&workload, scan_id))
             .join()
             .map_err(|_| "Thread error".to_string())?
