@@ -61,7 +61,7 @@ pub(crate) async fn site() -> std::io::Result<()> {
             .service(fetch_workload)
             .service(refresh_workloads)
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("0.0.0.0", 8080))?
     .run()
     .await
 }
