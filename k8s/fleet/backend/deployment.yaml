@@ -31,7 +31,7 @@ spec:
               key: token
         volumeMounts:
           - name: config-volume
-            mountPath: /app/config/default/config.toml
+            mountPath: /app/config/config.toml
       volumes:
       - name: config-volume
         configMap:
