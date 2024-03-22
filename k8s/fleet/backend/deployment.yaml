@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: slackwatch-be
+  name: slackwatch-rs
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: slackwatch-be
+      app: slackwatch-rs
   template:
     metadata:
       labels:
-        app: slackwatch-be
+        app: slackwatch-rs
     spec:
       serviceAccountName: slackwatch-backend
       containers:
-      - name: slackwatch-be
-        image: ghcr.io/slackspace-io/slackwatch-be:latest
+      - name: slackwatch-rs
+        image: ghcr.io/slackspace-io/slackwatch-rs:latest
         ports:
         - containerPort: 8080
         env:
-        - name: NTFY_TOKEN
+        - name: SLACKWATCH_NOTIFICATIONS.NTFY.TOKEN
           valueFrom:
             secretKeyRef:
               name: ntfy-token
@@ -31,7 +31,7 @@ spec:
               key: token
         volumeMounts:
           - name: config-volume
-            mountPath: /app/config/
+            mountPath: /app/config
       volumes:
       - name: config-volume
         configMap:

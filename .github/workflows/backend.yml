@@ -1,9 +1,9 @@
-name: Build and Push Backend Docker Image
+name: Build and Push Rust Docker Image
 
 on:
   push:
     branches:
-      - main
+      - rust
     paths:
       - 'backend/**'
       - '.github/workflows/backend.yml'
@@ -27,4 +27,4 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          tags: ghcr.io/slackspace-io/slackwatch-be:latest,ghcr.io/slackspace-io/slackwatch-be:dev,ghcr.io/slackspace-io/slackwatch-be:${{ github.sha }}
+          tags: ghcr.io/slackspace-io/slackwatch-rs:latest,ghcr.io/slackspace-io/slackwatch-rs:dev,ghcr.io/slackspace-io/slackwatch-rs:${{ github.sha }}

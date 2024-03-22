@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - rust
     paths:
       - 'frontend/**'
       - '.github/workflows/frontend.yml'

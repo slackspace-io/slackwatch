@@ -1,0 +1,5 @@
+[notifications.ntfy]
+url = "http://ntfy.ntfy.svc.cluster.local"
+topic = "slackwatch"
+priorty = 1
+reminder = "24h"

@@ -10,4 +10,4 @@ resources:
 configMapGenerator:
   - name: slackwatch-config
     files:
-      - ./config/config.yaml
+      - ./config/config.toml

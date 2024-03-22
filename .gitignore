@@ -8,6 +8,7 @@ dist/
 .env.development.local
 .env.test.local
 .env.production.local
+.env*
 
 # IDEs and editors
 .vscode/
@@ -38,3 +39,5 @@ src/node_modules/
 docker-compose*.yml
 *.dockerignore
 **/.dockerignore
+/backend/.env.example
+/backend/.env.dev
