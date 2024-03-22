@@ -1,13 +1,15 @@
+use crate::config::Settings;
+use config::ConfigError;
 use cron::Schedule;
 use std::str::FromStr;
 use std::time::Duration;
 use tokio::time::{sleep_until, Instant as TokioInstant};
 
-pub async fn scheduler() {
+pub async fn scheduler(schedule: &Schedule) {
     // Example cron schedule: Every minute
     log::info!("Scheduler started");
-    let schedule_str = "0 * * * * *"; // Adjust the cron expression as needed
-    let schedule = Schedule::from_str(schedule_str).expect("Failed to parse cron expression");
+    //let schedule_str = "0 * * * * *"; // Adjust the cron expression as needed
+    //let schedule = Schedule::from_str(schedule_str).expect("Failed to parse cron expression");
     println!("Cron schedule: {}", schedule);
     log::info!("Cron schedule: {}", schedule);
     // Find the next scheduled time
@@ -26,9 +28,16 @@ pub async fn scheduler() {
     }
 }
 
-pub async fn run_scheduler() {
+pub async fn run_scheduler(settings: Result<Settings, ConfigError>) {
+    //Load Scheduler
+    let settings = settings.unwrap_or_else(|err| {
+        log::error!("Failed to load settings: {}", err);
+        panic!("Failed to load settings: {}", err);
+    });
+    let schedule_str = settings.system.schedule;
+    let schedule = &Schedule::from_str(&schedule_str).expect("Failed to parse cron expression");
     loop {
-        scheduler().await;
+        scheduler(schedule).await;
     }
 }
 
