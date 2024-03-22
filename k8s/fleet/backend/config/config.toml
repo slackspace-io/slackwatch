@@ -1,5 +1,5 @@
 [system]
-schedule = "0 0 9-22/2 * * *"
+schedule = "0 15 9-22/2 * * *"
 
 [notifications.ntfy]
 url = "http://ntfy.ntfy.svc.cluster.local"
