@@ -3,7 +3,7 @@ name: Build and Push Rust Docker Image
 on:
   push:
     branches:
-      - rust
+      - main
     paths:
       - 'backend/**'
       - '.github/workflows/backend.yml'
