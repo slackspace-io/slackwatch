@@ -2,7 +2,8 @@ use crate::database;
 use crate::database::client::get_latest_scan_id;
 use crate::services;
 use crate::services::workloads;
-use actix_web::{get, web, App, HttpResponse, HttpServer, Responder};
+use actix_web::{get, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
+use std::collections::HashMap;
 
 #[get("/")]
 async fn index() -> impl Responder {
@@ -52,6 +53,14 @@ async fn fetch_workload(path: web::Path<(String, String)>) -> impl Responder {
     }
 }
 
+#[get("api/workloads/update")]
+async fn update_workload(req: HttpRequest) -> impl Responder {
+    let query_params =
+        web::Query::<HashMap<String, String>>::from_query(req.query_string()).unwrap();
+    log::info!("Query params: {:?}", query_params);
+    HttpResponse::Ok().body("Workload updated")
+}
+
 #[actix_web::main]
 pub async fn site() -> std::io::Result<()> {
     log::info!("Starting web server");
@@ -61,6 +70,7 @@ pub async fn site() -> std::io::Result<()> {
             .service(fetch_all_workloads)
             .service(fetch_workload)
             .service(refresh_workloads)
+            .service(update_workload)
     })
     .bind(("0.0.0.0", 8080))?
     .run()

@@ -1,26 +1,36 @@
 use config::{Config, ConfigError, Environment, File};
 use serde_derive::Deserialize;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[allow(unused)]
 pub struct Settings {
     pub notifications: Notifications,
     pub system: System,
+    pub gitops: Vec<GitopsConfig>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[allow(unused)]
 pub struct System {
     pub schedule: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
+#[allow(unused)]
+pub struct GitopsConfig {
+    pub name: String,
+    pub repository_url: String,
+    pub branch: String,
+    pub access_token_env_name: String,
+}
+
+#[derive(Debug, Deserialize, Clone)]
 #[allow(unused)]
 pub struct Notifications {
     pub ntfy: Ntfy,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[allow(unused)]
 pub struct Ntfy {
     pub url: String,
@@ -41,4 +51,5 @@ impl Settings {
         println!("{:?}", s);
         s.try_deserialize()
     }
+    //add clone
 }

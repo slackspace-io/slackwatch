@@ -38,12 +38,8 @@ pub async fn scheduler(schedule: &Schedule) {
     }
 }
 
-pub async fn run_scheduler(settings: Result<Settings, ConfigError>) {
+pub async fn run_scheduler(settings: Settings) {
     //Load Scheduler
-    let settings = settings.unwrap_or_else(|err| {
-        log::error!("Failed to load settings: {}", err);
-        panic!("Failed to load settings: {}", err);
-    });
     let schedule_str = settings.system.schedule;
     let schedule = &Schedule::from_str(&schedule_str).expect("Failed to parse cron expression");
     loop {

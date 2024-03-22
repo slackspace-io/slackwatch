@@ -30,21 +30,21 @@ async function handleUpdate(data: FormData) {
     }
     const name = data.get('containerName');
     const image = data.get('image');
-    const newTag = data.get('newTag');
-    const currentTag = data.get('currentTag');
+    const latest_version = data.get('newTag');
+    const current_version = data.get('currentTag');
     const namespace = data.get('namespace');
-    const repo = data.get('gitopsRepo');
+    const git_ops_repo = data.get('gitopsRepo');
     //create url
     //fetch url
     const params = new URLSearchParams({
         name: name as string,
         image: image as string,
-        newTag: newTag as string,
-        currentTag: currentTag as string,
+        latest_version: latest_version as string,
+        current_version: current_version as string,
         namespace: namespace as string,
-        repo: repo as string
+        git_ops_repo: git_ops_repo as string
     });
-    const response = await fetch(`${baseUrl}/api/container/update?${params}`);
+    const response = await fetch(`${baseUrl}/api/workloads/update?${params}`);
     if (!response.ok) {
         throw new Error('Failed to fetch data');
         return false;
@@ -79,7 +79,7 @@ const UpdateCard: React.FC<UpdateCardProps> = ({ update }) => (
     <div className="flex justify-between items-center">
       <p className="text-lg font-bold">{update.name}</p>
       {update.update_available == "Available" && update.latest_version && (
-          <form>
+          <form action={handleUpdate}>
         <input name="containerName" type="hidden" value={update.name} />
         <input name="newTag" type="hidden" value={update.latest_version} />
         <input name="image" type="hidden" value={update.image} />

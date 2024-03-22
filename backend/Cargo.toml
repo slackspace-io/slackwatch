@@ -30,6 +30,7 @@ ntfy = "0.4.0"
 config = "0.14.0"
 serde_derive = "1.0.197"
 cron = "0.12.1"
+git2 = "0.18.3"
 
 [features]
 default = ["kube/runtime"]
