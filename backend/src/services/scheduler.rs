@@ -1,4 +1,5 @@
 use crate::config::Settings;
+use crate::services::workloads::fetch_and_update_all_watched;
 use config::ConfigError;
 use cron::Schedule;
 use std::str::FromStr;
@@ -13,6 +14,16 @@ pub async fn scheduler(schedule: &Schedule) {
     println!("Cron schedule: {}", schedule);
     log::info!("Cron schedule: {}", schedule);
     // Find the next scheduled time
+    //print next 5 scheduled times
+    let mut i = 0;
+    for datetime in schedule.upcoming(chrono::Utc) {
+        if i < 5 {
+            println!("Next scheduled time: {}", datetime);
+            i += 1;
+        } else {
+            break;
+        }
+    }
     let now = chrono::Utc::now();
     if let Some(next) = schedule.upcoming(chrono::Utc).next() {
         let duration_until_next = (next - now).to_std().expect("Failed to calculate duration");
@@ -22,9 +33,8 @@ pub async fn scheduler(schedule: &Schedule) {
         let tokio_future = tokio_now + duration_until_next;
         // Sleep until the next scheduled time
         sleep_until(tokio_future).await;
-
         // Execute your function
-        your_scheduled_function().await;
+        refresh_all_workloads().await;
     }
 }
 
@@ -41,6 +51,9 @@ pub async fn run_scheduler(settings: Result<Settings, ConfigError>) {
     }
 }
 
-async fn your_scheduled_function() {
-    println!("Function is executed according to schedule.");
+async fn refresh_all_workloads() {
+    log::info!("Refreshing all workloads");
+    fetch_and_update_all_watched()
+        .await
+        .unwrap_or_else(|e| log::error!("Error refreshing workloads: {}", e));
 }

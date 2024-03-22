@@ -1,7 +1,7 @@
-use ntfy::payload::{Action, ActionType};
-use ntfy::{Auth, Dispatcher, NtfyError, Payload, Priority};
 use crate::config::Settings;
 use crate::models::models::Workload;
+use ntfy::payload::{Action, ActionType};
+use ntfy::{Auth, Dispatcher, NtfyError, Payload, Priority};
 
 pub async fn send_notification(workload: &Workload) -> Result<(), NtfyError> {
     //get settings
@@ -9,7 +9,6 @@ pub async fn send_notification(workload: &Workload) -> Result<(), NtfyError> {
     let token = settings.notifications.ntfy.token;
     let topic = settings.notifications.ntfy.topic;
     let url = settings.notifications.ntfy.url;
-
 
     let dispatcher = Dispatcher::builder(&url)
         .credentials(Auth::new("", &token)) // Add optional credentials
@@ -20,10 +19,13 @@ pub async fn send_notification(workload: &Workload) -> Result<(), NtfyError> {
     //    "Acknowledge",
     //    Url::parse(&url)?,
     //);
-    
+
     //make message for payload about new container update
-    let message = format!("Update Available: {} From {} to {}", workload.name, workload.current_version, workload.latest_version);
-    
+    let message = format!(
+        "Update Available: {} From {} to {}",
+        workload.name, workload.current_version, workload.latest_version
+    );
+
     let payload = Payload::new(&topic)
         .message(message) // Add optional message
         .title(&workload.name) // Add optiona title
@@ -35,7 +37,10 @@ pub async fn send_notification(workload: &Workload) -> Result<(), NtfyError> {
         //.delay(Local::now() + Duration::minutes(1)) // Add optional delay
         .markdown(true); // Use markdown
 
-    dispatcher.send(&payload).await.unwrap();
+    match dispatcher.send(&payload).await {
+        Ok(_) => log::info!("Payload sent successfully."),
+        Err(e) => log::error!("Failed to send payload: {}", e),
+    }
     log::info!("Notification sent");
     Ok(())
 }
