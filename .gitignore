@@ -39,5 +39,5 @@ src/node_modules/
 docker-compose*.yml
 *.dockerignore
 **/.dockerignore
-/rust/.env.example
-/rust/.env.dev
+/backend/.env.example
+/backend/.env.dev

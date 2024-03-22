@@ -101,7 +101,7 @@ func (c *Checker) GetTags(imageName string) ([]string, error) {
 	}
 
 	ref, err := docker.ParseReference("//" + imageName)
-    log.Printf("Parsed reference: %v\n", ref)
+	log.Printf("Parsed reference: %v\n", ref)
 	if err != nil {
 		log.Printf("Error parsing reference: %v\n", err)
 		return nil, fmt.Errorf("error parsing reference: %w", err)
