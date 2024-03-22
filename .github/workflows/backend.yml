@@ -6,7 +6,7 @@ on:
       - main
       - rust
     paths:
-      - 'rust/**'
+      - 'backend/**'
       - '.github/workflows/backend.yml'
 
 jobs:
