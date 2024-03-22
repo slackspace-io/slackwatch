@@ -20,8 +20,7 @@ Welcome to SlackWatch, the Kubernetes-centric solution designed to keep you info
 
 1. **Clone the repository** to get started.
 2. **Navigate to the backend directory**: `cd backend`.
-3. **Build the Go application**: Run `go build -o slackwatch-backend`.
-4. **Run the backend**: Execute `./slackwatch-backend`. This starts the backend server, which begins monitoring your Kubernetes cluster.
+3. **Install dependencies**: Run `cargo watch -x check` 
 
 ### Setting Up the Frontend
 
@@ -34,14 +33,16 @@ Welcome to SlackWatch, the Kubernetes-centric solution designed to keep you info
 
 SlackWatch is designed to be highly configurable to fit your specific needs. You can adjust settings such as Kubernetes cluster details, notification channels, and more in the `config.yaml` file located in the backend directory.
 
-```yaml
-kubernetes:
-  pollingInterval: 30
-  useInClusterConfig: true
-notifications:
-  ntfy:
-    url: "http://ntfy.sh"
-    topic: "slackwatch-updates"
+```toml
+[system]
+schedule = "0 0 * * * *"
+
+[notifications.ntfy]
+enabled = true
+token = "YOUR_NTFY_TOKEN" #Or as env variable(recommended)
+url = "https://your.ntfy.server"
+priority = "high"
+
 ```
 
 ## Contributing
