@@ -6,3 +6,14 @@ url = "http://ntfy.ntfy.svc.cluster.local"
 topic = "slackwatch"
 priorty = 1
 reminder = "24h"
+
+
+[[gitops]]
+name = "fleet-slack-house"
+#repository_url = "https://github.com/slackspace-io/slackwatch.git"
+repository_url = "https://github.com/slackspace-io/fleet-slack-house.git"
+branch = "main"
+access_token_env_name = "SLACKWATCH_TOKEN"
+commit_message = "Updated by slackwatch"
+commit_name = "slackwatch"
+commit_email = "slackwatch@slackspace.io"
