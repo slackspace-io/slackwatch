@@ -55,7 +55,33 @@ pub fn return_workload(name: String, namespace: String) -> Result<Workload> {
 pub fn return_all_workloads() -> Result<Vec<Workload>> {
     let conn = Connection::open("data.db")?;
     // only get latest unique name and namespace combinations
-    let mut stmt = conn.prepare("SELECT * FROM workloads WHERE scan_id IN (SELECT MAX(scan_id) FROM workloads GROUP BY scan_type)")?;
+    //let mut stmt = conn.prepare("SELECT * FROM workloads WHERE scan_id IN (SELECT MAX(scan_id) FROM workloads GROUP BY scan_type)")?;
+    let mut stmt = conn.prepare("WITH MaxScanID AS (
+    SELECT
+        scan_type,
+        MAX(scan_id) AS max_scan_id
+    FROM workloads
+    GROUP BY scan_type
+),
+FilteredByScanID AS (
+    SELECT
+        w.*
+    FROM workloads w
+    JOIN MaxScanID ms ON w.scan_type = ms.scan_type AND w.scan_id = ms.max_scan_id
+),
+MaxLastScanned AS (
+    SELECT
+        name,
+        namespace,
+        MAX(last_scanned) AS max_last_scanned
+    FROM FilteredByScanID
+    GROUP BY name, namespace
+)
+SELECT
+    f.*
+FROM FilteredByScanID f
+JOIN MaxLastScanned mls ON f.name = mls.name AND f.namespace = mls.namespace AND f.last_scanned = mls.max_last_scanned
+")?;
     let workloads = stmt.query_map([], |row| {
         Ok(Workload {
             name: row.get(1)?,
