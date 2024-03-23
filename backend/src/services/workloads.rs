@@ -9,8 +9,8 @@ use semver::Version;
 
 pub async fn update_single_workload(current_workload: Workload) -> Result<(), String> {
     let workload = find_specific_workload(
-        current_workload.name.clone(),
-        current_workload.namespace.clone(),
+        &current_workload.name.clone(),
+        &current_workload.namespace.clone(),
     )
     .await
     .map_err(|e| e.to_string())?;
