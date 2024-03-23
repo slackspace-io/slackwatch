@@ -12,6 +12,7 @@ interface CombinedData {
     update_available: string,
     image: string,
     last_scanned: string,
+    git_directory: string,
     namespace: string,
     current_version: string,
     latest_version: string,

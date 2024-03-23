@@ -19,7 +19,8 @@ pub fn create_table_if_not_exist() -> Result<()> {
                   latest_version  TEXT NOT NULL,
                   last_scanned    TEXT NOT NULL,
                   scan_id        INTEGER,
-                  scan_type     TEXT
+                  scan_type     TEXT,
+                  git_directory   TEXT
                   )",
         [],
     )?;
@@ -41,6 +42,7 @@ pub fn return_workload(name: String, namespace: String) -> Result<Workload> {
             current_version: row.get(8)?,
             latest_version: row.get(9)?,
             last_scanned: row.get(10)?,
+            git_directory: row.get(12)?,
         })
     })?;
     if let Some(workload) = workload.next() {
@@ -66,6 +68,7 @@ pub fn return_all_workloads() -> Result<Vec<Workload>> {
             current_version: row.get(8)?,
             latest_version: row.get(9)?,
             last_scanned: row.get(10)?,
+            git_directory: row.get(12)?,
         })
     })?;
     let mut result = Vec::new();
@@ -93,9 +96,9 @@ impl FromSql for UpdateStatus {
 pub fn get_latest_scan_id() -> std::result::Result<i32, Error> {
     let conn = Connection::open("data.db")?;
     let mut stmt = conn.prepare("SELECT MAX(scan_id) FROM workloads")?;
-    let scan_id_iter = stmt.query_map([], |row| row.get(0))?;
+    let mut scan_id_iter = stmt.query_map([], |row| row.get(0))?;
 
-    for scan_id_result in scan_id_iter {
+    if let Some(scan_id_result) = scan_id_iter.next() {
         return scan_id_result.map(|id: Option<i32>| id.unwrap_or(0)); // Handle potential NULL
     }
     Ok(0)
@@ -107,7 +110,7 @@ pub fn insert_workload(workload: &Workload, scan_id: i32) -> Result<()> {
     match conn.execute(
         "INSERT INTO workloads (name, image, namespace, git_ops_repo, include_pattern, exclude_pattern, update_available, current_version, latest_version, last_scanned, scan_id, scan_type)
                   VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
-        &[
+        [
             &workload.name,
             &workload.image,
             &workload.namespace,
@@ -119,7 +122,7 @@ pub fn insert_workload(workload: &Workload, scan_id: i32) -> Result<()> {
             &workload.latest_version,
             &workload.last_scanned,
             &scan_id.to_string(),
-            "placeholder",
+            workload.git_directory.as_ref().map(String::as_str).unwrap_or_default(),
         ],
     ) {
         Ok(_) => Ok(()),

@@ -131,5 +131,6 @@ pub async fn parse_tags(workload: &Workload) -> Result<Workload, Box<dyn std::er
         update_available,
         last_scanned: workload.last_scanned.clone(),
         latest_version: latest_version.clone(),
+        git_directory: workload.git_directory.clone(),
     })
 }

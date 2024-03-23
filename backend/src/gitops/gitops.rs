@@ -8,6 +8,7 @@ use walkdir::WalkDir;
 
 use crate::web::exweb::update_workload;
 use k8s_openapi::api::apps::v1::{Deployment, StatefulSet};
+use log::info;
 use std::error::Error;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
@@ -51,7 +52,18 @@ fn clone_or_open_repo(
 
 fn edit_files(local_path: &Path, workload: &Workload) {
     let name = &workload.name;
-    let search_path = local_path.join(name);
+    let search_path = if let Some(git_directory) = &workload.git_directory {
+        if git_directory.is_empty() {
+            log::info!("No git directory specified for workload: {}", name);
+            local_path.join(name)
+        } else {
+            info!("git directory: {:?}", git_directory);
+            local_path.join(git_directory)
+        }
+    } else {
+        log::info!("No git directory specified for workload: {}", name);
+        local_path.join(name)
+    };
     let image = Some(workload.image.clone());
     let current_version = Some(workload.current_version.clone());
     let latest_version = Some(workload.latest_version.clone());
@@ -71,14 +83,7 @@ fn edit_files(local_path: &Path, workload: &Workload) {
             let mut contents = String::new();
             file.read_to_string(&mut contents).unwrap();
             let mut image_updated = false; // Flag to track if the image was updated
-
-            let deployment: Result<Deployment, _> = serde_yaml::from_str(&contents);
-            if let Ok(deployment) = deployment {
-                log::info!("File: {:?}", entry.path());
-                log::info!("Deployment: {:?}", &deployment);
-            } else {
-                log::info!("Not a deployment {:?}", entry.path());
-            }
+                                           // Check if the file is a statefulset
             let statefulset_result: Result<StatefulSet, _> = serde_yaml::from_str(&contents);
             if let Ok(mut statefulset) = statefulset_result {
                 if let Some(spec) = statefulset.spec.as_mut() {
@@ -107,9 +112,37 @@ fn edit_files(local_path: &Path, workload: &Workload) {
                     file.write_all(serde_yaml::to_string(&statefulset).unwrap().as_bytes())
                         .unwrap();
                 }
+            }
+            //deployment
+            log::info!("Deployment checking");
+            let deployment_result: Result<Deployment, _> = serde_yaml::from_str(&contents);
+            if let Ok(mut deployment) = deployment_result {
+                log::info!("Deployment: {:?}", &deployment);
+                if let Some(spec) = deployment.spec.as_mut() {
+                    if let Some(template_spec) = spec.template.spec.as_mut() {
+                        for container in &mut template_spec.containers {
+                            // Replace image in Deployment
+                            if container.image.as_ref().unwrap().contains(&base_image) {
+                                log::info!("Found target image in file: {:?}", entry.path());
+                                container.image = Some(new_image.clone());
+                                image_updated = true; // Image has been updated
+                            }
+                        }
+                    }
+                }
+                if image_updated {
+                    log::info!("Updating image in file: {:?}", entry.path());
+                    let mut file = OpenOptions::new()
+                        .write(true)
+                        .truncate(true)
+                        .open(entry.path())
+                        .unwrap();
+                    file.write_all(serde_yaml::to_string(&deployment).unwrap().as_bytes())
+                        .unwrap();
+                }
             } else {
-                log::info!("Not a statefulset {:?}", entry.path());
-                // Handle non-statefulset scenario
+                log::info!("Not a deployment {:?}", entry.path());
+                // Handle non-deployment scenario
             }
         }
     }

@@ -71,7 +71,9 @@ async fn update_workload(req: HttpRequest) -> impl Responder {
     let current_version = query_params.get("current_version").unwrap();
     let latest_version = query_params.get("latest_version").unwrap();
     let git_ops_repo = query_params.get("git_ops_repo").unwrap();
+    let git_directory = query_params.get("git_directory").unwrap();
     let workload = Workload {
+        git_directory: Some(git_directory.clone()),
         name: name.clone(),
         exclude_pattern: None,
         git_ops_repo: Some(git_ops_repo.clone()),

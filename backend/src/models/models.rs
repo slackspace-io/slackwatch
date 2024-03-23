@@ -8,6 +8,7 @@ pub struct Workload {
     pub git_ops_repo: Option<String>,
     pub include_pattern: Option<String>,
     pub update_available: UpdateStatus,
+    pub git_directory: Option<String>,
     pub image: String,
     pub last_scanned: String,
     pub namespace: String,

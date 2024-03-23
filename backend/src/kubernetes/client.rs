@@ -17,21 +17,21 @@ impl Client {
         Ok(Client { kube_client })
     }
 
-   // pub async fn fetch_slackwatch_enabled_containers(&self) -> Result<Vec<Pod>, kube::Error> {
-   //     let pods: Api<Pod> = Api::all(self.kube_client.clone());
-   //     let lp = ListParams::default().labels("slackwatch.enable=true"); // Adjust based on actual use case
-   //     let pod_list = pods.list(&lp).await?;
-   //     Ok(pod_list.items)
-   // }
-   // pub async fn fetch_containers_with_annotation(
-   //     &self,
-   //     annotation_key: &str,
-   // ) -> Result<Vec<Pod>, kube::Error> {
-   //     let pods: Api<Pod> = Api::all(self.kube_client.clone());
-   //     let lp = ListParams::default().labels(format!("{}=*", annotation_key).as_str()); // Adjust based on actual use case
-   //     let pod_list = pods.list(&lp).await?;
-   //     Ok(pod_list.items)
-   // }
+    // pub async fn fetch_slackwatch_enabled_containers(&self) -> Result<Vec<Pod>, kube::Error> {
+    //     let pods: Api<Pod> = Api::all(self.kube_client.clone());
+    //     let lp = ListParams::default().labels("slackwatch.enable=true"); // Adjust based on actual use case
+    //     let pod_list = pods.list(&lp).await?;
+    //     Ok(pod_list.items)
+    // }
+    // pub async fn fetch_containers_with_annotation(
+    //     &self,
+    //     annotation_key: &str,
+    // ) -> Result<Vec<Pod>, kube::Error> {
+    //     let pods: Api<Pod> = Api::all(self.kube_client.clone());
+    //     let lp = ListParams::default().labels(format!("{}=*", annotation_key).as_str()); // Adjust based on actual use case
+    //     let pod_list = pods.list(&lp).await?;
+    //     Ok(pod_list.items)
+    // }
 
     pub async fn list_pods(&self) -> Result<Vec<Pod>, kube::Error> {
         let pods: Api<Pod> = Api::all(self.kube_client.clone());
@@ -56,6 +56,7 @@ pub async fn find_enabled_workloads() -> Result<Vec<Workload>, kube::Error> {
                         let exclude_pattern = annotations.get("slackwatch.exclude").cloned();
                         let include_pattern = annotations.get("slackwatch.include").cloned();
                         let git_ops_repo = annotations.get("slackwatch.repo").cloned();
+                        let git_directory = annotations.get("slackwatch.directory").cloned();
                         for spec in p.spec {
                             for container in spec.containers.clone() {
                                 if let Some(name) = Some(container.name) {
@@ -75,6 +76,7 @@ pub async fn find_enabled_workloads() -> Result<Vec<Workload>, kube::Error> {
                                             current_version: current_version.to_string(),
                                             last_scanned: chrono::Utc::now().to_rfc3339(),
                                             latest_version: "1.0.0".to_string(),
+                                            git_directory: git_directory.clone(),
                                         });
                                     }
                                 }
