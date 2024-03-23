@@ -13,6 +13,7 @@ pub struct Settings {
 #[allow(unused)]
 pub struct System {
     pub schedule: String,
+    pub data_dir: String,
 }
 
 #[derive(Debug, Deserialize, Clone)]
