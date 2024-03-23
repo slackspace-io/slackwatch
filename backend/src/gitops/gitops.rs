@@ -155,8 +155,13 @@ fn stage_changes(repo: &Repository) -> Result<(), git2::Error> {
     Ok(())
 }
 
-fn commit_changes<'a>(repo: &'a Repository, message: &str) -> Result<Commit<'a>, git2::Error> {
-    let sig = Signature::now("slackwatch", "slackwatch@slackspace.io")?;
+fn commit_changes<'a>(
+    repo: &'a Repository,
+    message: &str,
+    commit_name: &str,
+    commit_email: &str,
+) -> Result<Commit<'a>, git2::Error> {
+    let sig = Signature::now(commit_name, commit_email)?;
     let oid = repo.index()?.write_tree()?;
     let tree = repo.find_tree(oid)?;
     let parent_commit = find_last_commit(repo)?;
@@ -202,6 +207,9 @@ pub fn run_git_operations(workload: Workload) -> Result<(), Box<dyn Error>> {
             );
             continue;
         }
+        let commit_name = gitops_config.commit_name;
+        let commit_email = gitops_config.commit_email;
+        let commit_message = gitops_config.commit_message;
         let repo_url = gitops_config.repository_url;
         let branch = gitops_config.branch;
         let name = gitops_config.name;
@@ -215,7 +223,7 @@ pub fn run_git_operations(workload: Workload) -> Result<(), Box<dyn Error>> {
         let repo = clone_or_open_repo(&repo_url, &local_path, &access_token)?;
         edit_files(&local_path, &workload);
         stage_changes(&repo)?;
-        commit_changes(&repo, "Automated commit by gitops.rs")?;
+        commit_changes(&repo, &commit_message, &commit_name, &commit_email)?;
         push_changes(&repo, &access_token)?;
     }
 

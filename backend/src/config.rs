@@ -21,7 +21,10 @@ pub struct GitopsConfig {
     pub name: String,
     pub repository_url: String,
     pub branch: String,
+    pub commit_name: String,
+    pub commit_email: String,
     pub access_token_env_name: String,
+    pub commit_message: String,
 }
 
 #[derive(Debug, Deserialize, Clone)]
