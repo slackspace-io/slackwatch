@@ -38,6 +38,6 @@ src/node_modules/
 # Docker
 docker-compose*.yml
 *.dockerignore
-**/.dockerignore
+backend/.dockerignore
 /backend/.env.example
 /backend/.env.dev

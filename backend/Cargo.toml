@@ -34,6 +34,9 @@ git2 = "0.18.3"
 serde_yaml = "0.9.33"
 walkdir = "2.5.0"
 
+[dev-dependencies]
+tempfile = "3.10.1"
+
 [features]
 default = ["kube/runtime"]
 
