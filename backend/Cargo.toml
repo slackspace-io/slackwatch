@@ -31,6 +31,8 @@ config = "0.14.0"
 serde_derive = "1.0.197"
 cron = "0.12.1"
 git2 = "0.18.3"
+serde_yaml = "0.9.33"
+walkdir = "2.5.0"
 
 [features]
 default = ["kube/runtime"]

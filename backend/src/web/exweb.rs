@@ -1,5 +1,8 @@
 use crate::database;
 use crate::database::client::get_latest_scan_id;
+use crate::gitops::gitops::run_git_operations;
+use crate::models::models;
+use crate::models::models::{ApiResponse, Workload};
 use crate::services;
 use crate::services::workloads;
 use actix_web::{get, web, App, HttpRequest, HttpResponse, HttpServer, Responder};
@@ -28,14 +31,18 @@ async fn fetch_all_workloads() -> impl Responder {
 
 #[get("/api/workloads/refresh")]
 async fn refresh_workloads() -> impl Responder {
-    //fetch and update all workloads return if successful or error
-    if let Ok(_) = services::workloads::fetch_and_update_all_watched().await {
-        HttpResponse::Ok().body("Workloads refreshed")
-    } else if let Err(e) = services::workloads::fetch_and_update_all_watched().await {
-        HttpResponse::Ok().json(e.to_string())
-    } else {
-        HttpResponse::Ok().body("Workload not found")
-    }
+    tokio::spawn(async move {
+        // This is the background task.
+        // Since we're not waiting on it, we won't hold up the HTTP response.
+        match services::workloads::fetch_and_update_all_watched().await {
+            Ok(_) => println!("Workloads refreshed successfully."),
+            Err(e) => eprintln!("Failed to refresh workloads: {}", e),
+        }
+    });
+    HttpResponse::Ok().json(ApiResponse {
+        status: "success".to_string(),
+        message: "Workloads refreshed".to_string(),
+    })
 }
 
 #[get("/api/workloads/{name}/{namespace}")]
@@ -57,7 +64,29 @@ async fn fetch_workload(path: web::Path<(String, String)>) -> impl Responder {
 async fn update_workload(req: HttpRequest) -> impl Responder {
     let query_params =
         web::Query::<HashMap<String, String>>::from_query(req.query_string()).unwrap();
-    log::info!("Query params: {:?}", query_params);
+    //create workload struct
+    let name = query_params.get("name").unwrap();
+    let namespace = query_params.get("namespace").unwrap();
+    let image = query_params.get("image").unwrap();
+    let current_version = query_params.get("current_version").unwrap();
+    let latest_version = query_params.get("latest_version").unwrap();
+    let git_ops_repo = query_params.get("git_ops_repo").unwrap();
+    let workload = Workload {
+        name: name.clone(),
+        exclude_pattern: None,
+        git_ops_repo: Some(git_ops_repo.clone()),
+        include_pattern: None,
+        update_available: models::UpdateStatus::Available,
+        image: image.clone(),
+        last_scanned: "2021-08-01".to_string(),
+        namespace: namespace.clone(),
+        current_version: current_version.clone(),
+        latest_version: latest_version.clone(),
+    };
+
+    log::info!("name = {}, namespace = {}, image = {}, current_version = {}, latest_version = {}, git_ops_repo = {}", name, namespace, image, current_version, latest_version, git_ops_repo);
+    log::info!("Workload: {:?}", workload);
+    run_git_operations(workload).unwrap();
     HttpResponse::Ok().body("Workload updated")
 }
 

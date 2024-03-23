@@ -34,6 +34,7 @@ async function handleUpdate(data: FormData) {
     const current_version = data.get('currentTag');
     const namespace = data.get('namespace');
     const git_ops_repo = data.get('gitopsRepo');
+    const update_available = data.get('availableUpdate');
     //create url
     //fetch url
     const params = new URLSearchParams({
@@ -42,7 +43,8 @@ async function handleUpdate(data: FormData) {
         latest_version: latest_version as string,
         current_version: current_version as string,
         namespace: namespace as string,
-        git_ops_repo: git_ops_repo as string
+        git_ops_repo: git_ops_repo as string,
+        update_available: update_available as string
     });
     const response = await fetch(`${baseUrl}/api/workloads/update?${params}`);
     if (!response.ok) {
@@ -86,6 +88,7 @@ const UpdateCard: React.FC<UpdateCardProps> = ({ update }) => (
         <input name="currentTag" type="hidden" value={update.current_version} />
         <input name="namespace" type="hidden" value={update.namespace} />
         <input name="gitopsRepo" type="hidden" value={update.git_ops_repo} />
+              <input name="availableUpdate" type="hidden" value={update.update_available} />
         <button className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out">
           Update
         </button>

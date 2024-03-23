@@ -20,3 +20,9 @@ pub enum UpdateStatus {
     Available,
     NotAvailable,
 }
+
+#[derive(Serialize)]
+pub struct ApiResponse {
+    pub(crate) status: String,
+    pub(crate) message: String,
+}
