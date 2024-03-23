@@ -156,7 +156,7 @@ fn stage_changes(repo: &Repository) -> Result<(), git2::Error> {
 }
 
 fn commit_changes<'a>(repo: &'a Repository, message: &str) -> Result<Commit<'a>, git2::Error> {
-    let sig = Signature::now("Your Name", "your_email@example.com")?;
+    let sig = Signature::now("slackwatch", "slackwatch@slackspace.io")?;
     let oid = repo.index()?.write_tree()?;
     let tree = repo.find_tree(oid)?;
     let parent_commit = find_last_commit(repo)?;
@@ -172,9 +172,11 @@ fn find_last_commit(repo: &Repository) -> Result<Commit<'_>, git2::Error> {
 
 fn push_changes(repo: &Repository, access_token: &str) -> Result<(), git2::Error> {
     let mut cb = RemoteCallbacks::new();
-    cb.credentials(|_url, username_from_url, _allowed_types| {
-        Cred::userpass_plaintext(username_from_url.unwrap(), access_token)
+    log::info!("Setting credentials");
+    cb.credentials(move |_url, _username, _allowed_types| {
+        Cred::userpass_plaintext("x-access-token", access_token)
     });
+    log::info!("Setting credentials Done");
 
     let mut opts = PushOptions::new();
     opts.remote_callbacks(cb);
@@ -212,9 +214,9 @@ pub fn run_git_operations(workload: Workload) -> Result<(), Box<dyn Error>> {
         delete_local_repo()?;
         let repo = clone_or_open_repo(&repo_url, &local_path, &access_token)?;
         edit_files(&local_path, &workload);
-        //stage_changes(&repo)?;
-        //commit_changes(&repo, "Automated commit by gitops.rs")?;
-        //push_changes(&repo, &access_token)?;
+        stage_changes(&repo)?;
+        commit_changes(&repo, "Automated commit by gitops.rs")?;
+        push_changes(&repo, &access_token)?;
     }
 
     Ok(())
