@@ -19,7 +19,7 @@ mod web;
 async fn main() {
     println!("Hello, world!");
     //Logging and env variables
-    env::set_var("RUST_LOG", "debug");
+    env::set_var("RUST_LOG", "info");
     env_logger::init();
     dotenv::dotenv().ok();
     // Load Configurations

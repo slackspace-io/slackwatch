@@ -99,6 +99,8 @@ const UpdateCard: React.FC<UpdateCardProps> = ({ update }) => (
           </form>
       )}
     </div>
+      <RefreshButton update={update}/>
+
     <div className="mt-4">
       {update.current_version && <p>Current Tag: <span className="font-semibold">{update.current_version}</span></p>}
       {update.latest_version && <p className="text-green-500">New Tag: <span className="font-semibold">{update.latest_version}</span></p>}

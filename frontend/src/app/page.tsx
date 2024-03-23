@@ -4,7 +4,7 @@ import RefreshButton from "@/components/RefreshButton";
 import React from "react";
 
 
-interface CombinedData {
+export interface CombinedData {
     name: string,
     exclude_pattern: string,
     git_ops_repo: string,
@@ -46,6 +46,7 @@ async function refreshData() {
   return res.json();
 }
 
+
 export default async function Page() {
   let data = await getData();
 
@@ -55,10 +56,6 @@ export default async function Page() {
   return (
       <main className="p-4">
           <div className="flex justify-center items-end">
-              <form action={refreshData} >
-                  <RefreshButton/>
-
-              </form>
           </div>
           {data.map((update, index) => (
               <UpdateCard key={index} update={update}/>

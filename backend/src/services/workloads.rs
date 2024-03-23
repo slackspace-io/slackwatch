@@ -1,11 +1,36 @@
 use crate::database;
 use crate::database::client::get_latest_scan_id;
-use crate::kubernetes::client::find_enabled_workloads;
+use crate::kubernetes::client::{find_enabled_workloads, find_specific_workload};
 use crate::models::models::{UpdateStatus, Workload};
 use crate::notifications::ntfy::send_notification;
 use crate::repocheck::repocheck::get_tags_for_image;
 use regex::Regex;
 use semver::Version;
+
+pub async fn update_single_workload(current_workload: Workload) -> Result<(), String> {
+    let workload = find_specific_workload(
+        current_workload.name.clone(),
+        current_workload.namespace.clone(),
+    )
+    .await
+    .map_err(|e| e.to_string())?;
+    log::info!("Found workload: {:?}", workload);
+    let latest_tag = find_latest_tag_for_image(&workload)
+        .await
+        .map_err(|e| e.to_string())?;
+    let workload = parse_tags(&workload).await.map_err(|e| e.to_string())?;
+    if workload.update_available.to_string() == "Available" {
+        send_notification(&workload)
+            .await
+            .unwrap_or_else(|e| log::error!("Error sending notification: {}", e));
+    }
+    let scan_id = get_latest_scan_id().unwrap_or(0) + 1;
+    std::thread::spawn(move || database::client::insert_workload(&workload, scan_id))
+        .join()
+        .map_err(|_| "Thread error".to_string())?
+        .expect("TODO: panic message");
+    Ok(())
+}
 
 pub async fn fetch_and_update_all_watched() -> Result<(), String> {
     let workloads = find_enabled_workloads().await.map_err(|e| e.to_string())?;

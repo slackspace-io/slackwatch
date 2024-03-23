@@ -41,6 +41,74 @@ impl Client {
     }
 }
 
+pub async fn find_specific_workload(
+    request_name: String,
+    request_namespace: String,
+) -> Result<Workload, kube::Error> {
+    //get all pods
+    let client = Client::new().await?;
+    let pods = client.list_pods().await?;
+    //count number of pods
+    for p in pods {
+        if let Some(namespace) = p.namespace() {
+            if request_namespace != namespace {
+                log::info!("Skipping pod in different namespace");
+                continue;
+            }
+            if let Some(annotations) = p.metadata.annotations {
+                if let Some(enable) = annotations.get("slackwatch.enable") {
+                    //Found a pod with slackwatch.enable annotation
+                    if enable == "true" {
+                        let exclude_pattern = annotations.get("slackwatch.exclude").cloned();
+                        let include_pattern = annotations.get("slackwatch.include").cloned();
+                        let git_ops_repo = annotations.get("slackwatch.repo").cloned();
+                        let git_directory = annotations.get("slackwatch.directory").cloned();
+                        for spec in p.spec {
+                            for container in spec.containers.clone() {
+                                if let Some(name) = Some(container.name) {
+                                    if request_name != name {
+                                        log::info!("Skipping pod with different name");
+                                        continue;
+                                    }
+                                    if let Some(image) = container.image {
+                                        let parts = image.split(":").collect::<Vec<&str>>();
+                                        let current_version = parts.get(1).unwrap_or(&"latest");
+                                        let workload = Workload {
+                                            exclude_pattern: exclude_pattern.clone(),
+                                            git_ops_repo: git_ops_repo.clone(),
+                                            include_pattern: include_pattern.clone(),
+                                            update_available: "NotAvailable"
+                                                .parse()
+                                                .unwrap_or(UpdateStatus::NotAvailable),
+                                            image: image.clone(),
+                                            name: name.clone(),
+                                            namespace: namespace.clone(),
+                                            current_version: current_version.to_string(),
+                                            last_scanned: chrono::Utc::now().to_rfc3339(),
+                                            latest_version: "1.0.0".to_string(),
+                                            git_directory: git_directory.clone(),
+                                        };
+                                        if workload.name == name && workload.namespace == namespace
+                                        {
+                                            return Ok(workload);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Err(kube::Error::Api(kube::error::ErrorResponse {
+        code: 404,
+        message: "Workload not found".to_string(),
+        reason: "Not Found".to_string(),
+        status: "Failure".to_string(),
+    }))
+}
+
 pub async fn find_enabled_workloads() -> Result<Vec<Workload>, kube::Error> {
     //get all pods
     let client = Client::new().await?;

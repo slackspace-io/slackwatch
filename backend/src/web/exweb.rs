@@ -45,6 +45,50 @@ async fn refresh_workloads() -> impl Responder {
     })
 }
 
+#[get("/api/update/workload")]
+async fn update_single(req: HttpRequest) -> impl Responder {
+    log::info!("Updating single workload");
+    let query_params =
+        web::Query::<HashMap<String, String>>::from_query(req.query_string()).unwrap();
+    //create workload struct
+    let name = query_params.get("name").unwrap();
+    let namespace = query_params.get("namespace").unwrap();
+    let image = query_params.get("image").unwrap();
+    let current_version = query_params.get("current_version").unwrap();
+    let latest_version = query_params.get("latest_version").unwrap();
+    let git_ops_repo = query_params.get("git_ops_repo").unwrap();
+    let git_directory = query_params.get("git_directory").unwrap();
+    let workload = Workload {
+        git_directory: Some(git_directory.clone()),
+        name: name.clone(),
+        exclude_pattern: None,
+        git_ops_repo: Some(git_ops_repo.clone()),
+        include_pattern: None,
+        update_available: models::UpdateStatus::Available,
+        image: image.clone(),
+        last_scanned: "2021-08-01".to_string(),
+        namespace: namespace.clone(),
+        current_version: current_version.clone(),
+        latest_version: latest_version.clone(),
+    };
+
+    log::info!("name = {}, namespace = {}, image = {}, current_version = {}, latest_version = {}, git_ops_repo = {}", name, namespace, image, current_version, latest_version, git_ops_repo);
+    log::info!("Workload: {:?}", workload);
+    //update single workload
+    tokio::spawn(async move {
+        // This is the background task.
+        // Since we're not waiting on it, we won't hold up the HTTP response.
+        match services::workloads::update_single_workload(workload).await {
+            Ok(_) => println!("Workload updated successfully."),
+            Err(e) => eprintln!("Failed to update workload: {}", e),
+        }
+    });
+    HttpResponse::Ok().json(ApiResponse {
+        status: "success".to_string(),
+        message: "Workload refreshed".to_string(),
+    })
+}
+
 #[get("/api/workloads/{name}/{namespace}")]
 async fn fetch_workload(path: web::Path<(String, String)>) -> impl Responder {
     let (name, namespace) = path.into_inner();
@@ -62,6 +106,7 @@ async fn fetch_workload(path: web::Path<(String, String)>) -> impl Responder {
 
 #[get("api/workloads/update")]
 async fn update_workload(req: HttpRequest) -> impl Responder {
+    log::info!("Updating single workload");
     let query_params =
         web::Query::<HashMap<String, String>>::from_query(req.query_string()).unwrap();
     //create workload struct
@@ -101,6 +146,7 @@ pub async fn site() -> std::io::Result<()> {
             .service(fetch_all_workloads)
             .service(fetch_workload)
             .service(refresh_workloads)
+            .service(update_single)
             .service(update_workload)
     })
     .bind(("0.0.0.0", 8080))?
