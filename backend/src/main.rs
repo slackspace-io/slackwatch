@@ -1,11 +1,11 @@
 use crate::config::Settings;
 use crate::database::client::create_table_if_not_exist;
 use crate::gitops::gitops::run_git_operations;
-use crate::site::server::run;
+use actix_web::{App, HttpServer};
 use k8s_openapi::merge_strategies::list::set;
-use site::server;
+use leptos_actix::*;
 use std::env;
-use warp::host::exact;
+use warp::host::exact; // Import for SSR integration
 
 mod config;
 mod database;
@@ -15,7 +15,6 @@ mod models;
 mod notifications;
 mod repocheck;
 mod services;
-mod site;
 
 #[tokio::main]
 async fn main() {
@@ -43,12 +42,12 @@ async fn main() {
     //    log::error!("Failed to run git operations: {}", err);
     //    panic!("Failed to run git operations: {}", err);
     //});
-    tokio::task::spawn(services::scheduler::run_scheduler(settings.clone()));
-    tokio::task::spawn_blocking(|| {
-        println!("Site started");
-        let _ = run();
-        //        let _ = web::exweb::site();
-    })
-    .await
-    .expect("Failed to run site")
+
+    //    tokio::task::spawn(services::scheduler::run_scheduler(settings.clone()));
+    //    tokio::task::spawn_blocking(|| {
+    //        println!("Site started");
+    //        //        let _ = web::exweb::site();
+    //    })
+    //    .await
+    //    .expect("Failed to run site")
 }

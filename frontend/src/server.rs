@@ -1,8 +1,8 @@
-use crate::site::site::App;
+use crate::app::App;
 
 #[cfg(feature = "ssr")]
 #[actix_web::main]
-pub(crate) async fn run() -> std::io::Result<()> {
+pub async fn start_site() -> std::io::Result<()> {
     use actix_files::Files;
     use actix_web::*;
     use leptos::*;
@@ -58,7 +58,7 @@ pub fn main() {
     // a client-side main function is required for using `trunk serve`
     // prefer using `cargo leptos serve` instead
     // to run: `trunk serve --open --features csr`
-    use ssr_test::app::*;
+    use frontend::app::*;
 
     console_error_panic_hook::set_once();
 

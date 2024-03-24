@@ -1,125 +1,28 @@
-[package]
-name = "slackwatch"
-version = "0.1.0"
-edition = "2021"
-
-[lib]
-crate-type = ["cdylib", "rlib"]
-
-[dependencies]
-serde = { version = "1.0.197", features = ["derive"] }
-dotenv = "0.15.0"
-anyhow = "1.0.81"
-env_logger = "0.11.3"
-tokio = { version = "1.36.0", features = ["full"] }
-warp = "0.3.0"
-log = "0.4.14"
-k8s-openapi = { version = "0.21.1", features = ["v1_24"] }
-kube = { version = "0.88.1", features = ["runtime"] }
-kube-runtime = "0.88.1"
-rusqlite = { version = "0.31.0", features = ["bundled"] }
-actix-web = { version = "4", optional = true, features = ["macros"] }
-strum = "0.26.2"
-strum_macros = "0.26.2"
-futures = "0.3.30"
-reqwest = { version = "0.12.0", features = ["json"] }
-oci-distribution = "0.10.0"
-regex = "1.10.3"
-semver = "1.0.22"
-chrono = "0.4.35"
-url = "2.5.0"
-ntfy = "0.4.0"
-config = "0.14.0"
-serde_derive = "1.0.197"
-cron = "0.12.1"
-git2 = "0.18.3"
-serde_yaml = "0.9.33"
-walkdir = "2.5.0"
-leptos = { version = "0.6"  }
-leptos_meta = { version = "0.6"}
-leptos_actix = { version = "0.6", optional = true }
-leptos_router = { version = "0.6" }
-wasm-bindgen = "=0.2.92"
-actix-files = { version = "0.6", optional = true }
-console_error_panic_hook = "0.1"
-
-
-
-
-[dev-dependencies]
-tempfile = "3.10.1"
-
-[features]
-default = ["kube/runtime"]
-csr = ["leptos/csr", "leptos_meta/csr", "leptos_router/csr"]
-hydrate = ["leptos/hydrate", "leptos_meta/hydrate", "leptos_router/hydrate"]
-ssr = [
-    "dep:actix-files",
-    "dep:actix-web",
-    "dep:leptos_actix",
-    "leptos/ssr",
-    "leptos_meta/ssr",
-    "leptos_router/ssr",
+[workspace]
+members = [
+    "backend",
+    "frontend",
 ]
+resolver = "2"
 
 
-# Defines a size-optimized profile for the WASM bundle in release mode
-[profile.wasm-release]
-inherits = "release"
-opt-level = 'z'
-lto = true
-codegen-units = 1
-panic = "abort"
+[workspace.dependencies]
+leptos = { version = "0.6.9", default-features = false }
+leptos_meta = { version = "0.6.9", default-features = false }
+leptos_router = { version = "0.6.9", default-features = false }
+leptos_dom = { version = "0.6.9", default-features = false }
+leptos_actix = { version = "0.6.9" }
 
-[package.metadata.leptos]
-# The name used by wasm-bindgen/cargo-leptos for the JS/WASM bundle. Defaults to the crate name
-output-name = "slackwatch"
-# The site root folder is where cargo-leptos generate all output. WARNING: all content of this folder will be erased on a rebuild. Use it in your server setup.
-site-root = "target/site"
-# The site-root relative folder where all compiled output (JS, WASM and CSS) is written
-# Defaults to pkg
-site-pkg-dir = "pkg"
-# [Optional] The source CSS file. If it ends with .sass or .scss then it will be compiled by dart-sass into CSS. The CSS is optimized by Lightning CSS before being written to <site-root>/<site-pkg>/app.css
-style-file = "style/main.scss"
-# Assets source dir. All files found here will be copied and synchronized to site-root.
-# The assets-dir cannot have a sub directory with the same name/path as site-pkg-dir.
-#
-# Optional. Env: LEPTOS_ASSETS_DIR.
-assets-dir = "assets"
-# The IP and port (ex: 127.0.0.1:3000) where the server serves the content. Use it in your server setup.
-site-addr = "127.0.0.1:3000"
-# The port to use for automatic reload monitoring
-reload-port = 3001
-# [Optional] Command to use when running end2end tests. It will run in the end2end dir.
-#   [Windows] for non-WSL use "npx.cmd playwright test"
-#   This binary name can be checked in Powershell with Get-Command npx
-#  The browserlist query used for optimizing the CSS.
-browserquery = "defaults"
-# The environment Leptos will run in, usually either "DEV" or "PROD"
-env = "DEV"
-# The features to use when compiling the bin target
-#
-# Optional. Can be over-ridden with the command line parameter --bin-features
-bin-features = ["ssr"]
+gloo-net = { version = "0.5.0", features = ["http"] }
 
-# If the --no-default-features flag should be used when compiling the bin target
-#
-# Optional. Defaults to false.
-bin-default-features = false
+# See https://github.com/leptos-rs/cargo-leptos for documentation of all the parameters.
 
-# The features to use when compiling the lib target
-#
-# Optional. Can be over-ridden with the command line parameter --lib-features
-lib-features = ["hydrate"]
-
-# If the --no-default-features flag should be used when compiling the lib target
-#
-# Optional. Defaults to false.
-lib-default-features = false
-
-# The profile to use for the lib target when compiling for release
-#
-# Optional. Defaults to "release".
-lib-profile-release = "wasm-release"
-
-
+# A leptos project defines which workspace members
+# that are used together frontend (lib) & server (bin)
+[[workspace.metadata.leptos]]
+name = "slackwatch"
+bin-package = "backend"
+lib-package = "frontend"
+assets-dir = "frontend/assets"
+style-file = "frontend/css/main.scss"
+site-root = "target/site/"

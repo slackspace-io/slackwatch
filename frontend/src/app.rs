@@ -10,7 +10,7 @@ pub fn App() -> impl IntoView {
     view! {
         // injects a stylesheet into the document <head>
         // id=leptos means cargo-leptos will hot-reload this stylesheet
-        <Stylesheet id="leptos" href="/pkg/slackwatch.css"/>
+        <Stylesheet id="leptos" href="/pkg/ssr-test.css"/>
 
         // sets the document title
         <Title text="Welcome to Leptos"/>

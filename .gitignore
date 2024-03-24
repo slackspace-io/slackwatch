@@ -8,7 +8,7 @@ dist/
 .env.development.local
 .env.test.local
 .env.production.local
-.env*
+backend/.env.toml
 
 # IDEs and editors
 .vscode/
@@ -29,7 +29,7 @@ dist/
 
 # Svelte / TypeScript
 public/build/
-src/node_modules/
+backend/src/node_modules/
 
 # Kubernetes
 *.kube
@@ -38,6 +38,6 @@ src/node_modules/
 # Docker
 docker-compose*.yml
 *.dockerignore
-.dockerignore
+backend/.dockerignore
 /backend/.env.example
 /backend/.env.dev
