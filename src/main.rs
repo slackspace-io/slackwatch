@@ -1,7 +1,9 @@
 use crate::config::Settings;
 use crate::database::client::create_table_if_not_exist;
 use crate::gitops::gitops::run_git_operations;
+use crate::site::server::run;
 use k8s_openapi::merge_strategies::list::set;
+use site::server;
 use std::env;
 use warp::host::exact;
 
@@ -13,7 +15,7 @@ mod models;
 mod notifications;
 mod repocheck;
 mod services;
-mod web;
+mod site;
 
 #[tokio::main]
 async fn main() {
@@ -44,7 +46,8 @@ async fn main() {
     tokio::task::spawn(services::scheduler::run_scheduler(settings.clone()));
     tokio::task::spawn_blocking(|| {
         println!("Site started");
-        let _ = web::exweb::site();
+        let _ = run();
+        //        let _ = web::exweb::site();
     })
     .await
     .expect("Failed to run site")

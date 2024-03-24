@@ -1,6 +1,6 @@
 FROM rust:1.76 as builder
 WORKDIR /usr/src/slackwatch
-COPY . .
+COPY backend .
 RUN cargo install --path .
 
 FROM rust:1.76

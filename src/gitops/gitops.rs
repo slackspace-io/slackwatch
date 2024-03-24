@@ -6,7 +6,6 @@ use git2::{
 };
 use walkdir::WalkDir;
 
-use crate::web::exweb::update_workload;
 use k8s_openapi::api::apps::v1::{Deployment, StatefulSet};
 use log::info;
 use std::error::Error;
