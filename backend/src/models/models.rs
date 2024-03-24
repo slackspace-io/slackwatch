@@ -1,7 +1,8 @@
 use serde::Serialize;
+use serde_derive::Deserialize;
 
 //Data model for workload
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Workload {
     pub name: String,
     pub exclude_pattern: Option<String>,
@@ -16,7 +17,7 @@ pub struct Workload {
     pub latest_version: String,
 }
 
-#[derive(strum_macros::Display, strum_macros::EnumString, Debug, Serialize)]
+#[derive(strum_macros::Display, strum_macros::EnumString, Debug, Clone, Serialize, Deserialize)]
 pub enum UpdateStatus {
     Available,
     NotAvailable,

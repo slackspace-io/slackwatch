@@ -1,8 +1,12 @@
 use crate::models::models::UpdateStatus;
 use crate::models::models::Workload;
+#[cfg(feature = "ssr")]
 use rusqlite::types::{FromSql, FromSqlError, FromSqlResult, ToSqlOutput, ValueRef};
+
+#[cfg(feature = "ssr")]
 use rusqlite::{Connection, Error, Result, ToSql};
 
+#[cfg(feature = "ssr")]
 pub fn create_table_if_not_exist() -> Result<()> {
     let conn = Connection::open("data.db")?;
     conn.execute(
@@ -27,6 +31,7 @@ pub fn create_table_if_not_exist() -> Result<()> {
     Ok(())
 }
 
+#[cfg(feature = "ssr")]
 pub fn return_workload(name: String, namespace: String) -> Result<Workload> {
     let conn = Connection::open("data.db")?;
     let mut stmt = conn.prepare("SELECT * FROM workloads WHERE name = ?1 AND namespace = ?2")?;
@@ -52,6 +57,7 @@ pub fn return_workload(name: String, namespace: String) -> Result<Workload> {
     };
 }
 
+#[cfg(feature = "ssr")]
 pub fn return_all_workloads() -> Result<Vec<Workload>> {
     let conn = Connection::open("data.db")?;
     // only get latest unique name and namespace combinations
@@ -104,12 +110,14 @@ JOIN MaxLastScanned mls ON f.name = mls.name AND f.namespace = mls.namespace AND
     Ok(result)
 }
 
+#[cfg(feature = "ssr")]
 impl ToSql for UpdateStatus {
     fn to_sql(&self) -> rusqlite::Result<ToSqlOutput<'_>> {
         Ok(self.to_string().into())
     }
 }
 
+#[cfg(feature = "ssr")]
 impl FromSql for UpdateStatus {
     fn column_result(value: ValueRef<'_>) -> FromSqlResult<Self> {
         value
@@ -119,6 +127,7 @@ impl FromSql for UpdateStatus {
     }
 }
 
+#[cfg(feature = "ssr")]
 pub fn get_latest_scan_id() -> std::result::Result<i32, Error> {
     let conn = Connection::open("data.db")?;
     let mut stmt = conn.prepare("SELECT MAX(scan_id) FROM workloads")?;
@@ -130,6 +139,7 @@ pub fn get_latest_scan_id() -> std::result::Result<i32, Error> {
     Ok(0)
 }
 
+#[cfg(feature = "ssr")]
 pub fn insert_workload(workload: &Workload, scan_id: i32) -> Result<()> {
     let conn = Connection::open("data.db")?;
     //get scan_id

@@ -12,6 +12,7 @@ pub struct Client {
     kube_client: KubeClient,
 }
 
+#[cfg(feature = "ssr")]
 impl Client {
     pub async fn new() -> Result<Self, KubeError> {
         let kube_client = KubeClient::try_default().await?;
@@ -26,6 +27,7 @@ impl Client {
     }
 }
 
+#[cfg(feature = "ssr")]
 async fn create_workload_from_pod(pod: Pod) -> Option<Workload> {
     let annotations = pod.metadata.annotations.as_ref()?;
     if annotations.get("slackwatch.enable") != Some(&"true".to_string()) {
@@ -55,6 +57,7 @@ async fn create_workload_from_pod(pod: Pod) -> Option<Workload> {
     })
 }
 
+#[cfg(feature = "ssr")]
 pub async fn find_specific_workload(
     request_name: &str,
     request_namespace: &str,
@@ -76,6 +79,7 @@ pub async fn find_specific_workload(
     }))
 }
 
+#[cfg(feature = "ssr")]
 pub async fn find_enabled_workloads() -> Result<Vec<Workload>, KubeError> {
     let client = Client::new().await?;
     let pods = client.list_pods().await?;

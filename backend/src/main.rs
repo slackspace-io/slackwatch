@@ -1,4 +1,5 @@
 use crate::config::Settings;
+#[cfg(feature = "ssr")]
 use crate::database::client::create_table_if_not_exist;
 use crate::gitops::gitops::run_git_operations;
 use k8s_openapi::merge_strategies::list::set;
@@ -13,7 +14,7 @@ mod models;
 mod notifications;
 mod repocheck;
 mod services;
-mod web;
+mod site;
 
 #[tokio::main]
 async fn main() {
@@ -32,19 +33,12 @@ async fn main() {
     // Load Configurations
     //    log::info!("Configuration loaded: {:?}", settings);
     //create table if not exist
+    #[cfg(feature = "ssr")]
     create_table_if_not_exist().unwrap();
-    //find enabled
-    //end_notification().await.unwrap();
-    //start scheduler
-    //start site
-    //run_git_operations(settings.clone()).unwrap_or_else(|err| {
-    //    log::error!("Failed to run git operations: {}", err);
-    //    panic!("Failed to run git operations: {}", err);
-    //});
-    tokio::task::spawn(services::scheduler::run_scheduler(settings.clone()));
+    //tokio::task::spawn(services::scheduler::run_scheduler(settings.clone()));
     tokio::task::spawn_blocking(|| {
         println!("Site started");
-        let _ = web::exweb::site();
+        let _ = site::server::run_site();
     })
     .await
     .expect("Failed to run site")

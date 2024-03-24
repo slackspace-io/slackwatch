@@ -1,9 +1,11 @@
 use crate::config::Settings;
 use crate::models::models::Workload;
-use ntfy::payload::{Action, ActionType};
-use ntfy::{Auth, Dispatcher, NtfyError, Payload, Priority};
+use ntfy::NtfyError;
 
+#[cfg(feature = "ssr")]
 pub async fn send_notification(workload: &Workload) -> Result<(), NtfyError> {
+    use ntfy::payload::{Action, ActionType};
+    use ntfy::{Auth, Dispatcher, NtfyError, Payload, Priority};
     //get settings
     let settings = Settings::new().unwrap();
     let token = settings.notifications.ntfy.token;
