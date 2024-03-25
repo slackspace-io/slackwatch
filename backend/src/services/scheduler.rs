@@ -6,6 +6,7 @@ use std::str::FromStr;
 use std::time::Duration;
 use tokio::time::{sleep_until, Instant as TokioInstant};
 
+#[cfg(feature = "server")]
 pub async fn scheduler(schedule: &Schedule) {
     // Example cron schedule: Every minute
     log::info!("Scheduler started");
@@ -38,6 +39,7 @@ pub async fn scheduler(schedule: &Schedule) {
     }
 }
 
+#[cfg(feature = "server")]
 pub async fn run_scheduler(settings: Settings) {
     //Load Scheduler
     let schedule_str = settings.system.schedule;
@@ -47,6 +49,7 @@ pub async fn run_scheduler(settings: Settings) {
     }
 }
 
+#[cfg(feature = "server")]
 async fn refresh_all_workloads() {
     log::info!("Refreshing all workloads");
     fetch_and_update_all_watched()

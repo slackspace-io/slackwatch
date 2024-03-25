@@ -1,6 +1,9 @@
+#[cfg(feature = "server")]
 use config::{Config, ConfigError, Environment, File};
+#[cfg(feature = "server")]
 use serde_derive::Deserialize;
 
+#[cfg(feature = "server")]
 #[derive(Debug, Deserialize, Clone)]
 #[allow(unused)]
 pub struct Settings {
@@ -9,6 +12,7 @@ pub struct Settings {
     pub gitops: Vec<GitopsConfig>,
 }
 
+#[cfg(feature = "server")]
 #[derive(Debug, Deserialize, Clone)]
 #[allow(unused)]
 pub struct System {
@@ -16,6 +20,7 @@ pub struct System {
     pub data_dir: String,
 }
 
+#[cfg(feature = "server")]
 #[derive(Debug, Deserialize, Clone)]
 #[allow(unused)]
 pub struct GitopsConfig {
@@ -28,12 +33,14 @@ pub struct GitopsConfig {
     pub commit_message: String,
 }
 
+#[cfg(feature = "server")]
 #[derive(Debug, Deserialize, Clone)]
 #[allow(unused)]
 pub struct Notifications {
     pub ntfy: Ntfy,
 }
 
+#[cfg(feature = "server")]
 #[derive(Debug, Deserialize, Clone)]
 #[allow(unused)]
 pub struct Ntfy {
@@ -43,6 +50,7 @@ pub struct Ntfy {
     pub token: String,
 }
 
+#[cfg(feature = "server")]
 impl Settings {
     pub fn new() -> Result<Self, ConfigError> {
         //get config from env var

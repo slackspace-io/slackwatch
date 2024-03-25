@@ -1,8 +1,15 @@
+#![allow(non_snake_case, unused)]
+#[cfg(feature = "server")]
 use crate::config::Settings;
+#[cfg(feature = "server")]
 use crate::database::client::create_table_if_not_exist;
+#[cfg(feature = "server")]
 use crate::gitops::gitops::run_git_operations;
+use dioxus::prelude::*;
+#[cfg(feature = "server")]
 use k8s_openapi::merge_strategies::list::set;
 use std::env;
+#[cfg(feature = "server")]
 use warp::host::exact;
 
 mod config;
@@ -13,8 +20,8 @@ mod models;
 mod notifications;
 mod repocheck;
 mod services;
-mod web;
 
+#[cfg(feature = "server")]
 #[tokio::main]
 async fn main() {
     println!("Hello, world!");
@@ -41,11 +48,29 @@ async fn main() {
     //    log::error!("Failed to run git operations: {}", err);
     //    panic!("Failed to run git operations: {}", err);
     //});
-    tokio::task::spawn(services::scheduler::run_scheduler(settings.clone()));
+    //launch(app);
+    //working tokio stuff
+    //tokio::task::spawn(services::scheduler::run_scheduler(settings.clone()));
     tokio::task::spawn_blocking(|| {
         println!("Site started");
-        let _ = web::exweb::site();
+        launch(app);
+        //    let _ = web::exweb::site();
     })
     .await
     .expect("Failed to run site")
+}
+
+#[cfg(not(feature = "server"))]
+fn main() {
+    println!("Hello, world!");
+}
+
+fn app() -> Element {
+    let mut count = use_signal(|| 0);
+
+    rsx! {
+        h1 { "High-Five counter: {count}" }
+        button { onclick: move |_| count += 1, "Up high!" }
+        button { onclick: move |_| count -= 1, "Down low!" }
+    }
 }
