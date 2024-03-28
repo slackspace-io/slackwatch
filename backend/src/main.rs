@@ -57,7 +57,8 @@ fn main() {
     //tokio::task::spawn(services::scheduler::run_scheduler(settings.clone()));
     use crate::site::app::App;
     launch(App);
+//    tokio::task::spawn(launch(App));
     //tokio::task::spawn_blocking(|| launch(App));
-
     //let _ = web::exweb::site();
 }
+
