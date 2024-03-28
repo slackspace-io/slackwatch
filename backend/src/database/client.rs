@@ -27,6 +27,7 @@ pub fn create_table_if_not_exist() -> Result<()> {
     Ok(())
 }
 
+#[cfg(feature = "server")]
 pub fn return_workload(name: String, namespace: String) -> Result<Workload> {
     let conn = Connection::open("data.db")?;
     let mut stmt = conn.prepare("SELECT * FROM workloads WHERE name = ?1 AND namespace = ?2")?;
