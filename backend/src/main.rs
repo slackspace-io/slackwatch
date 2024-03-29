@@ -1,5 +1,6 @@
 #![allow(non_snake_case, unused)]
 
+use std::env;
 //#[cfg(feature = "server")]
 //use crate::config::Settings;
 //#[cfg(feature = "server")]
@@ -27,10 +28,13 @@ mod repocheck;
 mod services;
 mod site;
 
-fn main() {
+
+#[cfg(feature = "server")]
+#[tokio::main]
+async fn  main() {
     println!("Hello, world!");
     //Logging and env variables
-    //    env::set_var("RUST_LOG", "info");
+    env::set_var("RUST_LOG", "info");
     env_logger::init();
     //  dotenv::dotenv().ok();
     // Load Configurations
@@ -55,10 +59,21 @@ fn main() {
     //launch(app);
     //working tokio stuff
     //tokio::task::spawn(services::scheduler::run_scheduler(settings.clone()));
-    use crate::site::app::App;
-    launch(App);
+//    launch(App);
+      let site = std::thread::spawn(|| launch(App));
+    log::info!("Started logger");
+    println!("Started print");
+    // join
 //    tokio::task::spawn(launch(App));
     //tokio::task::spawn_blocking(|| launch(App));
     //let _ = web::exweb::site();
+    site.join().unwrap();
+}
+
+#[cfg(not(feature = "server"))]
+fn main() {
+    println!("Hello, world from non async main!");
+    launch(App);
+
 }
 
