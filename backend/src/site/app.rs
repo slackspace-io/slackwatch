@@ -16,10 +16,8 @@ async fn get_all_workloads() -> Result<String, ServerFnError> {
 }
 
 pub fn App() -> Element {
-    let mut workloads = use_resource(get_all_workloads);
-    let mut all = use_resource(get_all);
     println!("App started");
-    rsx! {All{}}
+    rsx! { All {} }
 //    rsx! {
 //        "server data is {workloads():?}"
 //        div {}
@@ -39,39 +37,37 @@ fn All() -> Element {
     match workloads() {
         Some(Ok(workloads)) => {
             rsx! {
-             div { class: "workloads-container",
-                div { {workloads.iter().map(|w|
-                    rsx!{
+                div { class: "workloads-container",
                     div {
-                    class: if w.update_available == models::models::UpdateStatus::Available {
-                        "workload-card-update-available"
-                    } else {
-                        "workload-card"
-                    },
-                    div { class: "workload-name", "{w.name}" },
-                    div { class: "workload-namespace", "Namespace: {w.namespace}" },
-                    div { class: "workload-version", "Current Tag {w.current_version}" },
-                    div { class: "workload-image", "Image: {w.image}" },
-                    div { class: "workload-last-scanned", "Last Scanned: {w.last_scanned}" },
-                    if w.update_available == models::models::UpdateStatus::Available {
-                        div { class: "workload-update-available", "Update Available" }
+                        {workloads.iter().map(|w|
+                            rsx!{
+                            div {
+                            class: if w.update_available == models::models::UpdateStatus::Available {
+                                "workload-card-update-available"
+                            } else {
+                                "workload-card"
+                            },
+                            div { class: "workload-name", "{w.name}" },
+                            div { class: "workload-namespace", "Namespace: {w.namespace}" },
+                            div { class: "workload-version", "Current Tag {w.current_version}" },
+                            div { class: "workload-image", "Image: {w.image}" },
+                            div { class: "workload-last-scanned", "Last Scanned: {w.last_scanned}" },
+                            if w.update_available == models::models::UpdateStatus::Available {
+                                div { class: "workload-update-available", "Update Available" }
+                            }
+                            }
+                            }
+                        
+                        )}
                     }
-                    }
-                    }
-
-                )}
                 }
-            }}
+            }
         },
         Some(Err(err)) => {
-            rsx! {
-                div { "Error: {err}" }
-            }
+            rsx! { div { "Error: {err}" } }
         },
         _ => {
-            rsx! {
-                div { "Loading..." }
-            }
+            rsx! { div { "Loading..." } }
 
         }
     }

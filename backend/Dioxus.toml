@@ -8,7 +8,7 @@ name = "Slackwatch"
 default_platform = "web"
 
 # `build` & `serve` dist path
-out_dir = "docs"
+out_dir = "slackwatch"
 
 # resource (public) file folder
 asset_dir = "assets"
@@ -25,6 +25,8 @@ reload_html = true
 
 # which files or dirs will be watcher monitoring
 watch_path = ["src", "public"]
+
+index_on_404 = true
 
 # include `assets` in web platform
 [web.resource]
@@ -44,3 +46,4 @@ style = ["/style.css"]
 
 # Javascript code file
 script = []
+

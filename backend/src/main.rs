@@ -60,7 +60,8 @@ async fn  main() {
     //working tokio stuff
     //tokio::task::spawn(services::scheduler::run_scheduler(settings.clone()));
 //    launch(App);
-      let site = std::thread::spawn(|| launch(App));
+
+    let site = std::thread::spawn(|| launch(App));
     log::info!("Started logger");
     println!("Started print");
     // join
