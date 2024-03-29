@@ -41,6 +41,6 @@ dioxus-fullstack = "0.5.0"
 tempfile = "3.8.1"
 
 [features]
-default = ["strum", "strum_macros", "serde_derive"]
-server = ["dioxus/axum", "kube/runtime", "kube", "k8s-openapi", "reqwest", "oci-distribution", "ntfy", "config", "serde_yaml", "walkdir", "git2", "futures", "rusqlite", "chrono", "url", "tokio", "cron", "serde_derive",  "strum", "strum_macros", "semver", "regex"]
+default = ["strum", "strum_macros", "serde_derive", "config"]
+server = ["dioxus/axum", "kube/runtime", "kube", "k8s-openapi", "reqwest", "oci-distribution", "ntfy",  "serde_yaml", "walkdir", "git2", "futures", "rusqlite", "chrono", "url", "tokio", "cron", "serde_derive",  "strum", "strum_macros", "semver", "regex"]
 web = ["dioxus/web"]

@@ -14,6 +14,8 @@ use std::env;
 use crate::site::app::App;
 use dioxus::prelude::*;
 use log::info;
+use crate::config::Settings;
+
 //#[cfg(feature = "server")]
 //use k8s_openapi::merge_strategies::list::set;
 //use std::env;
@@ -38,10 +40,10 @@ async fn  main() {
     env_logger::init();
     //  dotenv::dotenv().ok();
     // Load Configurations
-    // let settings = Settings::new().unwrap_or_else(|err| {
-    //     log::error!("Failed to load settings: {}", err);
-    //     panic!("Failed to load settings: {}", err);
-    // });
+     let settings = Settings::new().unwrap_or_else(|err| {
+         log::error!("Failed to load settings: {}", err);
+         panic!("Failed to load settings: {}", err);
+     });
     // log::info!("Starting up");
     // log::info!("Loading configuration {:?}", settings);
     // Load Configurations
@@ -58,8 +60,7 @@ async fn  main() {
     //});
     //launch(app);
     //working tokio stuff
-    //tokio::task::spawn(services::scheduler::run_scheduler(settings.clone()));
-//    launch(App);
+    tokio::task::spawn(services::scheduler::run_scheduler(settings.clone()));
 
     let site = std::thread::spawn(|| launch(App));
     log::info!("Started logger");
