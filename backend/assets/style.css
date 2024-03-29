@@ -1,7 +1,7 @@
 .workloads-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 60px; /* Space between cards */
+    gap: 600px; /* Space between cards */
 }
 
 .workload-card {
@@ -9,6 +9,7 @@
     padding: 20px;
     border-radius: 8px;
     background: white;
+    margin: 20px;
 }
 
 .workload-name {
