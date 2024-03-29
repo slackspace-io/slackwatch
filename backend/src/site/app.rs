@@ -22,6 +22,8 @@ pub fn App() -> Element {
         "server data is {workloads():?}"
         div {}
         "server data is {all():?}"
+        div { {all().map(|w| rsx! { div {"{w:?}"}})}}
+
 
 }
 }
