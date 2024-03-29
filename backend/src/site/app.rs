@@ -43,12 +43,19 @@ fn All() -> Element {
                 div { {workloads.iter().map(|w|
                     rsx!{
                     div {
-                    class: "workload-card",
+                    class: if w.update_available == models::models::UpdateStatus::Available {
+                        "workload-card-update-available"
+                    } else {
+                        "workload-card"
+                    },
                     div { class: "workload-name", "{w.name}" },
-                    div { class: "workload-version", "Version: {w.current_version}" },
-                    div { class: "workload-image", "Image: {w.image}" },
                     div { class: "workload-namespace", "Namespace: {w.namespace}" },
+                    div { class: "workload-version", "Current Tag {w.current_version}" },
+                    div { class: "workload-image", "Image: {w.image}" },
                     div { class: "workload-last-scanned", "Last Scanned: {w.last_scanned}" },
+                    if w.update_available == models::models::UpdateStatus::Available {
+                        div { class: "workload-update-available", "Update Available" }
+                    }
                     }
                     }
 

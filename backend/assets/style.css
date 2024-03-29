@@ -12,11 +12,26 @@
     margin: 20px;
 }
 
+.workload-card-update-available {
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4); /* Green glow */
+    padding: 20px;
+    border-radius: 8px;
+    background: white;
+    margin: 20px;
+}
+
 .workload-name {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+.workload-update-available {
+    color: #0d7c08;
     font-weight: bold;
 }
 
 .workload-version, .workload-image, .workload-namespace, .workload-last-scanned {
     margin-top: 10px;
+
 }
 
