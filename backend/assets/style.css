@@ -1,0 +1,21 @@
+.workloads-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 60px; /* Space between cards */
+}
+
+.workload-card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    border-radius: 8px;
+    background: white;
+}
+
+.workload-name {
+    font-weight: bold;
+}
+
+.workload-version, .workload-image, .workload-namespace, .workload-last-scanned {
+    margin-top: 10px;
+}
+

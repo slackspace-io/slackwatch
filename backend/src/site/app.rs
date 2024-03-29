@@ -30,16 +30,31 @@ pub fn App() -> Element {
 //}
 }
 
+
+
+
 #[component]
 fn All() -> Element {
     let workloads = use_server_future(get_all)?;
     match workloads() {
         Some(Ok(workloads)) => {
             rsx! {
-                div {"server data is {workloads:?}" }
-                div { {workloads.iter().map(|w| rsx! { div {"{w.name}"} })}
+             div { class: "workloads-container",
+                div { {workloads.iter().map(|w|
+                    rsx!{
+                    div {
+                    class: "workload-card",
+                    div { class: "workload-name", "{w.name}" },
+                    div { class: "workload-version", "Version: {w.current_version}" },
+                    div { class: "workload-image", "Image: {w.image}" },
+                    div { class: "workload-namespace", "Namespace: {w.namespace}" },
+                    div { class: "workload-last-scanned", "Last Scanned: {w.last_scanned}" },
                     }
-            }
+                    }
+
+                )}
+                }
+            }}
         },
         Some(Err(err)) => {
             rsx! {
