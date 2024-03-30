@@ -44,30 +44,17 @@ async fn  main() {
          log::error!("Failed to load settings: {}", err);
          panic!("Failed to load settings: {}", err);
      });
-    // log::info!("Starting up");
-    // log::info!("Loading configuration {:?}", settings);
-    // Load Configurations
-    //    log::info!("Configuration loaded: {:?}", settings);
+     log::info!("Starting up");
+     log::info!("Loading configuration {:?}", settings);
     //create table if not exist
-    //create_table_if_not_exist().unwrap();
-    //find enabled
-    //end_notification().await.unwrap();
-    //start scheduler
-    //start site
-    //run_git_operations(settings.clone()).unwrap_or_else(|err| {
-    //    log::error!("Failed to run git operations: {}", err);
-    //    panic!("Failed to run git operations: {}", err);
-    //});
-    //launch(app);
+    #[cfg(feature = "server")]
+    use crate::database::client::create_table_if_not_exist;
+    create_table_if_not_exist().unwrap();
     //working tokio stuff
     tokio::task::spawn(services::scheduler::run_scheduler(settings.clone()));
-
     let site = std::thread::spawn(|| launch(App));
     log::info!("Started logger");
     println!("Started print");
-    // join
-//    tokio::task::spawn(launch(App));
-    //tokio::task::spawn_blocking(|| launch(App));
     //let _ = web::exweb::site();
     site.join().unwrap();
 }
