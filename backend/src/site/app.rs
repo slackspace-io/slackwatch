@@ -12,6 +12,8 @@ use crate::models::models::Workload;
 enum Route {
         #[route("/")]
         Home {},
+        #[route("/refresh-all")]
+        RefreshAll {},
     }
 
 
@@ -38,9 +40,10 @@ fn Home() -> Element {
     match workloads() {
         Some(Ok(workloads)) => {
             rsx! {
-            div    { for w in workloads.iter() {
+                div { class: "workloads-page",
+                    for w in workloads.iter() {
                     WorkloadCard{workload: w.clone()}
-                }
+                        }
             }
             }
         },
@@ -73,7 +76,7 @@ fn WorkloadCard(props: WorkloadCardProps) -> Element {
                     }
                 }
             },
-                "UpdateNow"},
+              class: "workload-update-single",  "UpdateNow"},
             div { class: "workload-namespace", "Namespace: {props.workload.namespace}" },
             div { class: "workload-version", "Current Tag {props.workload.current_version}" },
             div { class: "workload-image", "Image: {props.workload.image}" },
