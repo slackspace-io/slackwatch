@@ -36,6 +36,30 @@
 
 }
 
+.workload-card {
+    position: relative;
+}
+
+.upgrade-button {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: block;
+}
+
+.card.has-upgrade .upgrade-button {
+    display: block;
+}
+
+
+
 .workload-name {
     font-weight: bold;
     font-size: 1.5em;

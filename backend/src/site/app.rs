@@ -82,7 +82,14 @@ fn WorkloadCard(props: WorkloadCardProps) -> Element {
             div { class: "workload-image", "Image: {props.workload.image}" },
             div { class: "workload-last-scanned", "Last Scanned: {props.workload.last_scanned}" },
             if props.workload.update_available == models::models::UpdateStatus::Available {
-                div { class: "workload-update-available", "Update Available" }
+                button { onclick: move |_| {
+                    async move {
+                        if let Ok(_) = upgrade_workload(data()).await {
+                            println!("Upgraded");
+                        }
+                    }
+                },
+                    class: "upgrade-button", "Click Me"}
             }
         }
     }
@@ -169,6 +176,16 @@ fn All() -> Element {
 
         }
     }
+}
+
+
+#[server]
+async fn upgrade_workload(workload: Workload) -> Result<(), ServerFnError> {
+    log::info!("upgrade_workload: {:?}", workload);
+    println!("upgrade_workload");
+       use crate::gitops::gitops::run_git_operations;
+    let result = run_git_operations(workload).await;
+    Ok(result.unwrap())
 }
 
 #[server]

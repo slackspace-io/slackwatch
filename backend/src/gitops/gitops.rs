@@ -5,13 +5,11 @@ use git2::{
     Commit, Cred, ErrorCode, IndexAddOption, PushOptions, RemoteCallbacks, Repository, Signature,
 };
 use walkdir::WalkDir;
-
-use k8s_openapi::api::apps::v1::{Deployment, StatefulSet};
-use log::info;
 use std::error::Error;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::Path;
+use k8s_openapi::api::apps::v1::{Deployment, StatefulSet};
 
 fn delete_local_repo() -> Result<(), std::io::Error> {
     let local_path = Path::new("/tmp/repos/");
@@ -43,6 +41,8 @@ fn clone_or_open_repo(
             let mut builder = git2::build::RepoBuilder::new();
             builder.fetch_options(fo);
             log::info!("Building repo");
+            log::info!("Repo URL: {}", repo_url);
+            log::info!("Repo Path: {:?}", repo_path);
             builder.clone(repo_url, repo_path)
         }
         Err(e) => Err(e),
@@ -56,7 +56,7 @@ fn edit_files(local_path: &Path, workload: &Workload) {
             log::info!("No git directory specified for workload: {}", name);
             local_path.join(name)
         } else {
-            info!("git directory: {:?}", git_directory);
+            log::info!("git directory: {:?}", git_directory);
             local_path.join(git_directory)
         }
     } else {
@@ -190,7 +190,8 @@ fn push_changes(repo: &Repository, access_token: &str) -> Result<(), git2::Error
     Ok(())
 }
 
-pub fn run_git_operations(workload: Workload) -> Result<(), Box<dyn Error>> {
+pub async fn run_git_operations(workload: Workload) -> Result<(), Box<dyn Error>> {
+
     let settings = Settings::new().unwrap_or_else(|err| {
         log::error!("Failed to load settings: {}", err);
         panic!("Failed to load settings: {}", err);
@@ -220,6 +221,7 @@ pub fn run_git_operations(workload: Workload) -> Result<(), Box<dyn Error>> {
         log::info!("Local path: {:?}", local_path);
         delete_local_repo()?;
         let repo = clone_or_open_repo(&repo_url, &local_path, &access_token)?;
+        log::info!("Cloned Repo Complete");
         edit_files(&local_path, &workload);
         stage_changes(&repo)?;
         commit_changes(&repo, &commit_message, &commit_name, &commit_email)?;
