@@ -38,7 +38,10 @@ fn Home() -> Element {
     match workloads() {
         Some(Ok(workloads)) => {
             rsx! {
-                WorkloadCard{workload: workloads[0].clone()}
+            div    { for w in workloads.iter() {
+                    WorkloadCard{workload: w.clone()}
+                }
+            }
             }
         },
         Some(Err(err)) => {
