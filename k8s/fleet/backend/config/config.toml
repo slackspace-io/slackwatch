@@ -1,5 +1,6 @@
 [system]
 schedule = "0 15 9-22/2 * * *"
+data_dir = "/app/slackwatch/data"
 
 [notifications.ntfy]
 url = "http://ntfy.ntfy.svc.cluster.local"
