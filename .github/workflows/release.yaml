@@ -24,7 +24,7 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/slackspace-io/slackwatch:${{ github.ref_name }}
+          tags: ghcr.io/slackspace-io/slackwatch:${{ github.ref_name }},ghcr.io/slackspace-io/slackwatch:latest
 
   create-release:
     needs: build-and-push-images
