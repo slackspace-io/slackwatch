@@ -14,20 +14,19 @@ Welcome to SlackWatch, the Kubernetes-centric solution designed to keep you info
 ### Prerequisites
 
 - Kubernetes cluster
-- Node.js and npm for the frontend
+- rust installed
+- dioxus-cli installed, dx binary in your path.
 
-### Setting Up the Backend
+### Deploying Slackwatch
+- Deploy using references k8s files under k8s directory
+- Run docker locally for testing
+- Run `dx serve --platform fullstack` to start locally. Will use local kube-config. 
+
+### Setting Up Slackwatch for development
 
 1. **Clone the repository** to get started.
-2. **Navigate to the backend directory**: `cd backend`.
-3. **Install dependencies**: Run `cargo watch -x check` 
-
-### Setting Up the Frontend
-
-1. **Navigate to the frontend directory**: From the root of the repository, `cd frontend`.
-2. **Install dependencies**: Run `npm install` to get all the necessary packages.
-3. **Start the development server**: Execute `npm run dev`.
-4. **Open your browser** and go to [http://localhost:3000](http://localhost:3000) to view the SlackWatch dashboard.
+2. **Navigate to the git directory**: 
+3. **Install dependencies**: Run `dx serve --platform fullstack` 
 
 ## Configuration
 
