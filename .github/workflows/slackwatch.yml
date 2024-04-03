@@ -7,8 +7,8 @@ on:
 
     paths:
       - 'src/**'
-      - 'Dockerfile'
       - '.github/workflows/slackwatch.yml'
+      - 'Dockerfile'
       - 'assets/**
 
 jobs:
