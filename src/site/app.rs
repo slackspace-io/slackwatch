@@ -72,11 +72,10 @@ fn WorkloadCard(props: WorkloadCardProps) -> Element {
                 to_owned![data, props.workload];
                 async move {
                     if let Ok(_) = update_workload(data()).await {
-                        println!("Updated");
                     }
                 }
             },
-              class: "workload-update-single",  "UpdateNow"},
+              class: "workload-update-single",  "Refresh"},
             div { class: "workload-namespace", "Namespace: {props.workload.namespace}" },
             div { class: "workload-version", "Current Tag {props.workload.current_version}" },
             div { class: "workload-image", "Image: {props.workload.image}" },
@@ -85,11 +84,10 @@ fn WorkloadCard(props: WorkloadCardProps) -> Element {
                 button { onclick: move |_| {
                     async move {
                         if let Ok(_) = upgrade_workload(data()).await {
-                            println!("Upgraded");
                         }
                     }
                 },
-                    class: "upgrade-button", "Click Me"}
+                    class: "upgrade-button", "Upgrade"}
             }
         }
     }
