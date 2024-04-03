@@ -735,9 +735,9 @@ dependencies = [
 
 [[package]]
 name = "dioxus"
-version = "0.5.0-alpha.2"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d60a0cd42c8fe9f36d7c34eb4acd6d9e5be5ca46f4f0c509c84b21daffa286a0"
+checksum = "804134b0ea229772d5841e8bc19b8e41a5b93cb6f6a7d28fdf24cbd44d373687"
 dependencies = [
  "dioxus-config-macro",
  "dioxus-core",
@@ -768,9 +768,9 @@ dependencies = [
 
 [[package]]
 name = "dioxus-config-macro"
-version = "0.5.0-alpha.2"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e360c156e8d0d7412f6ee3aeb0031c156ab5a5d5d526d6fc25751f840441c276"
+checksum = "ebe244197b320dec9e9f38742985fe98c058136ada770df73e9429878ed92863"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -950,9 +950,9 @@ dependencies = [
 
 [[package]]
 name = "dioxus-liveview"
-version = "0.5.0-alpha.2"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "983496f98833f977b2abda5e4dad863da2fc9e48c0d5f1632cde3c28b956f073"
+checksum = "fb2b58c6ef35b880ea648ff634d8d1c95fbf33e6c96037dd977b2a6a17163d9d"
 dependencies = [
  "axum",
  "dioxus-cli-config",
@@ -976,9 +976,9 @@ dependencies = [
 
 [[package]]
 name = "dioxus-router"
-version = "0.5.0-alpha.2"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9303eeaf6ece1982538fc92c9f3dfc70909de1dfe1c0fba5a6a4e06a7c96d0fd"
+checksum = "0c4cbbc1aff811aa3715c94a7ca0375be0be34356aba7f3897328d844323519b"
 dependencies = [
  "dioxus-cli-config",
  "dioxus-fullstack",
@@ -998,9 +998,9 @@ dependencies = [
 
 [[package]]
 name = "dioxus-router-macro"
-version = "0.5.0-alpha.2"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "424f3ca9fe7f2e2c477bc4cfb3e2d9c8574c82995b8646fcbaaefe16567d7c6c"
+checksum = "0a1b089ef30c7c31ad888016454d2508209c619bda09f57c877e799866e4df22"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1940,20 +1940,20 @@ dependencies = [
 
 [[package]]
 name = "hyper-rustls"
-version = "0.26.0"
+version = "0.27.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a0bea761b46ae2b24eb4aef630d8d1c398157b6fc29e6350ecf090a0b70c952c"
+checksum = "736f15a50e749d033164c56c09783b6102c4ff8da79ad77dbddbbaea0f8567f7"
 dependencies = [
  "futures-util",
  "http 1.1.0",
  "hyper 1.2.0",
  "hyper-util",
  "log",
- "rustls 0.22.3",
+ "rustls 0.23.4",
  "rustls-native-certs",
  "rustls-pki-types",
  "tokio",
- "tokio-rustls 0.25.0",
+ "tokio-rustls 0.26.0",
  "tower-service",
 ]
 
@@ -2227,9 +2227,9 @@ dependencies = [
 
 [[package]]
 name = "kube"
-version = "0.89.0"
+version = "0.90.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "92cd10d00ad38b2f72a5223cd8f2827968466a5d32ae89672d2b0df06488c499"
+checksum = "65bfada4e00dac93a7b94e454ae4cde04ff8786645ac1b98f31352272e2682b5"
 dependencies = [
  "k8s-openapi",
  "kube-client",
@@ -2239,9 +2239,9 @@ dependencies = [
 
 [[package]]
 name = "kube-client"
-version = "0.89.0"
+version = "0.90.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "23b4ee4e409c9afb4e38a30802875acb108902387a41346bbc2fd8610df5f729"
+checksum = "e0708306b5c0085f249f5e3d2d56a9bbfe0cbbf4fd4eb9ed4bbba542ba7649a7"
 dependencies = [
  "base64 0.22.0",
  "bytes",
@@ -2253,15 +2253,14 @@ dependencies = [
  "http-body 1.0.0",
  "http-body-util",
  "hyper 1.2.0",
- "hyper-rustls 0.26.0",
+ "hyper-rustls 0.27.0",
  "hyper-timeout",
  "hyper-util",
  "jsonpath-rust",
  "k8s-openapi",
  "kube-core",
  "pem",
- "pin-project",
- "rustls 0.22.3",
+ "rustls 0.23.4",
  "rustls-pemfile 2.1.1",
  "secrecy",
  "serde",
@@ -2277,16 +2276,15 @@ dependencies = [
 
 [[package]]
 name = "kube-core"
-version = "0.89.0"
+version = "0.90.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "beab9186726ed0c2420ff8a37b02f26dc62b3c33330ac60d0cc7605e1a6f6678"
+checksum = "7845bcc3e0f422df4d9049570baedd9bc1942f0504594e393e72fe24092559cf"
 dependencies = [
  "chrono",
  "form_urlencoded",
  "http 1.1.0",
  "json-patch",
  "k8s-openapi",
- "once_cell",
  "serde",
  "serde_json",
  "thiserror",
@@ -2294,9 +2292,9 @@ dependencies = [
 
 [[package]]
 name = "kube-runtime"
-version = "0.89.0"
+version = "0.90.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "16f0c0463270c844ff08e8a674777289afdb4cc6063036bed5dc35107f135808"
+checksum = "4560e2c5c71366f6dceb6500ce33cf72299aede92381bb875dc2d4ba4f102c21"
 dependencies = [
  "ahash 0.8.11",
  "async-trait",
@@ -3155,11 +3153,12 @@ dependencies = [
 
 [[package]]
 name = "rustls"
-version = "0.22.3"
+version = "0.23.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "99008d7ad0bbbea527ec27bddbc0e432c5b87d8175178cee68d2eec9c4a1813c"
+checksum = "8c4d6d8ad9f2492485e13453acbb291dd08f64441b6609c491f1c2cd2c6b4fe1"
 dependencies = [
  "log",
+ "once_cell",
  "ring",
  "rustls-pki-types",
  "rustls-webpki 0.102.2",
@@ -3858,11 +3857,11 @@ dependencies = [
 
 [[package]]
 name = "tokio-rustls"
-version = "0.25.0"
+version = "0.26.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "775e0c0f0adb3a2f22a00c4745d728b479985fc15ee7ca6a2608388c5569860f"
+checksum = "0c7bc40d0e5a97695bb96e27995cd3a08538541b0a846f65bba7a359f36700d4"
 dependencies = [
- "rustls 0.22.3",
+ "rustls 0.23.4",
  "rustls-pki-types",
  "tokio",
 ]
