@@ -5,6 +5,12 @@ on:
     branches:
       - main
 
+    paths:
+      - './src/**'
+      - './Dockerfile'
+      - './.github/workflows/slackwatch.yml'
+      - './assets/**
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
