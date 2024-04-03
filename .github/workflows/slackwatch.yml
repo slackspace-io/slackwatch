@@ -7,7 +7,7 @@ on:
       - dioxus-1
     paths:
       - 'backend/**'
-      - '.github/workflows/backend.yml'
+      - '.github/workflows/slackwatch.yml'
 
 jobs:
   build-and-push:
