@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: slackwatch-fe-ingress
+  name: slackwatch-ingress
   namespace: slackwatch
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
@@ -17,7 +17,7 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: slackwatch-fe-svc
+            name: slackwatch-svc
             port:
               number: 80
 

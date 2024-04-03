@@ -5,9 +5,6 @@ on:
     branches:
       - main
       - dioxus-1
-    paths:
-      - 'backend/**'
-      - '.github/workflows/slackwatch.yml'
 
 jobs:
   build-and-push:
@@ -25,7 +22,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: ./backend
-          file: ./backend/Dockerfile
+          context: ./
+          file: ./Dockerfile
           push: true
           tags: ghcr.io/slackspace-io/slackwatch:latest,ghcr.io/slackspace-io/slackwatch:dev,ghcr.io/slackspace-io/slackwatch:${{ github.sha }}

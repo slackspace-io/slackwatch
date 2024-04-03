@@ -17,15 +17,6 @@ dist/
 *.swo
 *~
 
-# Go
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-/vendor/
-*.test
-*.out
 
 # Svelte / TypeScript
 public/build/
@@ -38,6 +29,10 @@ src/node_modules/
 # Docker
 docker-compose*.yml
 *.dockerignore
-backend/.dockerignore
-/backend/.env.example
-/backend/.env.dev
+
+# Dioxus
+.dioxus/
+slackwatch/
+
+# Rust
+target/

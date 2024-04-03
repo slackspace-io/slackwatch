@@ -1,13 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: slackwatch-fe-svc
+  name: slackwatch-svc
 spec:
   selector:
-    app: slackwatch-fe
+    app: slackwatch
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 3000
+      targetPort: 8080
   type: ClusterIP
-

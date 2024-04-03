@@ -13,6 +13,8 @@ out_dir = "slackwatch"
 # resource (public) file folder
 asset_dir = "assets"
 
+address = "0.0.0.0"
+
 [web.app]
 
 # HTML title tag content
@@ -47,3 +49,8 @@ style = ["/style.css"]
 # Javascript code file
 script = []
 
+[server]
+addr = "0.0.0.0"
+
+[server.app]
+addr = "0.0.0.0"

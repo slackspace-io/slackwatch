@@ -52,7 +52,16 @@ async fn  main() {
     create_table_if_not_exist().unwrap();
     //working tokio stuff
     tokio::task::spawn(services::scheduler::run_scheduler(settings.clone()));
-    let site = std::thread::spawn(|| launch(App));
+    let mut config = dioxus::fullstack::Config::new();
+
+    #[cfg(feature = "server")]
+    {
+        config = config.addr(std::net::SocketAddr::from(([0, 0, 0, 0], 8080)));
+    }
+
+// Launch the app with the custom menu
+    let site = std::thread::spawn(|| LaunchBuilder::new().with_cfg(config).launch(App));
+    //let site = std::thread::spawn(|| launch(App));
     log::info!("Started logger");
     println!("Started print");
     //let _ = web::exweb::site();
