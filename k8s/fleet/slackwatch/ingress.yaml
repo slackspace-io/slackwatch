@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: slackwatch-ingress
+  namespace: slackwatch
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: default-authentik@kubernetescrd
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: slackwatch.slack.house
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: slackwatch-svc
+            port:
+              number: 80
+
