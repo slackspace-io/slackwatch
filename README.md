@@ -1,26 +1,24 @@
-# SlackWatch: Your Kubernetes Container Guardian 🚀
+# SlackWatch: Automated Kubernetes Image Updates
 
-### Features
-- Notify you of new versions of your container images by comparing semver tags.
-- Check for updates on a configured schedule.
-- Authenticate with your container registry assuming standard docker registry auth behaviours.
-- Trigger automated upgrade by commiting new tag to your gitops repo, if you have configured a gitops repo.
-- Use include/exclude regex patterns to filter out images you are not interested in, these are set as annotations on the deployment.
-- Notify you of new versions, as well sucessful commits via ntfy.
-- A Web UI to view the status of your images, and trigger automated upgrades.
+SlackWatch simplifies Kubernetes image management by keeping your deployments up-to-date.
 
-## What is SlackWatch?
-Slackwatch is under heavy development. It is not yet ready for production use. I personally am using it, including the automated upgrade feature, but I am not recommending it for others yet.
+Features
 
-I started slackwatch to solve my own problem of keeping track of container versions in my kubernetes cluster at home. I was usually notified by noticing a new release on github, but this did not mean the image was actually available.
+* **Image Version Monitoring:** Detects new container image versions (using semver tags) and sends notifications.
+* **Scheduled Updates:** Runs checks on a configurable schedule.
+* **Registry Authentication:** Integrates with standard container registry authentication.
+* **GitOps Integration:** Triggers automated upgrades by committing new tags to your GitOps repository.
+* **Filtering:** Uses include/exclude regex patterns for targeted updates.
+* **Notifications:** Notifies you via ntfy about updates and successful commits.
+* **Web UI:** Provides a dashboard for image status and manual upgrade triggers.
 
-I did try to use other tools, but they didn't quite fit my needs. I was primarily interested in comparing tag versions, since I do not run :latest on majority of my workloads. I also then liked the idea of triggering a commit to my gitops repo to trigger an upgrade.
+What is SlackWatch?
 
-I initially wrote this in go+nextjs, but decided this was a good opportunity to begin learning rust.
+SlackWatch is a Kubernetes tool designed to streamline the process of keeping your container images up-to-date. It's ideal if you:
 
-I am not saying rust is the best choice for this project, but I am enjoying learning it.
-
-The stack now, and going forward is planned to be rust + using dioxus as the web framework.
+* Rely on version tags for image management (rather than `:latest`)
+* Want a customizable and automated solution for image updates
+* Prefer a GitOps-friendly workflow
 
 ## Example of a new version of ghostfolio
 
