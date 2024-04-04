@@ -2,6 +2,16 @@
 
 SlackWatch simplifies Kubernetes image management by keeping your deployments up-to-date.
 
+
+
+## What is SlackWatch?
+
+SlackWatch is a Kubernetes tool designed to streamline the process of keeping your container images up-to-date. It's ideal if you:
+
+* Rely on version tags for image management (rather than `:latest`)
+* Want a customizable and automated solution for image updates
+* Prefer a GitOps-friendly workflow
+
 ### Features
 
 * **Image Version Monitoring:** Detects new container image versions (using semver tags) and sends notifications.
@@ -12,15 +22,7 @@ SlackWatch simplifies Kubernetes image management by keeping your deployments up
 * **Notifications:** Notifies you via ntfy about updates and successful commits.
 * **Web UI:** Provides a dashboard for image status and manual upgrade triggers.
 
-### What is SlackWatch?
-
-SlackWatch is a Kubernetes tool designed to streamline the process of keeping your container images up-to-date. It's ideal if you:
-
-* Rely on version tags for image management (rather than `:latest`)
-* Want a customizable and automated solution for image updates
-* Prefer a GitOps-friendly workflow
-
-### Example of a new version of ghostfolio
+## Example of a new version of ghostfolio
 
 #### Web View showing the new version.
 
