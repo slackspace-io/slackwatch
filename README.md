@@ -2,7 +2,7 @@
 
 SlackWatch simplifies Kubernetes image management by keeping your deployments up-to-date.
 
-Features
+### Features
 
 * **Image Version Monitoring:** Detects new container image versions (using semver tags) and sends notifications.
 * **Scheduled Updates:** Runs checks on a configurable schedule.
@@ -12,7 +12,7 @@ Features
 * **Notifications:** Notifies you via ntfy about updates and successful commits.
 * **Web UI:** Provides a dashboard for image status and manual upgrade triggers.
 
-What is SlackWatch?
+### What is SlackWatch?
 
 SlackWatch is a Kubernetes tool designed to streamline the process of keeping your container images up-to-date. It's ideal if you:
 
@@ -20,23 +20,23 @@ SlackWatch is a Kubernetes tool designed to streamline the process of keeping yo
 * Want a customizable and automated solution for image updates
 * Prefer a GitOps-friendly workflow
 
-## Example of a new version of ghostfolio
+### Example of a new version of ghostfolio
 
-### Web View showing the new version.
+#### Web View showing the new version.
 
 <img alt="slackwatch-update.png" src="https://raw.githubusercontent.com/slackspace-io/slackwatch/main/.github/assets/img/slackwatch-update.png"/>
 
-### Mobile notification via ntfy
+#### Mobile notification via ntfy
 
 <img alt="Screenshot_20240404-172936.png" src="https://raw.githubusercontent.com/slackspace-io/slackwatch/main/.github/assets/img/slackwatch_mobile_notification_ntfy.png"/>
 
-## Trigger automated upgrade by commiting new tag to your gitops repo. 
+### Trigger automated upgrade by commiting new tag to your gitops repo. 
 
-### Commit completed
+#### Commit completed
 
 <img alt="slackwatch_commit_example.png" src="https://raw.githubusercontent.com/slackspace-io/slackwatch/main/.github/assets/img/slackwatch_commit_example.png"/>
 
-### Notified of successful commit
+#### Notified of successful commit
 
 <img alt="Screenshot_20240404-173514.png" src="https://raw.githubusercontent.com/slackspace-io/slackwatch/main/.github/assets/img/slackwatch_ntfy_commit_notification.png"/>
 
