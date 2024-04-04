@@ -76,13 +76,29 @@ SlackWatch is designed to be highly configurable to fit your specific needs. You
 
 ```toml
 [system]
-schedule = "0 0 * * * *"
+schedule = "0 0 9-22/2 * * *"
+data_dir = "/app/slackwatch/data"
 
 [notifications.ntfy]
-enabled = true
-token = "YOUR_NTFY_TOKEN" #Or as env variable(recommended)
-url = "https://your.ntfy.server"
-priority = "high"
+url = "http://localhost:9090"
+topic = "slackwatch"
+priorty = 1
+reminder = "24h"
+#The ntfy token should be an env variable named SLACKWATCH_NOTIFICATIONS.NTFY.TOKEN in k8s
+
+
+[[gitops]]
+##should match annotation on pod. This acts as a key to which gitops repo to use.
+name = "fleet-slack-house"
+repository_url = "https://github.com/slackspace-io/slackwatch.git"
+branch = "main"
+##k8s secret env variable which has your git repo's token
+access_token_env_name = "SLACKWATCH_TOKEN"
+commit_message = "Updated by slackwatch"
+commit_name = "slackwatch"
+commit_email = "slackwatch@slackspace.io"
+
+
 
 ```
 
