@@ -1,4 +1,14 @@
 # SlackWatch: Your Kubernetes Container Guardian 🚀
+
+- Notify you of new versions of your container images by comparing semver tags.
+- Check for updates on a configured schedule.
+- Authenticate with your container registry assuming standard docker registry auth behaviours.
+- Trigger automated upgrade by commiting new tag to your gitops repo, if you have configured a gitops repo.
+- Use include/exclude regex patterns to filter out images you are not interested in, these are set as annotations on the deployment.
+- Notify you of new versions, as well sucessful commits via ntfy.
+- A Web UI to view the status of your images, and trigger automated upgrades.
+
+## What is SlackWatch?
 Slackwatch is under heavy development. It is not yet ready for production use. I personally am using it, including the automated upgrade feature, but I am not recommending it for others yet.
 
 I started slackwatch to solve my own problem of keeping track of container versions in my kubernetes cluster at home. I was usually notified by noticing a new release on github, but this did not mean the image was actually available.
@@ -10,15 +20,6 @@ I initially wrote this in go+nextjs, but decided this was a good opportunity to 
 I am not saying rust is the best choice for this project, but I am enjoying learning it.
 
 The stack now, and going forward is planned to be rust + using dioxus as the web framework.
-
-## Working 'features' of Slackwatch
-- Notify you of new versions of your container images by comparing semver tags.
-- Check for updates on a configured schedule.
-- Authenticate with your container registry assuming standard docker registry auth behaviours. 
-- Trigger automated upgrade by commiting new tag to your gitops repo, if you have configured a gitops repo.
-- Use include/exclude regex patterns to filter out images you are not interested in, these are set as annotations on the deployment.
-- Notify you of new versions, as well sucessful commits via ntfy.
-- A Web UI to view the status of your images, and trigger automated upgrades.
 
 ## Example of a new version of ghostfolio
 
