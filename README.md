@@ -1,5 +1,6 @@
 # SlackWatch: Your Kubernetes Container Guardian 🚀
 
+### Features
 - Notify you of new versions of your container images by comparing semver tags.
 - Check for updates on a configured schedule.
 - Authenticate with your container registry assuming standard docker registry auth behaviours.
