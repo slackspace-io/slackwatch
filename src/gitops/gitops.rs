@@ -10,6 +10,7 @@ use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::Path;
 use k8s_openapi::api::apps::v1::{Deployment, StatefulSet};
+use crate::notifications::ntfy::notify_commit;
 
 fn delete_local_repo() -> Result<(), std::io::Error> {
     let local_path = Path::new("/tmp/repos/");
@@ -226,6 +227,8 @@ pub async fn run_git_operations(workload: Workload) -> Result<(), Box<dyn Error>
         stage_changes(&repo)?;
         commit_changes(&repo, &commit_message, &commit_name, &commit_email)?;
         push_changes(&repo, &access_token)?;
+        notify_commit(&workload).await?;
+
     }
 
     Ok(())
