@@ -4,3 +4,13 @@ language = "en"
 multilingual = false
 src = "docs/"
 title = "Slackwatch Documentation"
+
+[rust]
+edition = "2021"
+
+
+
+[output.html]
+default-theme = "ayu"
+git-repository-url = "https://github.com/slackspace-io/slackwatch"
+highlight-code = true
