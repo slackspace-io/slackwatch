@@ -2,6 +2,7 @@
 
 SlackWatch simplifies Kubernetes image management by keeping your deployments up-to-date.
 
+Link to [Documentation](https://slackspace-io.github.io/slackwatch/) 
 
 
 ## What is SlackWatch?
