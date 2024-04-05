@@ -191,10 +191,15 @@ async fn update_workload(workload: Workload) -> Result<(), ServerFnError> {
     log::info!("update_workload: {:?}", workload);
     println!("update_workload");
     use crate::services::workloads::update_single_workload;
-    let result = update_single_workload(workload).await;
-    Ok(result.unwrap())
- //   Ok(result.unwrap())
+    match update_single_workload(workload).await {
+        Ok(result) => Ok(result),
+        Err(e) => {
+            log::error!("Failed to update workload: {}", e);
+            Err(ServerFnError::new(&format!("Failed to update workload: {}", e)))
+        }
+    }
 }
+
 
 #[server]
 async fn refresh_all() -> Result<(), ServerFnError> {

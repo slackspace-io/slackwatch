@@ -15,20 +15,26 @@ pub async fn update_single_workload(current_workload: Workload) -> Result<(), St
     .await
     .map_err(|e| e.to_string())?;
     log::info!("Found workload: {:?}", workload);
-    let latest_tag = find_latest_tag_for_image(&workload)
-        .await
-        .map_err(|e| e.to_string())?;
-    let workload = parse_tags(&workload).await.map_err(|e| e.to_string())?;
-    if workload.update_available.to_string() == "Available" {
-        send_notification(&workload)
-            .await
-            .unwrap_or_else(|e| log::error!("Error sending notification: {}", e));
-    }
     let scan_id = get_latest_scan_id().unwrap_or(0) + 1;
-    std::thread::spawn(move || database::client::insert_workload(&workload, scan_id))
-        .join()
-        .map_err(|_| "Thread error".to_string())?
-        .expect("TODO: panic message");
+    if let Some(latest_tag) = find_latest_tag_for_image(&workload).await {
+        let workload = parse_tags(&workload).await.map_err(|e| e.to_string())?;
+
+        if workload.update_available.to_string() == "Available" {
+            send_notification(&workload)
+                .await
+                .unwrap_or_else(|e| log::error!("Error sending notification: {}", e));
+        }
+        std::thread::spawn(move || database::client::insert_workload(&workload, scan_id))
+            .join()
+            .map_err(|_| "Thread error".to_string())?
+            .expect("TODO: panic message");
+    } else {
+        log::info!("No tags found for image: {}", workload.image);
+        std::thread::spawn(move || database::client::insert_workload(&workload, scan_id))
+            .join()
+            .map_err(|_| "Thread error".to_string())?
+            .expect("TODO: panic message");
+    }
     Ok(())
 }
 
@@ -39,33 +45,43 @@ pub async fn fetch_and_update_all_watched() -> Result<(), String> {
     //stop after 3
     let scan_id = get_latest_scan_id().unwrap_or(0) + 1;
     for workload in workloads {
-        find_latest_tag_for_image(&workload)
-            .await
-            .map_err(|e| e.to_string())?;
-        let workload = parse_tags(&workload).await.map_err(|e| e.to_string())?;
-        if workload.update_available.to_string() == "Available" {
-            send_notification(&workload)
-                .await
-                .unwrap_or_else(|e| log::error!("Error sending notification: {}", e));
-        }
+        if let Some(_) = find_latest_tag_for_image(&workload).await {
+            let workload = parse_tags(&workload).await.map_err(|e| e.to_string())?;
+            if workload.update_available.to_string() == "Available" {
+                send_notification(&workload)
+                    .await
+                    .unwrap_or_else(|e| log::error!("Error sending notification: {}", e));
+            }
+            std::thread::spawn(move || database::client::insert_workload(&workload, scan_id))
+                .join()
+                .map_err(|_| "Thread error".to_string())?
+                .expect("TODO: panic message");
 
-        std::thread::spawn(move || database::client::insert_workload(&workload, scan_id))
-            .join()
-            .map_err(|_| "Thread error".to_string())?
-            .expect("TODO: panic message");
+        } else {
+            log::info!("No tags found for image: {}", workload.image);
+            std::thread::spawn(move || database::client::insert_workload(&workload, scan_id))
+                .join()
+                .map_err(|_| "Thread error".to_string())?
+                .expect("TODO: panic message");
+        }
     }
     Ok(())
 }
 
-pub async fn find_latest_tag_for_image(workload: &Workload) -> Result<String, String> {
-    let tags = get_tags_for_image(&workload.image)
-        .await
-        .map_err(|e| e.to_string())?;
-    let latest_tag = tags.first().ok_or("No tags found")?;
-    log::info!("Latest tag for image {}: {}", workload.image, latest_tag);
-    //update workload with latest tag
-    Ok(latest_tag.clone())
+pub async fn find_latest_tag_for_image(workload: &Workload) -> Option<String> {
+    match get_tags_for_image(&workload.image).await {
+        Ok(tags) => {
+            let latest_tag = tags.first()?.clone();
+            log::info!("Latest tag for image {}: {}", workload.image, latest_tag);
+            Some(latest_tag)
+        },
+        Err(e) => {
+            log::error!("Error fetching tags for image {}: {}", workload.image, e);
+            None
+        },
+    }
 }
+
 
 pub async fn test_call() {
     let workloads = find_enabled_workloads().await.unwrap();
