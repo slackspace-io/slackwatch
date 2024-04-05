@@ -26,16 +26,4 @@ jobs:
           push: true
           tags: ghcr.io/slackspace-io/slackwatch:${{ github.ref_name }},ghcr.io/slackspace-io/slackwatch:latest
 
-  create-release:
-    needs: build-and-push-images
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }}
-          body: |
-            - Slackwatch Docker image tagged with ${{ github.ref_name }}
+
