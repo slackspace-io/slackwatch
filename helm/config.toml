@@ -1,0 +1,31 @@
+
+[system]
+schedule = "0 0 9-22/2 * * *"
+data_dir = "/app/slackwatch/data"
+
+[notifications.ntfy]
+url = "http://localhost:9090"
+topic = "slackwatch"
+priorty = 1
+reminder = "24h"
+token = "dummy"
+
+
+[[gitops]]
+name = "fleet-slack-house"
+repository_url = "https://github.com/slackspace-io/slackwatch.git"
+branch = "main"
+access_token_env_name = "SLACKWATCH_TOKEN"
+commit_message = "Updated by slackwatch"
+commit_name = "slackwatch"
+commit_email = "slackwatch@slackspace.io"
+
+[[gitops]]
+name = "noauth"
+repository_url = "https://github.com/slackspace-io/slackwatch.git"
+branch = "main"
+access_token_env_name = "your_github_access_token_for_repoA"
+commit_message = "Updated by slackwatch"
+commit_name = "slackwatch"
+commit_email = "slackwatch@slackspace.io"
+
