@@ -3,8 +3,9 @@
     flex-direction: column;
     width: 100%;
 }
+
 .workload-card-update-available {
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4); /* Green glow */
+    box-shadow: 0 0 15px rgba(0, 150, 255, 0.4); /* Electric blue glow */
     padding: 20px;
     border-radius: 8px;
     background: white;
@@ -21,19 +22,17 @@
     margin: 20px;
 }
 
-
 .workload-update-single {
     display: flex;
     border: none;
     padding: 0!important;
     font-family: Arial, sans-serif;
-    color: #069;
+    color: #0096FF; /* Electric Blue */
     cursor: pointer;
     text-decoration: underline;
     background: none!important;
     justify-content: space-between;
     align-items: center;
-
 }
 
 .workload-card {
@@ -41,11 +40,9 @@
 }
 
 .upgrade-button {
-    position: absolute;
-    top: 30px;
-    right: 30px;
-    background-color: #007bff;
-    color: white;
+    position: relative;
+    background-color: #F27B30; /* Your vibrant orange */
+    color: #ffffff;
     padding: 8px 16px;
     border: none;
     font-size: 14px;
@@ -58,20 +55,17 @@
     display: block;
 }
 
-
-
 .workload-name {
     font-weight: bold;
     font-size: 1.5em;
 }
 
 .workload-update-available {
-    color: #0d7c08;
+    color: #5944AD; /* Cool, deep purple */
     font-weight: bold;
     order: 1!important;
 }
 
 .workload-version, .workload-image, .workload-namespace, .workload-last-scanned {
     margin-top: 10px;
-
 }
