@@ -15,7 +15,7 @@ spec:
       serviceAccountName: slackwatch-backend
       containers:
       - name: slackwatch
-        image: ghcr.io/slackspace-io/slackwatch:latest
+        image: ghcr.io/slackspace-io/slackwatch:dev
         ports:
         - containerPort: 8080
         env:
