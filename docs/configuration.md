@@ -177,7 +177,7 @@ description: The email to use when syncing changes.
 
 
 
-Complete configuration file
+### Complete configuration file
 ```toml
 [system]
 schedule = "0 0 9-22/2 * * *"
