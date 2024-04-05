@@ -1,0 +1,6 @@
+[book]
+authors = ["Jacob Morgan"]
+language = "en"
+multilingual = false
+src = "docs/"
+title = "Slackwatch Documentation"

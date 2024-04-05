@@ -36,3 +36,6 @@ slackwatch/
 
 # Rust
 target/
+
+#mdbook
+book/
