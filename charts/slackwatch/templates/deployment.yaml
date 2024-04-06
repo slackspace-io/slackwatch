@@ -25,6 +25,19 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /app/config
+          env:
+            {{- range $key, $val := .Values.customEnv }}
+              {{- if $val.fromSecret.enabled }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $val.fromSecret.secretName }}
+                  key: {{ $val.fromSecret.key }}
+              {{- else }}
+            - name: {{ $key }}
+              value: {{ $val | quote }}
+              {{- end }}
+            {{- end }}
       volumes:
         - name: config-volume
           configMap:
