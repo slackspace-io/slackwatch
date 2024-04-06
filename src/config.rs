@@ -50,7 +50,8 @@ impl Settings {
         let s = Config::builder()
             //add source if env var slackwatch_config path is set
             .add_source(File::with_name("/app/config/config").required(false))
-            .add_source(File::with_name(".env.toml").required(false))
+//            .add_source(File::with_name(".env.toml").required(false))
+            .add_source(File::with_name(".env.yaml").required(false))
             .add_source(File::with_name(&env_config).required(false))
             .add_source(Environment::with_prefix("slackwatch"))
             .build()?;
