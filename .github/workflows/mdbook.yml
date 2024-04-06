@@ -50,9 +50,11 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: |
-            ./book
-            ./index.yaml
+          path: ./book
+      - name: Upload helm chart
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./index.yaml
 
 
   # Deployment job
