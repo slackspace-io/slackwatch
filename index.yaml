@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  slackwatch:
+  - apiVersion: v2
+    appVersion: "1.0"
+    created: "2024-04-06T11:49:07.849606745Z"
+    description: A Helm chart for Kubernetes to deploy Slackwatch
+    digest: f6df72c052ccaf360a67e22e9bbc6bed848d69d2af98c11132f006f9f999feb1
+    name: slackwatch
+    type: application
+    urls:
+    - https://github.com/slackspace-io/slackwatch/releases/download/slackwatch-0.1.0/slackwatch-0.1.0.tgz
+    version: 0.1.0
+generated: "2024-04-06T11:49:07.849616523Z"
