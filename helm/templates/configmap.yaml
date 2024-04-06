@@ -3,6 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ .Chart.Name }}-config
 data:
-  {{- $files:= .Files}}
-    config.toml: |-
-  {{$files.Get "config.toml"}}
+  config.yaml: |
+    {{- if .Values.config }}
+    {{- toYaml .Values.config | nindent 4 }}
+    {{- end }}

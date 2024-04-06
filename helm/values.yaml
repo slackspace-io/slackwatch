@@ -1,28 +1,51 @@
 replicaCount: 1
+namespace: slackwatch
 
 image:
-  repository: ghcr.io/slackspace-io/slackwatch
+  repository: ghcr.io/slackspace-io/slackwatch  # Assuming this image is accessible as a placeholder
   pullPolicy: IfNotPresent
   tag: "latest"
 
 service:
+  annotations: {}
+  labels: {}
   type: ClusterIP
-  port: 8080
+  port: 80
+
+ingress:
+  enabled: false
+  labels: {}
+  ingressClassName: ""
+  paths:
+    - /
+  pathType: Prefix
+  extraPaths: []
+  https: false
+  annotations: {}
+  tls: []
+  hosts:
+    - test.slackwatch.default # Placeholder domain
 
 config:
-  schedule: "0 15 9-22/2 * * *"
-  data_dir: "/app/slackwatch/data"
-  ntfy:
-    url: "http://ntfy.ntfy.svc.cluster.local"
-    topic: "slackwatch"
-    reminder: "24h"
-    token: "dummy"
+  system:
+    #default schedule is every 2 hours
+    schedule: "0 0 */2 * *"
+    data_dir: "/app/slackwatch/data"
 
-gitops:
-  - name: "dummy"
-    repository_url: "https://github.com/slackspace-io/dummy.git"
-    branch: "main"
-    commit_message: "Updated by slackwatch"
-    commit_name: "slackwatch"
-    commit_email: "slackwatch@slackspace.io"
-    access_token_env_name: "SLACKWATCH_TOKEN"
+  notifications:
+    ntfy:
+      url: "http://ntfy-server.default:80" # Assumes an 'ntfy-server' available in the 'default' namespace
+      topic: "slackwatch-test"
+      token: "slackwatch-ntfy-token"
+      priority: 1
+      reminder: "24h"
+      # ... other notification provider settings
+
+  gitops:
+    - name: "test-repo" # Placeholder name
+      repository_url: "https://github.com/your-org/test-repo.git"
+      branch: "main"
+      access_token_env_name: "TEST_REPO_ACCESS_TOKEN"
+      commit_message: "Automated commit by slackwatch"
+      commit_email: "slackwatch@yourmail.default"
+      # ... other GitOps settings
