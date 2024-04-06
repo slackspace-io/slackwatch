@@ -8,6 +8,8 @@ title = "Slackwatch Documentation"
 [rust]
 edition = "2021"
 
+[build]
+build-dir = "site/book"
 
 
 [output.html]
