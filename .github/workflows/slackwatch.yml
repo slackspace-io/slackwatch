@@ -11,6 +11,10 @@ on:
       - 'Dockerfile'
       - 'assets/**'
 
+concurrency:
+  group: "slackwatch"
+  cancel-in-progress: true
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
