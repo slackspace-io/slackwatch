@@ -42,7 +42,13 @@ pub async fn scheduler(schedule: &Schedule) {
 #[cfg(feature = "server")]
 pub async fn run_scheduler(settings: Settings) {
     //Load Scheduler
+    let run_at_startup = settings.system.run_at_startup;
+    if run_at_startup {
+        log::info!("Running full refresh at startup");
+        refresh_all_workloads().await;
+    }
     let schedule_str = settings.system.schedule;
+    log::info!("Schedule is {}", schedule_str);
     let schedule = &Schedule::from_str(&schedule_str).expect("Failed to parse cron expression");
     loop {
         scheduler(schedule).await;

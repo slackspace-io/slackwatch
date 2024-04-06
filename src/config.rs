@@ -10,11 +10,13 @@ pub struct Settings {
     pub gitops: Option<Vec<GitopsConfig>>,
 }
 
+
 impl Default for System {
     fn default() -> Self {
         System {
-            schedule: "0 0 6-20/2 * * *".to_string(),
-            data_dir: "/app/slackwatch/data".to_string(),
+            schedule: default_schedule(),
+            data_dir: default_data_dir(),
+            run_at_startup: default_run_at_startup(),
         }
     }
 }
@@ -22,8 +24,23 @@ impl Default for System {
 #[derive(Debug, Deserialize, Clone)]
 #[allow(unused)]
 pub struct System {
+    #[serde(default = "default_schedule")]
     pub schedule: String,
+    #[serde(default = "default_data_dir")]
     pub data_dir: String,
+    #[serde(default = "default_run_at_startup")]
+    pub run_at_startup: bool,
+}
+
+fn default_schedule() -> String {
+    "0 0 */2 * * *".to_string()
+}
+fn default_data_dir() -> String {
+    "/app/slackwatch/data".to_string()
+}
+
+fn default_run_at_startup() -> bool {
+    false
 }
 
 #[derive(Debug, Deserialize, Clone)]

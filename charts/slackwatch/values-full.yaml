@@ -29,8 +29,10 @@ ingress:
 config:
   system:
     #default schedule is every 2 hours
-    schedule: "0 0 */2 * *"
+    schedule: "0 0 */2 * * *"
     data_dir: "/app/slackwatch/data"
+    #run at startup, otherwise blank page until first run. App is stateless at the moment.
+    run_at_startup: false
 
   notifications:
     ntfy:
