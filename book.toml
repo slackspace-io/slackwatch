@@ -15,5 +15,3 @@ default-theme = "ayu"
 git-repository-url = "https://github.com/slackspace-io/slackwatch"
 highlight-code = true
 
-[output.html.redirect]
-"index.yaml" = "https://raw.githubusercontent.com/slackspace-io/slackwatch/gh-pages/index.yaml"
