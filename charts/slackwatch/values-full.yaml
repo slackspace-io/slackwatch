@@ -1,0 +1,62 @@
+replicaCount: 1
+namespace: slackwatch
+
+image:
+  repository: ghcr.io/slackspace-io/slackwatch  # Assuming this image is accessible as a placeholder
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  annotations: {}
+  labels: {}
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  labels: {}
+  ingressClassName: ""
+  paths:
+    - /
+  pathType: Prefix
+  extraPaths: []
+  https: false
+  annotations: {}
+  tls: []
+  hosts:
+    - test.slackwatch.default # Placeholder domain
+
+config:
+  system:
+    #default schedule is every 2 hours
+    schedule: "0 0 */2 * *"
+    data_dir: "/app/slackwatch/data"
+
+  notifications:
+    ntfy:
+      url: "http://ntfy-server.default:80" # Assumes an 'ntfy-server' available in the 'default' namespace
+      topic: "slackwatch-test"
+      token: "slackwatch-ntfy-token"
+      priority: 1
+      reminder: "24h"
+      # ... other notification provider settings
+
+  gitops:
+    - name: "test-repo" # Placeholder name
+      repository_url: "https://github.com/your-org/test-repo.git"
+      branch: "main"
+      access_token_env_name: "TEST_REPO_ACCESS_TOKEN"
+      commit_message: "Automated commit by slackwatch"
+      commit_email: "slackwatch@yourmail.default"
+      # ... other GitOps settings
+
+# Custom environment variables for the Slackwatch application
+#customEnv:
+#  # Environment variables that should be populated from secrets
+#  # Users can comment out or remove if not needed
+#  # When using gitops or ntfy it is recommended to use secrets. Match the secretName with the appropriate configuration.
+#  TEST_REPO_ACCESS_TOKEN:
+#    fromSecret:
+#      enabled: true
+#      secretName: "TEST_REPO_ACCESS_TOKEN"
+#      key: "tokensupersecret"

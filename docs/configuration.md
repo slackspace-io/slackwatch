@@ -1,6 +1,8 @@
 # Configuration
 
-## Configuration File
+## Configuration File [TOML]
+
+**Note**: config-rs can support a variety of formats. Below is an example of a TOML configuration file. However, going forward only yaml, and helm values files will be tested.
 
 Slackwatch supports configuration via a TOML file. The default location is `~/.slackwatch/config.toml`. Here's an example:
 

@@ -31,3 +31,4 @@ config:
     #default schedule is every 2 hours
     schedule: "0 0 */2 * *"
     data_dir: "/app/slackwatch/data"
+
