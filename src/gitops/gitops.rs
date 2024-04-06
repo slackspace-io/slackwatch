@@ -1,4 +1,4 @@
-use crate::config::Settings;
+use crate::config::{GitopsConfig, Ntfy, Settings};
 use crate::models::models::Workload;
 use futures::FutureExt;
 use git2::{
@@ -11,6 +11,23 @@ use std::io::{Read, Write};
 use std::path::Path;
 use k8s_openapi::api::apps::v1::{Deployment, StatefulSet};
 use crate::notifications::ntfy::notify_commit;
+
+
+
+fn load_settings() ->Result<Vec<GitopsConfig>, String> {
+    //get settings
+    let settings = Settings::new().unwrap_or_else(|err| {
+        log::error!("Failed to load settings: {}", err);
+        panic!("Failed to load settings: {}", err);
+    });
+    if let Some(gitops_config) = settings.gitops {
+        return Ok(gitops_config.clone());
+    } else {
+        return Err("No Gitops Config Found".to_string());
+    }
+
+}
+
 
 fn delete_local_repo() -> Result<(), std::io::Error> {
     let local_path = Path::new("/tmp/repos/");
@@ -192,12 +209,25 @@ fn push_changes(repo: &Repository, access_token: &str) -> Result<(), git2::Error
 }
 
 pub async fn run_git_operations(workload: Workload) -> Result<(), Box<dyn Error>> {
+    match load_settings() {
+        Ok(settings) => {
+            log::info!("Settings: {:?}", settings);
+            return Ok(run_git_operations_internal(settings, workload).await?);
+        }
+        Err(e) => {
+            log::info!("Failed to load settings: {}", e);
+            //Create error
+            return Ok(());
+            // Handle the error, e.g., by returning or panicking
+        }
+    }
 
-    let settings = Settings::new().unwrap_or_else(|err| {
-        log::error!("Failed to load settings: {}", err);
-        panic!("Failed to load settings: {}", err);
-    });
-    for gitops_config in settings.gitops {
+async fn run_git_operations_internal(
+        settings: Vec<GitopsConfig>,
+        workload: Workload,
+    ) -> Result<(), Box<dyn Error>> {
+
+    for gitops_config in settings {
         log::info!("Gitops config: {:?}", gitops_config);
         log::info!("Workload: {:?}", workload);
         if gitops_config.name.as_str() != workload.git_ops_repo.clone().unwrap_or_default().as_str()
@@ -232,4 +262,5 @@ pub async fn run_git_operations(workload: Workload) -> Result<(), Box<dyn Error>
     }
 
     Ok(())
+}
 }

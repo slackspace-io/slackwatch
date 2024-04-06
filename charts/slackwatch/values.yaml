@@ -31,34 +31,3 @@ config:
     #default schedule is every 2 hours
     schedule: "0 0 */2 * *"
     data_dir: "/app/slackwatch/data"
-
-  notifications:
-    ntfy:
-      url: "http://ntfy-server.default:80" # Assumes an 'ntfy-server' available in the 'default' namespace
-      topic: "slackwatch-test"
-      token: "slackwatch-ntfy-token"
-      priority: 1
-      reminder: "24h"
-      # ... other notification provider settings
-
-  gitops:
-    - name: "test-repo" # Placeholder name
-      repository_url: "https://github.com/your-org/test-repo.git"
-      branch: "main"
-      access_token_env_name: "TEST_REPO_ACCESS_TOKEN"
-      commit_message: "Automated commit by slackwatch"
-      commit_email: "slackwatch@yourmail.default"
-      # ... other GitOps settings
-
-# Custom environment variables for the Slackwatch application
-#customEnv:
-#  # Example of a direct value environment variable
-#  # EXAMPLE_ENV_VAR: "example_value"
-#
-#  # Environment variables that should be populated from secrets
-#  # Users can comment out or remove if not needed
-#  TEST_REPO_ACCESS_TOKEN:
-#    fromSecret:
-#      enabled: true
-#      secretName: "TEST_REPO_ACCESS_TOKEN"
-#      key: "tokensupersecret"

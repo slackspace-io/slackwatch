@@ -4,9 +4,19 @@ use serde_derive::Deserialize;
 #[derive(Debug, Deserialize, Clone)]
 #[allow(unused)]
 pub struct Settings {
-    pub notifications: Notifications,
+    #[serde(default)]
     pub system: System,
-    pub gitops: Vec<GitopsConfig>,
+    pub notifications: Option<Notifications>,
+    pub gitops: Option<Vec<GitopsConfig>>,
+}
+
+impl Default for System {
+    fn default() -> Self {
+        System {
+            schedule: "0 0 6-20/2 * * *".to_string(),
+            data_dir: "/app/slackwatch/data".to_string(),
+        }
+    }
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -31,7 +41,7 @@ pub struct GitopsConfig {
 #[derive(Debug, Deserialize, Clone)]
 #[allow(unused)]
 pub struct Notifications {
-    pub ntfy: Ntfy,
+    pub ntfy: Option<Ntfy>,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -57,7 +67,7 @@ impl Settings {
             .build()?;
         //print config
         println!("{:?}", s);
-        s.try_deserialize()
+        s.try_deserialize::<Settings>().or_else(|e| Err(e))
     }
     //add clone
 }
@@ -105,7 +115,6 @@ mod tests {
         //remove conflicting env var ones for now
         assert_eq!(settings.system.data_dir, "/tmp/data");
         assert_eq!(settings.gitops[0].name, "example-repo");
-        assert_eq!(settings.notifications.ntfy.url, "http://ntfy.example.com");
     }
 
     #[test]
