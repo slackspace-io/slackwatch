@@ -3,7 +3,20 @@
 ### Helm
 Reference files located in the `charts` directory, including a full values.yaml file with all available configuration options.
 
-Helm repo is located at https://slackspace-io.github.io/slackwatch/helm/
+Helm repo is located at [https://slackspace-io.github.io/slackwatch/helm/](https://slackspace-io.github.io/slackwatch/installation.html#helm)
+
+To install slackwatch using helm, run the following command:
+
+```shell
+helm repo add slackwatch https://slackspace-io.github.io/slackwatch/helm/
+helm install slackwatch slackwatch/slackwatch
+```
+
+Full values.yaml file with all available configuration options displayed below. It can be found in `charts/slackwatch/values-full.yaml`.
+```
+{{#include ../charts/slackwatch/values-full.yaml}}
+```
+
 
 
 ### Kubernetes
