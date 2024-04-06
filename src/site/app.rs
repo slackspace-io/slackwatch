@@ -39,6 +39,15 @@ fn Home() -> Element {
     let workloads = use_server_future(get_all)?;
     match workloads() {
         Some(Ok(workloads)) => {
+            if workloads.len() == 0 {
+                rsx! {
+                    div { "No workloads found" } ,
+                    br {},
+                    br {},
+                    a { href: "/refresh-all", "Click to Refresh All" }
+
+                }
+            } else {
             rsx! {
                 div { class: "workloads-page",
                     for w in workloads.iter() {
@@ -46,6 +55,7 @@ fn Home() -> Element {
                         }
             }
             }
+        }
         },
         Some(Err(err)) => {
             rsx! { div { "Error: {err}" } }
@@ -118,7 +128,12 @@ fn RefreshAll() -> Element {
     let refresh = use_server_future(refresh_all)?;
     match refresh() {
         Some(Ok(_)) => {
-            rsx! { div { "Refreshed" } }
+            rsx! {
+                div { "Refreshed" },
+                br {},
+                br {},
+                a { href: "/", "Go back to Home" }
+            }
         },
         Some(Err(err)) => {
             rsx! { div { "Error: {err}" } }
@@ -213,5 +228,6 @@ async fn refresh_all() -> Result<(), ServerFnError> {
 async fn get_all() -> Result<Vec<Workload>, ServerFnError> {
     use crate::database::client::return_all_workloads;
     let workloads = return_all_workloads();
+    log::info!("get_all_workloads: {:?}", workloads);
     Ok(workloads.unwrap())
 }
