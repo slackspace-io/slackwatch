@@ -21,4 +21,15 @@ entries:
     urls:
     - https://github.com/slackspace-io/slackwatch/releases/download/slackwatch-0.1.0/slackwatch-0.1.0.tgz
     version: 0.1.0
-generated: "2024-04-06T11:51:16.618646446Z"
+  slackwatch-helm:
+  - apiVersion: v2
+    appVersion: 0.3.3
+    created: "2024-04-06T11:52:18.529367374Z"
+    description: A Helm chart for Kubernetes to deploy Slackwatch
+    digest: 729137b0cb01cbac32b3bf4ea0bd47669d0d9082470d8eef31d3666c8f8e4475
+    name: slackwatch-helm
+    type: application
+    urls:
+    - https://github.com/slackspace-io/slackwatch/releases/download/slackwatch-helm-0.1.0/slackwatch-helm-0.1.0.tgz
+    version: 0.1.0
+generated: "2024-04-06T11:52:18.529380117Z"
