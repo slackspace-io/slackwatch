@@ -9,7 +9,7 @@ To install slackwatch using helm, run the following command:
 
 ```shell
 helm repo add slackwatch https://slackspace-io.github.io/slackwatch/helm/
-helm install slackwatch slackwatch/slackwatch
+helm install slackwatch slackwatch/slackwatch-helm
 ```
 
 Full values.yaml file with all available configuration options displayed below. It can be found in `charts/slackwatch/values-full.yaml`.
