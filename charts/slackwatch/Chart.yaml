@@ -2,5 +2,5 @@ apiVersion: v2
 name: slackwatch-helm
 description: A Helm chart for Kubernetes to deploy Slackwatch
 type: application
-version: 0.1.1
-appVersion: 0.3.3
+version: 0.1.0
+appVersion: 0.3.4
