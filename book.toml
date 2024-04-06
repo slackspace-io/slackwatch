@@ -9,7 +9,7 @@ title = "Slackwatch Documentation"
 edition = "2021"
 
 [build]
-build-dir = "site/book"
+build-dir = "site"
 
 
 [output.html]
