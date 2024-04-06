@@ -32,7 +32,7 @@ docker-compose*.yml
 
 # Dioxus
 .dioxus/
-slackwatch/
+.slackwatch/
 
 # Rust
 target/
