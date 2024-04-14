@@ -26,9 +26,10 @@ pub async fn get_tags_for_image(image: &str) -> Result<Vec<String>, Box<dyn std:
     let auth = RegistryAuth::Anonymous;
     let config = ClientConfig::default();
     let mut client = Client::new(config);
+    let max_tags = Some(1500);
     log::info!("Fetching tags for image: {:?}", reference.tag());
     let tags = client
-        .list_tags(&reference, &auth, None, reference.tag())
+        .list_tags(&reference, &auth, max_tags, reference.tag())
         .await?;
     log::info!("Available tags for {}: {:?}", reference, tags.tags);
     //length of tags

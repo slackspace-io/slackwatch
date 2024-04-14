@@ -40,3 +40,4 @@ docker-compose*.yml
 #mdbook
 book/
 .site/
+/site/

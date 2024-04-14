@@ -29,8 +29,6 @@ async fn get_all_workloads() -> Result<String, ServerFnError> {
     use crate::database::client::return_all_workloads;
     let workloads = return_all_workloads();
     Ok(workloads.unwrap().iter().map(|w| w.name.clone()).collect::<Vec<String>>().join(", "))
-
-//    Ok(workloads.unwrap().iter().map(|w| w.name.clone()).collect::<Vec<String>>().join(", "))
 }
 
 
@@ -68,6 +66,31 @@ fn Home() -> Element {
 }
 
 #[component]
+fn DebugWorkloadCard(props: WorkloadCardProps) -> Element {
+    rsx! {
+        div {
+            class: if props.workload.update_available == models::models::UpdateStatus::Available {
+                "workload-card-update-available"
+            } else {
+                "workload-card"
+            },
+            div { class: "workload-name", "{props.workload.name}" },
+            div { class: "workload-
+            namespace", "Namespace: {props.workload.namespace}" },
+            div { class: "workload-version", "Current Tag {props.workload.current_version}" },
+            div { class: "workload-image", "Image: {props.workload.image}" },
+            div { class: "workload-last-scanned", "Last Scanned: {props.workload.last_scanned}" },
+            if props.workload.update_available == models::models::UpdateStatus::Available {
+                div { class: "workload-latest-version", "Latest Version Available: {props.workload.latest_version}" }
+                br {}
+            }
+        }
+    }
+}
+
+
+
+#[component]
 fn WorkloadCard(props: WorkloadCardProps) -> Element {
     let data = use_signal(|| {props.workload.clone()});
     rsx! {
@@ -91,6 +114,8 @@ fn WorkloadCard(props: WorkloadCardProps) -> Element {
             div { class: "workload-image", "Image: {props.workload.image}" },
             div { class: "workload-last-scanned", "Last Scanned: {props.workload.last_scanned}" },
             if props.workload.update_available == models::models::UpdateStatus::Available {
+                div { class: "workload-latest-version", "Latest Version Available: {props.workload.latest_version}" }
+                br {}
                 button { onclick: move |_| {
                     async move {
                         if let Ok(_) = upgrade_workload(data()).await {
@@ -106,20 +131,6 @@ fn WorkloadCard(props: WorkloadCardProps) -> Element {
 pub fn App() -> Element {
     println!("App started");
     rsx! { Router::<Route> {} }
-    //rsx!{
-    //    div {
-    //        "App"
-    //    }
-    //}
-    //rsx! { All {} }
-//    rsx! {
-//        "server data is {workloads():?}"
-//        div {}
-//        "server data is {all():?}"
-//        div { {all().map(|w| rsx! { div {"{w:?}"}})}}
-//
-//
-//}
 }
 
 
@@ -170,6 +181,7 @@ fn All() -> Element {
                             div { class: "workload-version", "Current Tag {w.current_version}" },
                             div { class: "workload-image", "Image: {w.image}" },
                             div { class: "workload-last-scanned", "Last Scanned: {w.last_scanned}" },
+                                        div { class: "workload-name", "{w.latest_version}" },
                             if w.update_available == models::models::UpdateStatus::Available {
                                 div { class: "workload-update-available", "Update Available" }
                             }

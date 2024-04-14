@@ -3,7 +3,7 @@ name: Build and Push Slackwatch Image
 on:
   push:
     branches:
-      - main
+      - dev
 
     paths:
       - 'src/**'
@@ -33,4 +33,4 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/slackspace-io/slackwatch:preview,ghcr.io/slackspace-io/slackwatch:${{ github.sha }}
+          tags: ghcr.io/slackspace-io/slackwatch:dev,ghcr.io/slackspace-io/slackwatch:${{ github.sha }}

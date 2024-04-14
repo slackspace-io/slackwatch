@@ -6,16 +6,13 @@ use std::str::FromStr;
 use std::time::Duration;
 use tokio::time::{sleep_until, Instant as TokioInstant};
 
+
+
 #[cfg(feature = "server")]
 pub async fn scheduler(schedule: &Schedule) {
-    // Example cron schedule: Every minute
     log::info!("Scheduler started");
-    //let schedule_str = "0 * * * * *"; // Adjust the cron expression as needed
-    //let schedule = Schedule::from_str(schedule_str).expect("Failed to parse cron expression");
     println!("Cron schedule: {}", schedule);
     log::info!("Cron schedule: {}", schedule);
-    // Find the next scheduled time
-    //print next 5 scheduled times
     let mut i = 0;
     for datetime in schedule.upcoming(chrono::Utc) {
         if i < 5 {
