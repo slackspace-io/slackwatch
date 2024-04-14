@@ -66,6 +66,31 @@ fn Home() -> Element {
 }
 
 #[component]
+fn DebugWorkloadCard(props: WorkloadCardProps) -> Element {
+    rsx! {
+        div {
+            class: if props.workload.update_available == models::models::UpdateStatus::Available {
+                "workload-card-update-available"
+            } else {
+                "workload-card"
+            },
+            div { class: "workload-name", "{props.workload.name}" },
+            div { class: "workload-
+            namespace", "Namespace: {props.workload.namespace}" },
+            div { class: "workload-version", "Current Tag {props.workload.current_version}" },
+            div { class: "workload-image", "Image: {props.workload.image}" },
+            div { class: "workload-last-scanned", "Last Scanned: {props.workload.last_scanned}" },
+            if props.workload.update_available == models::models::UpdateStatus::Available {
+                div { class: "workload-latest-version", "Latest Version Available: {props.workload.latest_version}" }
+                br {}
+            }
+        }
+    }
+}
+
+
+
+#[component]
 fn WorkloadCard(props: WorkloadCardProps) -> Element {
     let data = use_signal(|| {props.workload.clone()});
     rsx! {
@@ -106,20 +131,6 @@ fn WorkloadCard(props: WorkloadCardProps) -> Element {
 pub fn App() -> Element {
     println!("App started");
     rsx! { Router::<Route> {} }
-    //rsx!{
-    //    div {
-    //        "App"
-    //    }
-    //}
-    //rsx! { All {} }
-//    rsx! {
-//        "server data is {workloads():?}"
-//        div {}
-//        "server data is {all():?}"
-//        div { {all().map(|w| rsx! { div {"{w:?}"}})}}
-//
-//
-//}
 }
 
 
