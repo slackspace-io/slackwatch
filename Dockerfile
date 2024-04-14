@@ -1,8 +1,8 @@
 FROM rust:1.77.1 as builder
 WORKDIR /app
+RUN cargo install dioxus-cli@0.5.0
 COPY Cargo.toml Cargo.lock ./
 COPY src ./src
-RUN cargo install dioxus-cli@0.5.0
 RUN  dx build --platform fullstack --release
 
 FROM rust:1.77.1
