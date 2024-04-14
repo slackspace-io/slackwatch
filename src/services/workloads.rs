@@ -117,7 +117,8 @@ pub async fn parse_tags(workload: &Workload) -> Result<Workload, Box<dyn std::er
             .collect();
 
         log::info!("Filtered tags: {:?}", tags);
-    } else if let Some(exclude_pattern_str) = &workload.exclude_pattern {
+    }
+    if let Some(exclude_pattern_str) = &workload.exclude_pattern {
         log::info!("Exclude pattern defined, using only exclude");
         log::info!("Exclude pattern: {}", exclude_pattern_str);
 
@@ -145,8 +146,14 @@ pub async fn parse_tags(workload: &Workload) -> Result<Workload, Box<dyn std::er
             if tag_version > current_version {
                 // tag_version is greater than current_version
                 // Do something with this tag
-                println!("Tag {} is newer than current version", tag);
-                latest_version = tag.clone();
+                if latest_version.is_empty() {
+                    log::info!("latest_version is empty - setting to tag {}", tag);
+                    latest_version = tag.clone();
+                } else if tag_version > Version::parse(&strip_tag_lettings(&latest_version)).unwrap() {
+                    log::info!("Tag {} is newer than {} current latest_version updating", tag, latest_version);
+                    latest_version = tag.clone();
+                }
+                
             }
         } else {
             // Handle the case where the tag is not a valid SemVer format
