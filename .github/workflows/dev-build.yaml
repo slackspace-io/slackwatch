@@ -9,6 +9,7 @@ on:
       - 'src/**'
       - 'Dockerfile'
       - 'assets/**'
+      - '.github/workflows/dev-build.yaml'
 
 concurrency:
   group: "slackwatch"
