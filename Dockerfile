@@ -9,6 +9,6 @@ FROM rust:1.77.1
 #RUN apt-get update && rm -rf /var/lib/apt/lists/*
 #Copy all files from the builder
 WORKDIR /app
-COPY --from=builder /app/slackwatch /app/slackwatch
+COPY --from=builder /app/target/release/slackwatch /app/slackwatch
 EXPOSE 8080
 CMD ["/app/slackwatch/slackwatch"]
