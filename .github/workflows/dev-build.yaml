@@ -28,9 +28,11 @@ jobs:
         run: docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v5
         with:
           context: ./
           file: ./Dockerfile
           push: true
           tags: ghcr.io/slackspace-io/slackwatch:dev,ghcr.io/slackspace-io/slackwatch:${{ github.sha }}
+          cache-from: type=gh,mode=max
+          cache-to: type=gh,mode=max
