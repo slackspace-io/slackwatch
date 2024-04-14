@@ -1,4 +1,4 @@
-name: Build and Push Slackwatch Image
+name: Build and Push Dev Branch
 
 on:
   push:
