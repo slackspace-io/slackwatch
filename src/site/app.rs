@@ -29,8 +29,6 @@ async fn get_all_workloads() -> Result<String, ServerFnError> {
     use crate::database::client::return_all_workloads;
     let workloads = return_all_workloads();
     Ok(workloads.unwrap().iter().map(|w| w.name.clone()).collect::<Vec<String>>().join(", "))
-
-//    Ok(workloads.unwrap().iter().map(|w| w.name.clone()).collect::<Vec<String>>().join(", "))
 }
 
 
@@ -91,6 +89,8 @@ fn WorkloadCard(props: WorkloadCardProps) -> Element {
             div { class: "workload-image", "Image: {props.workload.image}" },
             div { class: "workload-last-scanned", "Last Scanned: {props.workload.last_scanned}" },
             if props.workload.update_available == models::models::UpdateStatus::Available {
+                div { class: "workload-latest-version", "Latest Version Available: {props.workload.latest_version}" }
+                br {}
                 button { onclick: move |_| {
                     async move {
                         if let Ok(_) = upgrade_workload(data()).await {
@@ -170,6 +170,7 @@ fn All() -> Element {
                             div { class: "workload-version", "Current Tag {w.current_version}" },
                             div { class: "workload-image", "Image: {w.image}" },
                             div { class: "workload-last-scanned", "Last Scanned: {w.last_scanned}" },
+                                        div { class: "workload-name", "{w.latest_version}" },
                             if w.update_available == models::models::UpdateStatus::Available {
                                 div { class: "workload-update-available", "Update Available" }
                             }

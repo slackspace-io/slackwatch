@@ -67,6 +67,6 @@
     order: 1!important;
 }
 
-.workload-version, .workload-image, .workload-namespace, .workload-last-scanned {
+.workload-version, .workload-image, .workload-namespace, .workload-last-scanned, .workload-latest-version {
     margin-top: 10px;
 }
