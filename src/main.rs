@@ -42,7 +42,6 @@ async fn  main() {
     #[cfg(feature = "server")]
     use crate::database::client::create_table_if_not_exist;
     create_table_if_not_exist().unwrap();
-    //working tokio stuff
     tokio::task::spawn(services::scheduler::run_scheduler(settings.clone()));
     let mut config = dioxus::fullstack::Config::new();
 
