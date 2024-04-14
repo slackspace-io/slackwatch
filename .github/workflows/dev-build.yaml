@@ -35,5 +35,5 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ghcr.io/slackspace-io/slackwatch:dev,ghcr.io/slackspace-io/slackwatch:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,modes=max
+          cache-from: type=registry,ref=ghcr.io/slackspace-io/slackwatch:build-cache
+          cache-to: type=registry,ref=ghcr.io/slackspace-io/slackwatch:build-cache,mode=max
