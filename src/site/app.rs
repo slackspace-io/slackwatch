@@ -2,7 +2,9 @@
 
 use dioxus::prelude::*;
 use dioxus::prelude::ServerFnError;
+use serde_derive::{Deserialize, Serialize};
 use wasm_bindgen_futures::spawn_local;
+use crate::config::{GitopsConfig, Notifications, Settings, System};
 use crate::models;
 use crate::models::models::Workload;
 
@@ -14,8 +16,15 @@ enum Route {
         Home {},
         #[route("/refresh-all")]
         RefreshAll {},
+        #[route("/settings")]
+        SettingsPage {},
     }
 
+#[derive(Debug, Deserialize, Clone)]
+#[allow(unused)]
+pub struct AppSettings {
+    pub settings: Settings,
+}
 
 
 #[derive(PartialEq, Clone,Props)]
@@ -30,6 +39,62 @@ async fn get_all_workloads() -> Result<String, ServerFnError> {
     let workloads = return_all_workloads();
     Ok(workloads.unwrap().iter().map(|w| w.name.clone()).collect::<Vec<String>>().join(", "))
 }
+
+
+
+#[component]
+fn SettingsCard(props: AppSettings) -> Element {
+    rsx! {
+        div {
+            class: "settings-section",
+        }
+    }
+}
+
+#[component]
+fn SettingsPage() -> Element {
+    let settings_context = use_context::<Signal<AppSettings>>();
+    let settings = settings_context.read();
+    rsx! {
+        div {
+            class: "settings-page",
+            div {
+                class: "settings-section",
+                div { class: "settings-section-header", "System Settings" },
+                div { class: "settings-item",
+                    span { class: "settings-item-key", "Schedule: " },
+                    span { class: "settings-item-value", "{settings.settings.system.schedule}" }
+                },
+                div { class: "settings-item",
+                    span { class: "settings-item-key", "Data Directory: " },
+                    span { class: "settings-item-value", "{settings.settings.system.data_dir}" }
+                },
+                div { class: "settings-item",
+                    span { class: "settings-item-key", "Run at Startup: " },
+                    span { class: "settings-item-value", "{settings.settings.system.run_at_startup}" }
+                }
+            },
+            div {
+                class: "settings-section",
+                div { class: "settings-section-header", "Gitops Settings" },
+                    for gitops in settings.clone().settings.gitops.unwrap().iter() {
+                        div { class: "settings-item",
+                            span { class: "settings-item-key", "Name: " }
+                            span { class: "settings-item-value", "{gitops.name}" }
+                        }
+                        div { class: "settings-item",
+                            span { class: "settings-item-key", "Repository URL: " }
+                            span { class: "settings-item-value", "{gitops.repository_url}" }
+                        }
+                }
+                
+            }
+
+        },
+    }
+}
+
+    
 
 
 #[component]
@@ -130,6 +195,13 @@ fn WorkloadCard(props: WorkloadCardProps) -> Element {
 
 pub fn App() -> Element {
     println!("App started");
+    use_context_provider(|| Signal::new(AppSettings { settings: Settings::new().unwrap_or_else(
+        |err| {
+            log::error!("Failed to load settings: {}", err);
+            panic!("Failed to load settings: {}", err);
+        }
+    ) }));
+    //load config
     rsx! { Router::<Route> {} }
 }
 
@@ -204,6 +276,7 @@ fn All() -> Element {
 }
 
 
+
 #[server]
 async fn upgrade_workload(workload: Workload) -> Result<(), ServerFnError> {
     log::info!("upgrade_workload: {:?}", workload);
@@ -239,6 +312,8 @@ async fn refresh_all() -> Result<(), ServerFnError> {
 #[server]
 async fn get_all() -> Result<Vec<Workload>, ServerFnError> {
     use crate::database::client::return_all_workloads;
+    let settings_context = consume_context::<Signal<AppSettings>>();
+    log::info!("settings_context: {:?}", settings_context);
     let workloads = return_all_workloads();
     log::info!("get_all_workloads: {:?}", workloads);
     Ok(workloads.unwrap())
