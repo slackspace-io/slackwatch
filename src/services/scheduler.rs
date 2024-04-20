@@ -53,6 +53,17 @@ pub async fn run_scheduler(settings: Settings) {
 }
 
 #[cfg(feature = "server")]
+pub async fn next_schedule_time(schedule_str: &String) -> String {
+    let now = chrono::Utc::now();
+    let schedule = &Schedule::from_str(&schedule_str).expect("Failed to parse cron expression");
+    if let Some(next) = schedule.upcoming(chrono::Utc).next() {
+        let duration_until_next = (next - now).to_std().expect("Failed to calculate duration");
+        return format!("{:?}", next);
+    }
+    "No upcoming schedule".to_string()
+}
+
+#[cfg(feature = "server")]
 async fn refresh_all_workloads() {
     log::info!("Refreshing all workloads");
     fetch_and_update_all_watched()

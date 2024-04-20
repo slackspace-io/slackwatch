@@ -103,3 +103,17 @@
 .settings-item-value {
     margin-left: 10px;
 }
+
+.system-info {
+    font-weight: bold;
+    font-size: 1.25em;
+}
+
+.next-scheduled-time {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        padding: 20px;
+        border-radius: 8px;
+        background: white;
+        order: 2;
+        margin: 20px;
+}

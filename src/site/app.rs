@@ -56,6 +56,10 @@ fn SettingsPage() -> Element {
     let settings_context = use_context::<Signal<AppSettings>>();
     let settings = settings_context.read();
     rsx! {
+        //div {
+        //  NextScheduledTimeCard {}
+        //
+        //},
         div {
             class: "settings-page",
             div {
@@ -87,14 +91,14 @@ fn SettingsPage() -> Element {
                             span { class: "settings-item-value", "{gitops.repository_url}" }
                         }
                 }
-                
+
             }
 
         },
     }
 }
 
-    
+
 
 
 #[component]
@@ -113,6 +117,7 @@ fn Home() -> Element {
             } else {
             rsx! {
                 div { class: "workloads-page",
+                    NextScheduledTimeCard {},
                     for w in workloads.iter() {
                     WorkloadCard{workload: w.clone()}
                         }
@@ -275,6 +280,49 @@ fn All() -> Element {
     }
 }
 
+
+// ... rest of the code ...
+
+#[component]
+fn NextScheduledTimeCard() -> Element {
+    let settings_context = use_context::<Signal<AppSettings>>().clone();
+    let mut next_schedule = use_server_future(move || async move {
+        let settings = settings_context.read();
+        get_next_schedule_time(settings.settings.clone()).await
+    })?;
+    match next_schedule() {
+        Some(Ok(next_schedule)) => {
+            rsx! {
+                div { class: "next-scheduled-time",
+                    div { class: "system-info", "System Info" },
+                    div { "Next Run: {next_schedule}" }
+                }
+            }
+        },
+        Some(Err(err)) => {
+            rsx! { div { "Error: {err}" } }
+        },
+        None => {
+            rsx! { div { "Loading..." } }
+        }
+        _ => {
+            rsx! { div { "Loading..." } }
+        }
+    }
+}
+
+#[server]
+async fn get_next_schedule_time(settings: Settings) -> Result<String, ServerFnError> {
+    use crate::services::scheduler::next_schedule_time;
+    let schedule_str = &settings.system.schedule;
+    let next_schedule = next_schedule_time(&schedule_str).await;
+    log::info!("get_next_schedule_time: {:?}", next_schedule);
+    if next_schedule.contains("No upcoming schedule") {
+        Result::Err(ServerFnError::new(&next_schedule))
+    } else {
+        Result::Ok(next_schedule)
+    }
+}
 
 
 #[server]
