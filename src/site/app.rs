@@ -1,6 +1,7 @@
 #![allow(non_snake_case, unused)]
 
 use dioxus::prelude::*;
+use dioxus::prelude::server_fn::response::Res;
 use dioxus::prelude::ServerFnError;
 use serde_derive::{Deserialize, Serialize};
 use wasm_bindgen_futures::spawn_local;
@@ -20,7 +21,7 @@ enum Route {
         SettingsPage {},
     }
 
-#[derive(Debug, Deserialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[allow(unused)]
 pub struct AppSettings {
     pub settings: Settings,
@@ -53,7 +54,7 @@ fn SettingsCard(props: AppSettings) -> Element {
 
 #[component]
 fn SettingsPage() -> Element {
-    let settings_context = use_context::<Signal<AppSettings>>();
+    let settings_context = use_context::<Signal<Settings>>();
     let settings = settings_context.read();
     rsx! {
         //div {
@@ -67,21 +68,21 @@ fn SettingsPage() -> Element {
                 div { class: "settings-section-header", "System Settings" },
                 div { class: "settings-item",
                     span { class: "settings-item-key", "Schedule: " },
-                    span { class: "settings-item-value", "{settings.settings.system.schedule}" }
+                    span { class: "settings-item-value", "{settings.system.schedule}" }
                 },
                 div { class: "settings-item",
                     span { class: "settings-item-key", "Data Directory: " },
-                    span { class: "settings-item-value", "{settings.settings.system.data_dir}" }
+                    span { class: "settings-item-value", "{settings.system.data_dir}" }
                 },
                 div { class: "settings-item",
                     span { class: "settings-item-key", "Run at Startup: " },
-                    span { class: "settings-item-value", "{settings.settings.system.run_at_startup}" }
+                    span { class: "settings-item-value", "{settings.system.run_at_startup}" }
                 }
             },
             div {
                 class: "settings-section",
                 div { class: "settings-section-header", "Gitops Settings" },
-                    for gitops in settings.clone().settings.gitops.unwrap().iter() {
+                    for gitops in settings.clone().gitops.unwrap().iter() {
                         div { class: "settings-item",
                             span { class: "settings-item-key", "Name: " }
                             span { class: "settings-item-value", "{gitops.name}" }
@@ -174,6 +175,7 @@ fn WorkloadCard(props: WorkloadCardProps) -> Element {
             button {onclick: move |_| {
                 to_owned![data, props.workload];
                 async move {
+                    println!("Refresh button clicked");
                     if let Ok(_) = update_workload(data()).await {
                     }
                 }
@@ -188,6 +190,7 @@ fn WorkloadCard(props: WorkloadCardProps) -> Element {
                 br {}
                 button { onclick: move |_| {
                     async move {
+                        println!("Upgrade button clicked");
                         if let Ok(_) = upgrade_workload(data()).await {
                         }
                     }
@@ -200,16 +203,31 @@ fn WorkloadCard(props: WorkloadCardProps) -> Element {
 
 pub fn App() -> Element {
     println!("App started");
-    use_context_provider(|| Signal::new(AppSettings { settings: Settings::new().unwrap_or_else(
-        |err| {
-            log::error!("Failed to load settings: {}", err);
-            panic!("Failed to load settings: {}", err);
-        }
-    ) }));
+    let settings = use_server_future(load_settings)?;
+    if let Some(Err(err)) = settings() {
+        return rsx! { div { "Error: {err}" } };
+    }
+    if let Some(Ok(settings)) = settings() {
+        println!("Settings: {:?}", settings);
+        use_context_provider(|| Signal::new(settings));
+    }
+    //use_context_provider(|| {
+    //    //Signal::new(settings)
+    //});
+    
+//    use_context_provider(|| Signal::new(Appsettings:settings)  );
+//    use_context_provider(|| Signal::new(load_settings)  );
     //load config
     rsx! { Router::<Route> {} }
 }
 
+
+#[server]
+async fn load_settings() -> Result<Settings, ServerFnError> {
+    let settings = Settings::new().unwrap();
+    Ok(settings)
+
+}
 
 #[component]
 fn RefreshAll() -> Element {
@@ -285,10 +303,11 @@ fn All() -> Element {
 
 #[component]
 fn NextScheduledTimeCard() -> Element {
-    let settings_context = use_context::<Signal<AppSettings>>().clone();
+    let settings_context = use_context::<Signal<Settings>>();
+    log::info!("settings context: {:?}", settings_context);
     let mut next_schedule = use_server_future(move || async move {
         let settings = settings_context.read();
-        get_next_schedule_time(settings.settings.clone()).await
+        get_next_schedule_time(settings.clone()).await
     })?;
     match next_schedule() {
         Some(Ok(next_schedule)) => {
@@ -296,6 +315,7 @@ fn NextScheduledTimeCard() -> Element {
                 div { class: "next-scheduled-time",
                     div { class: "system-info", "System Info" },
                     div { "Next Run: {next_schedule}" }
+                    a { href: "/refresh-all", "Click to Run Now" }
                 }
             }
         },
@@ -360,8 +380,6 @@ async fn refresh_all() -> Result<(), ServerFnError> {
 #[server]
 async fn get_all() -> Result<Vec<Workload>, ServerFnError> {
     use crate::database::client::return_all_workloads;
-    let settings_context = consume_context::<Signal<AppSettings>>();
-    log::info!("settings_context: {:?}", settings_context);
     let workloads = return_all_workloads();
     log::info!("get_all_workloads: {:?}", workloads);
     Ok(workloads.unwrap())

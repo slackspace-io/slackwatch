@@ -64,7 +64,7 @@
 .workload-update-available {
     color: #5944AD; /* Cool, deep purple */
     font-weight: bold;
-    order: 1!important;
+    order: 2!important;
 }
 
 .workload-version, .workload-image, .workload-namespace, .workload-last-scanned, .workload-latest-version {
@@ -114,6 +114,6 @@
         padding: 20px;
         border-radius: 8px;
         background: white;
-        order: 2;
         margin: 20px;
+        order: 1!important;
 }
