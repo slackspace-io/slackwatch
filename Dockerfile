@@ -3,6 +3,7 @@ WORKDIR /app
 RUN cargo install dioxus-cli
 COPY Dioxus.toml ./
 COPY Cargo.toml Cargo.lock ./
+COPY assets ./assets
 COPY src ./src
 RUN  dx build --platform fullstack --release
 
