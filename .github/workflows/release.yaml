@@ -1,4 +1,4 @@
-name: Release v0.3.8
+name: Release Slackwatch
 
 on:
   push:
