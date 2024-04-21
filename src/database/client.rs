@@ -150,7 +150,7 @@ pub fn insert_workload(workload: &Workload, scan_id: i32) -> Result<()> {
             &workload.latest_version,
             &workload.last_scanned,
             &scan_id.to_string(),
-            workload.git_directory.as_ref().map(String::as_str).unwrap_or_default(),
+            &workload.name,
         ],
     ) {
         Ok(_) => Ok(()),

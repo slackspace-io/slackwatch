@@ -1,8 +1,11 @@
 #![allow(non_snake_case, unused)]
 
 use dioxus::prelude::*;
+use dioxus::prelude::server_fn::response::Res;
 use dioxus::prelude::ServerFnError;
+use serde_derive::{Deserialize, Serialize};
 use wasm_bindgen_futures::spawn_local;
+use crate::config::{GitopsConfig, Notifications, Settings, System};
 use crate::models;
 use crate::models::models::Workload;
 
@@ -14,8 +17,15 @@ enum Route {
         Home {},
         #[route("/refresh-all")]
         RefreshAll {},
+        #[route("/settings")]
+        SettingsPage {},
     }
 
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[allow(unused)]
+pub struct AppSettings {
+    pub settings: Settings,
+}
 
 
 #[derive(PartialEq, Clone,Props)]
@@ -30,6 +40,66 @@ async fn get_all_workloads() -> Result<String, ServerFnError> {
     let workloads = return_all_workloads();
     Ok(workloads.unwrap().iter().map(|w| w.name.clone()).collect::<Vec<String>>().join(", "))
 }
+
+
+
+#[component]
+fn SettingsCard(props: AppSettings) -> Element {
+    rsx! {
+        div {
+            class: "settings-section",
+        }
+    }
+}
+
+#[component]
+fn SettingsPage() -> Element {
+    let settings_context = use_context::<Signal<Settings>>();
+    let settings = settings_context.read();
+    rsx! {
+        //div {
+        //  NextScheduledTimeCard {}
+        //
+        //},
+        div {
+            class: "settings-page",
+            div {
+                class: "settings-section",
+                div { class: "settings-section-header", "System Settings" },
+                div { class: "settings-item",
+                    span { class: "settings-item-key", "Schedule: " },
+                    span { class: "settings-item-value", "{settings.system.schedule}" }
+                },
+                div { class: "settings-item",
+                    span { class: "settings-item-key", "Data Directory: " },
+                    span { class: "settings-item-value", "{settings.system.data_dir}" }
+                },
+                div { class: "settings-item",
+                    span { class: "settings-item-key", "Run at Startup: " },
+                    span { class: "settings-item-value", "{settings.system.run_at_startup}" }
+                }
+            },
+            div {
+                class: "settings-section",
+                div { class: "settings-section-header", "Gitops Settings" },
+                    for gitops in settings.clone().gitops.unwrap().iter() {
+                        div { class: "settings-item",
+                            span { class: "settings-item-key", "Name: " }
+                            span { class: "settings-item-value", "{gitops.name}" }
+                        }
+                        div { class: "settings-item",
+                            span { class: "settings-item-key", "Repository URL: " }
+                            span { class: "settings-item-value", "{gitops.repository_url}" }
+                        }
+                }
+
+            }
+
+        },
+    }
+}
+
+
 
 
 #[component]
@@ -48,6 +118,7 @@ fn Home() -> Element {
             } else {
             rsx! {
                 div { class: "workloads-page",
+                    NextScheduledTimeCard {},
                     for w in workloads.iter() {
                     WorkloadCard{workload: w.clone()}
                         }
@@ -104,6 +175,7 @@ fn WorkloadCard(props: WorkloadCardProps) -> Element {
             button {onclick: move |_| {
                 to_owned![data, props.workload];
                 async move {
+                    println!("Refresh button clicked");
                     if let Ok(_) = update_workload(data()).await {
                     }
                 }
@@ -118,6 +190,7 @@ fn WorkloadCard(props: WorkloadCardProps) -> Element {
                 br {}
                 button { onclick: move |_| {
                     async move {
+                        println!("Upgrade button clicked");
                         if let Ok(_) = upgrade_workload(data()).await {
                         }
                     }
@@ -130,9 +203,31 @@ fn WorkloadCard(props: WorkloadCardProps) -> Element {
 
 pub fn App() -> Element {
     println!("App started");
+    let settings = use_server_future(load_settings)?;
+    if let Some(Err(err)) = settings() {
+        return rsx! { div { "Error: {err}" } };
+    }
+    if let Some(Ok(settings)) = settings() {
+        println!("Settings: {:?}", settings);
+        use_context_provider(|| Signal::new(settings));
+    }
+    //use_context_provider(|| {
+    //    //Signal::new(settings)
+    //});
+    
+//    use_context_provider(|| Signal::new(Appsettings:settings)  );
+//    use_context_provider(|| Signal::new(load_settings)  );
+    //load config
     rsx! { Router::<Route> {} }
 }
 
+
+#[server]
+async fn load_settings() -> Result<Settings, ServerFnError> {
+    let settings = Settings::new().unwrap();
+    Ok(settings)
+
+}
 
 #[component]
 fn RefreshAll() -> Element {
@@ -200,6 +295,52 @@ fn All() -> Element {
             rsx! { div { "Loading..." } }
 
         }
+    }
+}
+
+
+// ... rest of the code ...
+
+#[component]
+fn NextScheduledTimeCard() -> Element {
+    let settings_context = use_context::<Signal<Settings>>();
+    log::info!("settings context: {:?}", settings_context);
+    let mut next_schedule = use_server_future(move || async move {
+        let settings = settings_context.read();
+        get_next_schedule_time(settings.clone()).await
+    })?;
+    match next_schedule() {
+        Some(Ok(next_schedule)) => {
+            rsx! {
+                div { class: "next-scheduled-time",
+                    div { class: "system-info", "System Info" },
+                    div { "Next Run: {next_schedule}" }
+                    a { href: "/refresh-all", "Click to Run Now" }
+                }
+            }
+        },
+        Some(Err(err)) => {
+            rsx! { div { "Error: {err}" } }
+        },
+        None => {
+            rsx! { div { "Loading..." } }
+        }
+        _ => {
+            rsx! { div { "Loading..." } }
+        }
+    }
+}
+
+#[server]
+async fn get_next_schedule_time(settings: Settings) -> Result<String, ServerFnError> {
+    use crate::services::scheduler::next_schedule_time;
+    let schedule_str = &settings.system.schedule;
+    let next_schedule = next_schedule_time(&schedule_str).await;
+    log::info!("get_next_schedule_time: {:?}", next_schedule);
+    if next_schedule.contains("No upcoming schedule") {
+        Result::Err(ServerFnError::new(&next_schedule))
+    } else {
+        Result::Ok(next_schedule)
     }
 }
 

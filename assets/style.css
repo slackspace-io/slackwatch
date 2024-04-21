@@ -64,9 +64,56 @@
 .workload-update-available {
     color: #5944AD; /* Cool, deep purple */
     font-weight: bold;
-    order: 1!important;
+    order: 2!important;
 }
 
 .workload-version, .workload-image, .workload-namespace, .workload-last-scanned, .workload-latest-version {
     margin-top: 10px;
+}
+
+
+.settings-page {
+    background-color: #F0F0F0;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px auto;
+    width: 80%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.settings-section {
+    margin-bottom: 20px;
+}
+
+.settings-section-header {
+    font-weight: bold;
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.settings-item {
+    margin-top: 5px;
+}
+
+.settings-item-key {
+    font-weight: bold;
+}
+
+.settings-item-value {
+    margin-left: 10px;
+}
+
+.system-info {
+    font-weight: bold;
+    font-size: 1.25em;
+}
+
+.next-scheduled-time {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        padding: 20px;
+        border-radius: 8px;
+        background: white;
+        margin: 20px;
+        order: 1!important;
 }
