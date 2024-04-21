@@ -33,6 +33,11 @@ struct WorkloadCardProps {
     workload: Workload,
 }
 
+#[derive(PartialEq, Clone,Props)]
+struct WorkloadsProps {
+    workloads: Vec<Workload>,
+}
+
 
 #[server] // For the server-side rendering version
 async fn get_all_workloads() -> Result<String, ServerFnError> {
@@ -118,7 +123,7 @@ fn Home() -> Element {
             } else {
             rsx! {
                 div { class: "workloads-page",
-                    NextScheduledTimeCard {},
+                    SystemInfoCard {workloads: workloads.clone()},
                     for w in workloads.iter() {
                     WorkloadCard{workload: w.clone()}
                         }
@@ -133,6 +138,49 @@ fn Home() -> Element {
             rsx! { div { "Loading..." } }
         }
 
+    }
+}
+
+
+// ... rest of the code ...
+#[component]
+fn SystemInfoCard(props: WorkloadsProps) -> Element {
+    let data = use_signal(|| {props.workloads.clone()});
+    rsx! {
+        div { class: "system-info-card",
+            div { class: "system-info", "System Info" },
+            div { class: "system-info-entry","Watched Workloads: {data().len()}" },
+            NextScheduledTimeCard {},
+        }
+        }
+}
+
+#[component]
+fn NextScheduledTimeCard() -> Element {
+    let settings_context = use_context::<Signal<Settings>>();
+    log::info!("settings context: {:?}", settings_context);
+    let mut next_schedule = use_server_future(move || async move {
+        let settings = settings_context.read();
+        get_next_schedule_time(settings.clone()).await
+    })?;
+    match next_schedule() {
+        Some(Ok(next_schedule)) => {
+            rsx! {
+                    div { class: "system-info-entry", "Next Run: {next_schedule}" }
+                    div { class: "system-info-entry", 
+                    a {  href: "/refresh-all", "Click to Run Now" }
+                    }
+            }
+        },
+        Some(Err(err)) => {
+            rsx! { div { "Error: {err}" } }
+        },
+        None => {
+            rsx! { div { "Loading..." } }
+        }
+        _ => {
+            rsx! { div { "Loading..." } }
+        }
     }
 }
 
@@ -214,7 +262,7 @@ pub fn App() -> Element {
     //use_context_provider(|| {
     //    //Signal::new(settings)
     //});
-    
+
 //    use_context_provider(|| Signal::new(Appsettings:settings)  );
 //    use_context_provider(|| Signal::new(load_settings)  );
     //load config
@@ -299,37 +347,7 @@ fn All() -> Element {
 }
 
 
-// ... rest of the code ...
 
-#[component]
-fn NextScheduledTimeCard() -> Element {
-    let settings_context = use_context::<Signal<Settings>>();
-    log::info!("settings context: {:?}", settings_context);
-    let mut next_schedule = use_server_future(move || async move {
-        let settings = settings_context.read();
-        get_next_schedule_time(settings.clone()).await
-    })?;
-    match next_schedule() {
-        Some(Ok(next_schedule)) => {
-            rsx! {
-                div { class: "next-scheduled-time",
-                    div { class: "system-info", "System Info" },
-                    div { "Next Run: {next_schedule}" }
-                    a { href: "/refresh-all", "Click to Run Now" }
-                }
-            }
-        },
-        Some(Err(err)) => {
-            rsx! { div { "Error: {err}" } }
-        },
-        None => {
-            rsx! { div { "Loading..." } }
-        }
-        _ => {
-            rsx! { div { "Loading..." } }
-        }
-    }
-}
 
 #[server]
 async fn get_next_schedule_time(settings: Settings) -> Result<String, ServerFnError> {
