@@ -44,7 +44,7 @@ pub fn return_workload(name: String, namespace: String) -> Result<Workload> {
             current_version: row.get(8)?,
             latest_version: row.get(9)?,
             last_scanned: row.get(10)?,
-            git_directory: row.get(12)?,
+            git_directory: row.get(13)?,
         })
     })?;
     if let Some(workload) = workload.next() {
@@ -96,7 +96,7 @@ JOIN MaxLastScanned mls ON f.name = mls.name AND f.namespace = mls.namespace AND
             current_version: row.get(8)?,
             latest_version: row.get(9)?,
             last_scanned: row.get(10)?,
-            git_directory: row.get(12)?,
+            git_directory: row.get(13)?,
         })
     })?;
     let mut result = Vec::new();
@@ -136,8 +136,8 @@ pub fn insert_workload(workload: &Workload, scan_id: i32) -> Result<()> {
     let conn = Connection::open("data.db")?;
     //get scan_id
     match conn.execute(
-        "INSERT INTO workloads (name, image, namespace, git_ops_repo, include_pattern, exclude_pattern, update_available, current_version, latest_version, last_scanned, scan_id, scan_type)
-                  VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
+        "INSERT INTO workloads (name, image, namespace, git_ops_repo, include_pattern, exclude_pattern, update_available, current_version, latest_version, last_scanned, scan_id, scan_type, git_directory)
+                  VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)",
         [
             &workload.name,
             &workload.image,
@@ -151,6 +151,7 @@ pub fn insert_workload(workload: &Workload, scan_id: i32) -> Result<()> {
             &workload.last_scanned,
             &scan_id.to_string(),
             &workload.name,
+            &workload.git_directory.as_ref().map(String::as_str).unwrap_or_default(),
         ],
     ) {
         Ok(_) => Ok(()),
