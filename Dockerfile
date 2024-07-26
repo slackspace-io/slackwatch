@@ -1,4 +1,4 @@
-FROM rust:1.77.2 as builder
+FROM rust:1.79 as builder
 WORKDIR /app
 RUN cargo install dioxus-cli
 COPY Dioxus.toml ./
@@ -7,7 +7,7 @@ COPY assets ./assets
 COPY src ./src
 RUN  dx build --platform fullstack --release
 
-FROM rust:1.77.2
+FROM rust:1.79
 #RUN apt-get update && rm -rf /var/lib/apt/lists/*
 #Copy all files from the builder
 WORKDIR /app
