@@ -5,42 +5,43 @@ edition = "2021"
 
 
 [dependencies]
-serde = { version = "1.0.204", features = ["derive"] }
+serde = { version = "1.0.214", features = ["derive"] }
 dotenv = { version = "0.15.0"}
-anyhow = { version = "1.0.86", features = ["std"] }
+anyhow = { version = "1.0.92", features = ["std"] }
 env_logger = { version = "0.11.5" }
-tokio = { version = "1.39.1", features = ["full"], optional = true }
+tokio = { version = "1.41.0", features = ["full"], optional = true }
 warp = { version = "0.3.7", optional = true }
 log = { version = "0.4.22"}
-k8s-openapi = { version = "0.22.0", features = ["v1_24"], optional = true }
-kube = { version = "0.93.1", features = ["runtime"], optional = true }
-kube-runtime = {version = "0.93.1", optional = true}
-rusqlite = { version = "0.32.0", features = ["bundled"], optional = true }
+k8s-openapi = { version = "0.23.0", features = ["v1_27"], optional = true }
+kube = { version = "0.96.0", features = ["runtime"], optional = true }
+kube-runtime = {version = "0.96.0", optional = true}
+rusqlite = { version = "0.32.1", features = ["bundled"], optional = true }
 #actix-web = { version = "4", optional = true }
 strum = { version = "0.26.3", optional = true}
 strum_macros = { version = "0.26.4", optional = true}
-futures = { version = "0.3.30", optional = true }
-reqwest = { version = "0.12.5", features = ["json"], optional = true }
+futures = { version = "0.3.31", optional = true }
+reqwest = { version = "0.12.9", features = ["json"], optional = true }
 oci-distribution = { version = "0.11.0", optional =     true }
-regex = { version = "1.10.5", optional = true }
+regex = { version = "1.11.1", optional = true }
 semver = { version = "1.0.23", optional = true}
 chrono = { version = "0.4.38", optional = true }
 url =  { version = "2.5.2", optional = true }
-ntfy = { version = "0.4.0", optional = true }
-config = { version = "0.14.0", optional = true }
-serde_derive = { version = "1.0.204", optional = true }
+ntfy = { version = "0.6.0", optional = true }
+config = { version = "0.14.1", optional = true }
+serde_derive = { version = "1.0.214", optional = true }
 cron = { version = "0.12.1", optional = true }
 git2 = { version = "0.19.0", optional = true }
 serde_yaml = { version = "0.9.34", optional = true }
 walkdir = { version = "2.5.0", optional = true }
 dioxus = { version = "0.5.6", features = ["fullstack", "router"], optional = true }
-wasm-bindgen-futures = "0.4.42"
+wasm-bindgen-futures = "0.4.45"
 dioxus-fullstack = "0.5.6"
+wasm-bindgen = "0.2.95"
 
 [dev-dependencies]
-tempfile = "3.10.1"
+tempfile = "3.13.0"
 
 [features]
 default = ["strum", "strum_macros", "serde_derive", "config"]
-server = ["dioxus/axum", "kube/runtime", "kube", "k8s-openapi/v1_24", "reqwest", "oci-distribution", "ntfy",  "serde_yaml", "walkdir", "git2", "futures", "rusqlite", "chrono", "url", "tokio", "cron", "serde_derive",  "strum", "strum_macros", "semver", "regex", "warp"]
+server = ["dioxus/axum", "kube/runtime", "kube", "k8s-openapi/v1_27", "reqwest", "oci-distribution", "ntfy",  "serde_yaml", "walkdir", "git2", "futures", "rusqlite", "chrono", "url", "tokio", "cron", "serde_derive",  "strum", "strum_macros", "semver", "regex", "warp"]
 web = ["dioxus/web"]
