@@ -10,6 +10,8 @@ on:
       - 'Dockerfile'
       - 'assets/**'
       - '.github/workflows/dev-build.yaml'
+      - 'Cargo.toml'
+      - 'Cargo.lock'
 
 concurrency:
   group: "slackwatch"
