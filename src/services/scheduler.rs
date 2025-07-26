@@ -8,7 +8,6 @@ use tokio::time::{sleep_until, Instant as TokioInstant};
 
 
 
-#[cfg(feature = "server")]
 pub async fn scheduler(schedule: &Schedule) {
     log::info!("Scheduler started");
     println!("Cron schedule: {}", schedule);
@@ -36,7 +35,6 @@ pub async fn scheduler(schedule: &Schedule) {
     }
 }
 
-#[cfg(feature = "server")]
 pub async fn run_scheduler(settings: Settings) {
     //Load Scheduler
     let run_at_startup = settings.system.run_at_startup;
@@ -52,7 +50,6 @@ pub async fn run_scheduler(settings: Settings) {
     }
 }
 
-#[cfg(feature = "server")]
 pub async fn next_schedule_time(schedule_str: &String) -> String {
     let now = chrono::Utc::now();
     let schedule = &Schedule::from_str(&schedule_str).expect("Failed to parse cron expression");
@@ -63,7 +60,6 @@ pub async fn next_schedule_time(schedule_str: &String) -> String {
     "No upcoming schedule".to_string()
 }
 
-#[cfg(feature = "server")]
 async fn refresh_all_workloads() {
     log::info!("Refreshing all workloads");
     fetch_and_update_all_watched()

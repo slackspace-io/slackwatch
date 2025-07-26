@@ -30,7 +30,7 @@ pub async fn get_tags_for_image(image: &str) -> Result<Vec<String>, Box<dyn std:
     log::info!("Fetching tags for image: {:?}", reference.tag());
 
     let mut all_tags = Vec::new();
-    let mut last_tag = reference.tag().cloned();
+    let mut last_tag = reference.tag().map(|s| s.to_string());
     let mut attempt_count = 0;
     const MAX_ATTEMPTS: usize = 5;
 

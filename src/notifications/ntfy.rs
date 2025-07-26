@@ -1,13 +1,9 @@
-use dioxus::html::set;
-use dioxus::prelude::client;
-use dioxus::prelude::server_fn::response::Res;
+use futures::SinkExt;
 use crate::config::{Ntfy, Settings};
 use crate::models::models::Workload;
 use ntfy::payload::{Action, ActionType};
-use ntfy::{Auth, Dispatcher, NtfyError, Payload, Priority};
-use wasm_bindgen_futures::js_sys::Atomics::load;
-use wasm_bindgen_futures::js_sys::Set;
-
+use ntfy::{dispatcher, Auth, Dispatcher, Payload, Priority};
+use ntfy::error::Error as NtfyError;
 
 pub async fn notify_commit(workload: &Workload) -> Result<(), NtfyError> {
     //get settings
@@ -18,9 +14,9 @@ pub async fn notify_commit(workload: &Workload) -> Result<(), NtfyError> {
             let token = settings.token;
 
 
-            let dispatcher = Dispatcher::builder(&url)
-                .credentials(Auth::new("", &token)) // Add optional credentials
-                .build()?; // Build dispatcher
+            let dispatcher = dispatcher::builder(&url)
+                .credentials(Auth::credentials("", &token)) // Add optional credentials
+                .build_blocking()?; // Build dispatcher
 
             //let action = Action::new(
             //    ActionType::Http,
@@ -45,7 +41,7 @@ pub async fn notify_commit(workload: &Workload) -> Result<(), NtfyError> {
                 //.delay(Local::now() + Duration::minutes(1)) // Add optional delay
                 .markdown(true); // Use markdown
 
-            match dispatcher.send(&payload).await {
+            match dispatcher.send(&payload) {
                 Ok(_) => log::info!("Payload sent successfully."),
                 Err(e) => log::error!("Failed to send payload: {}", e),
             }
@@ -88,9 +84,9 @@ pub async fn send_notification(workload: &Workload) -> Result<(), NtfyError> {
             let topic = settings.topic;
             let token = settings.token;
 
-            let dispatcher = Dispatcher::builder(&url)
-                .credentials(Auth::new("", &token)) // Add optional credentials
-                .build()?; // Build dispatcher
+            let mut dispatcher = dispatcher::builder(&url)
+                .credentials(Auth::credentials("", &token)) // Add optional credentials
+                .build_blocking();
 
             //let action = Action::new(
             //    ActionType::Http,
@@ -115,7 +111,7 @@ pub async fn send_notification(workload: &Workload) -> Result<(), NtfyError> {
                 //.delay(Local::now() + Duration::minutes(1)) // Add optional delay
                 .markdown(true); // Use markdown
 
-            match dispatcher.send(&payload).await {
+            match dispatcher?.send(&payload) {
                 Ok(_) => log::info!("Payload sent successfully."),
                 Err(e) => log::error!("Failed to send payload: {}", e),
             }

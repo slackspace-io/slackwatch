@@ -1,0 +1,189 @@
+/* Base styles from original application */
+.workloads-page {
+    background-color: #F8F8F8;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.workload-card-update-available {
+    box-shadow: 0 0 15px rgba(0, 150, 255, 0.4); /* Electric blue glow */
+    padding: 20px;
+    border-radius: 8px;
+    background: white;
+    order: 1;
+    margin: 20px;
+}
+
+.workload-card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    border-radius: 8px;
+    background: white;
+    order: 2;
+    margin: 20px;
+    position: relative;
+}
+
+.workload-update-single {
+    display: flex;
+    border: none;
+    padding: 0!important;
+    font-family: Arial, sans-serif;
+    color: #0096FF; /* Electric Blue */
+    cursor: pointer;
+    text-decoration: underline;
+    background: none!important;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.upgrade-button {
+    position: relative;
+    background-color: #F27B30; /* Your vibrant orange */
+    color: #ffffff;
+    padding: 8px 16px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 4px;
+    display: block;
+}
+
+.workload-name {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+.workload-update-available {
+    color: #5944AD; /* Cool, deep purple */
+    font-weight: bold;
+    order: 2!important;
+}
+
+.workload-version, .workload-image, .workload-namespace, .workload-last-scanned, .workload-latest-version {
+    margin-top: 10px;
+}
+
+.settings-page {
+    background-color: #F0F0F0;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px auto;
+    width: 80%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.settings-section {
+    margin-bottom: 20px;
+}
+
+.settings-section-header {
+    font-weight: bold;
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.settings-item {
+    margin-top: 5px;
+}
+
+.settings-item-key {
+    font-weight: bold;
+}
+
+.settings-item-value {
+    margin-left: 10px;
+}
+
+.system-info {
+    font-weight: bold;
+    font-size: 1.25em;
+}
+
+.system-info-entry {
+    margin-top: 10px;
+}
+
+.system-info-card {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    border-radius: 8px;
+    background: white;
+    margin: 20px;
+    order: 1!important;
+}
+
+/* Additional styles for React app */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #F8F8F8;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.app-header {
+    background-color: #333;
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.app-header h1 {
+    margin: 0;
+}
+
+.app-header nav ul {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.app-header nav ul li {
+    margin-left: 1rem;
+}
+
+.app-header nav ul li a {
+    color: white;
+    text-decoration: none;
+}
+
+.app-header nav ul li a:hover {
+    text-decoration: underline;
+}
+
+.app-content {
+    flex: 1;
+    padding: 1rem;
+}
+
+.app-footer {
+    background-color: #333;
+    color: white;
+    padding: 1rem;
+    text-align: center;
+}
+
+a {
+    color: #0096FF;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

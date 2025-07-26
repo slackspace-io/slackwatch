@@ -1,7 +1,5 @@
 # General
 .DS_Store
-node_modules/
-dist/
 *.log
 *.env
 .env.local
@@ -17,11 +15,6 @@ dist/
 *.swo
 *~
 
-
-# Svelte / TypeScript
-public/build/
-src/node_modules/
-
 # Kubernetes
 *.kube
 *.k8s
@@ -30,12 +23,18 @@ src/node_modules/
 docker-compose*.yml
 *.dockerignore
 
-# Dioxus
-.dioxus/
-.slackwatch/
+# React
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
 # Rust
-.target/
+/target/
+**/*.rs.bk
+Cargo.lock
 
 #mdbook
 book/

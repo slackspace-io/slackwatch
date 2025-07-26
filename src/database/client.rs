@@ -3,7 +3,6 @@ use crate::models::models::Workload;
 use rusqlite::types::{FromSql, FromSqlError, FromSqlResult, ToSqlOutput, ValueRef};
 use rusqlite::{Connection, Error, Result, ToSql};
 
-#[cfg(feature = "server")]
 pub fn create_table_if_not_exist() -> Result<()> {
     let conn = Connection::open("data.db")?;
     conn.execute(
@@ -28,7 +27,6 @@ pub fn create_table_if_not_exist() -> Result<()> {
     Ok(())
 }
 
-#[cfg(feature = "server")]
 pub fn return_workload(name: String, namespace: String) -> Result<Workload> {
     let conn = Connection::open("data.db")?;
     let mut stmt = conn.prepare("SELECT * FROM workloads WHERE name = ?1 AND namespace = ?2")?;

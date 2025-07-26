@@ -13,6 +13,8 @@ SlackWatch is a Kubernetes tool designed to streamline the process of keeping yo
 * Want a customizable and automated solution for image updates
 * Prefer a GitOps-friendly workflow
 
+> **Architecture Note:** SlackWatch now uses a React frontend with a Rust backend, providing better performance, maintainability, and a more modern development experience. The frontend and backend are decoupled, communicating via a RESTful API.
+
 ### Features
 
 * **Image Version Monitoring:** Detects new container image versions (using semver tags) and sends notifications.
@@ -57,19 +59,25 @@ Check out the Kubernetes manifests in the `k8s` directory for deployment configu
 ### Prerequisites for running locally or developing
 
 - Kubernetes cluster accessible from your local machine
-- rust installed
-- dioxus-cli installed, dx binary in your path.
+- Rust installed
+- Node.js and npm installed
 
 ### Deploying Slackwatch locally
-- Deploy using references k8s files under k8s directory
-- Run docker locally for testing
-- Run `dx serve --platform fullstack` to start locally. Will use local kube-config. 
+- Deploy using reference k8s files under k8s directory
+- Run docker locally for testing: `docker build -t slackwatch .`
+- Run the Docker container: `docker run -p 8080:8080 slackwatch`
 
 ### Setting Up Slackwatch for development
 
 1. **Clone the repository** to get started.
-2. **Navigate to the git directory**: 
-3. **Install dependencies**: Run `dx serve --platform fullstack` 
+2. **Navigate to the project directory**
+3. **Backend development**:
+   - Run `cargo run` to start the Rust backend
+4. **Frontend development**:
+   - Navigate to the frontend directory: `cd frontend`
+   - Install dependencies: `npm install`
+   - Start the development server: `npm run dev`
+   - The frontend will be available at http://localhost:5173 and will proxy API requests to the backend
 
 ## Configuration
 
