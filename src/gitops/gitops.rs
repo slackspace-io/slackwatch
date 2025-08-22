@@ -75,6 +75,7 @@ fn edit_files(local_path: &Path, workload: &Workload) {
             local_path.join(name)
         } else {
             log::info!("git directory: {:?}", git_directory);
+            log::info!("Full Path: {:?}/{:?}", local_path, git_directory);
             local_path.join(git_directory)
         }
     } else {
